@@ -1,0 +1,3 @@
+[submodule "src/JamSim"]
+	path = src/JamSim
+	url = git@github.com:tommerman64/JamSim.git

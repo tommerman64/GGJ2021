@@ -1,0 +1,4 @@
+bin/*/*
+bin/*.zip
+bin/main.hl
+!bin/js/index.html

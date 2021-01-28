@@ -1,0 +1,12 @@
+# class paths
+-cp src
+
+# entry point
+-main Main
+
+# libraries
+-lib heaps
+-lib hlsdl
+
+# output
+-hl bin/main.hl
