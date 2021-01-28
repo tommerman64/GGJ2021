@@ -1,0 +1,13 @@
+needed systems:
+A) ship movement and collision
+B) bullets and hit events
+C) Pickup and drop off
+D) Attachment and inventory
+
+ABC all need to share transform/bounding box info. So that will probably all be one shared cache that only is written to by movement system
+
+Entity types:
+player ship (all systems)
+big ship (pickup and drop off)
+loot box (ship movement, bullets and hit events)
+pickup (ship movement, inventory)
