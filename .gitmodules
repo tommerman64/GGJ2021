@@ -1,3 +1,6 @@
 [submodule "src/JamSim"]
 	path = src/JamSim
 	url = git@github.com:tommerman64/JamSim.git
+[submodule "src\\JamSim"]
+	path = src\\JamSim
+	url = git@github.com:tommerman64/JamSim.git
