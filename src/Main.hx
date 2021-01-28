@@ -6,6 +6,8 @@ import h3d.Vector;
 import jamSim.Sim;
 
 class Main extends hxd.App {
+
+    static var SIM_FRAME_TIME =  1.0/60.0;
     var _music:hxd.snd.Channel;
 
     // sim and systems
@@ -33,14 +35,14 @@ class Main extends hxd.App {
 
         _sim = new Sim();
 
-        _timeToNextFrame = 1.0/60.0;
+        _timeToNextFrame = SIM_FRAME_TIME;
     }
 
     override function update(dt:Float) {
         _framerateText.text = ""+1/dt;
         _timeToNextFrame -= dt;
         if (_timeToNextFrame <= 0) {
-            _timeToNextFrame = 1.0/60.0;
+            _timeToNextFrame += SIM_FRAME_TIME;
             // Update
             _sim.Tick();
         }
