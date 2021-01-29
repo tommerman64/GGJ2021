@@ -1,3 +1,5 @@
+import shipSim.Input.InputSystem;
+import shipSim.PhysData;
 import hxd.res.Font;
 import h2d.Bitmap;
 import h2d.Tile;
@@ -16,6 +18,10 @@ class Main extends hxd.App {
 
     var _timeToNextFrame:Float;
 
+    var GameData = {
+        shipMovement : new Array<shipSim.ShipMovement>(),
+    }
+
     override function init() {
         super.init();
 
@@ -33,7 +39,15 @@ class Main extends hxd.App {
             _music = res.play(true);
         }
 
+        var inputSystem = new InputSystem();
+
+        var locomotionSystem = new shipSim.ShipLocomotionSystem();
+        locomotionSystem.InjectShipMovementData(GameData.shipMovement);
+        locomotionSystem.SetInputSystem(inputSystem);
+
         _sim = new Sim();
+        _sim.AddSystem(inputSystem);
+        _sim.AddSystem(locomotionSystem);
 
         _timeToNextFrame = SIM_FRAME_TIME;
     }
