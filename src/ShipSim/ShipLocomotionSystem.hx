@@ -10,10 +10,9 @@ import jamSim.Entity;
 class ShipLocomotionSystem extends MovementSystem {
 
     // MOVEMENT CONSTS
-    static var BASE_ROTATIONAL_ACCEL = 2 * Math.PI;
-    static var SIM_FRAME_LENGTH = 1.0/60.0;
-    static var MAX_SPEED = 20;
-    static var BOOSTER_ACCEL = 15;
+    static var BASE_ROTATIONAL_ACCEL = 20 * Math.PI;
+    static var MAX_SPEED = 100;
+    static var BOOSTER_ACCEL = 40;
     static var NATURAL_DECEL = 5;
 
     var _inputSystem:InputSystem;
@@ -37,30 +36,30 @@ class ShipLocomotionSystem extends MovementSystem {
     private function UpdateMovementData(inp:InputState, movement:ShipMovement) {
         // velocity and rotational velocity should naturally decelerate
         var targetVelocity = new Vector();
-        movement.velocity = GameMath.VecMoveTowards(movement.velocity, targetVelocity, NATURAL_DECEL * SIM_FRAME_LENGTH);
+        movement.velocity = GameMath.VecMoveTowards(movement.velocity, targetVelocity, NATURAL_DECEL * MovementSystem.SIM_FRAME_LENGTH);
         movement.rotationalVelocity = GameMath.MoveTowards(movement.rotationalVelocity, 0, BASE_ROTATIONAL_ACCEL / 10);
 
         if (inp.Throttle) {
-            targetVelocity.x = Math.cos(movement.rotation);
-            targetVelocity.y = Math.sin(movement.rotation);
+            targetVelocity.x = Math.cos(movement.rotation - (Math.PI / 2));
+            targetVelocity.y = Math.sin(movement.rotation - (Math.PI / 2));
             // multiply this by max velocity
             targetVelocity.scale3(MAX_SPEED);
             // move current velocity towards that by acceleration value
-            movement.velocity = GameMath.VecMoveTowards(movement.velocity, targetVelocity, BOOSTER_ACCEL * SIM_FRAME_LENGTH);
+            movement.velocity = GameMath.VecMoveTowards(movement.velocity, targetVelocity, BOOSTER_ACCEL * MovementSystem.SIM_FRAME_LENGTH);
         }
 
         var rotationInput : Float = 0;
         if (inp.Left) {
-            rotationInput = -BASE_ROTATIONAL_ACCEL * SIM_FRAME_LENGTH;
+            rotationInput = -BASE_ROTATIONAL_ACCEL * MovementSystem.SIM_FRAME_LENGTH;
         }
 
         if (inp.Right) {
-            rotationInput = BASE_ROTATIONAL_ACCEL * SIM_FRAME_LENGTH;
+            rotationInput = BASE_ROTATIONAL_ACCEL * MovementSystem.SIM_FRAME_LENGTH;
         }
 
         movement.rotationalVelocity += rotationInput;
 
-        movement.rotation += movement.rotationalVelocity * SIM_FRAME_LENGTH;
+        movement.rotation += movement.rotationalVelocity * MovementSystem.SIM_FRAME_LENGTH;
     }
 
     public override function Tick() {

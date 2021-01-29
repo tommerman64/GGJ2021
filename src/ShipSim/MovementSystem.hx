@@ -4,7 +4,10 @@ import jamSim.SimSystem;
 import jamSim.Entity;
 import shipSim.PhysData;
 
+// Sim system that tracks player movement data
 class MovementSystem extends SimSystem {
+    static var SIM_FRAME_LENGTH = 1.0/60.0;
+
     var _playerEntityIds: Array<EntityId>;
     var _shipMovementData : Array<ShipMovement>;
 
