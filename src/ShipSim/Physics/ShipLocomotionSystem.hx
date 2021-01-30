@@ -50,11 +50,11 @@ class ShipLocomotionSystem extends MovementSystem {
 
         var rotationInput : Float = 0;
         if (inp.Left) {
-            rotationInput = -BASE_ROTATIONAL_ACCEL * MovementSystem.SIM_FRAME_LENGTH;
+            rotationInput -= BASE_ROTATIONAL_ACCEL * MovementSystem.SIM_FRAME_LENGTH;
         }
 
         if (inp.Right) {
-            rotationInput = BASE_ROTATIONAL_ACCEL * MovementSystem.SIM_FRAME_LENGTH;
+            rotationInput += BASE_ROTATIONAL_ACCEL * MovementSystem.SIM_FRAME_LENGTH;
         }
 
         movement.rotationalVelocity += rotationInput;
