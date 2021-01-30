@@ -68,7 +68,7 @@ class Main extends hxd.App {
 
         MakePlayerEntity(100, 100);
 
-        PlaceCrates(3);
+        MakeCrateEntity(400, 400);
 
         _timeToNextFrame = SIM_FRAME_TIME;
     }
@@ -89,16 +89,7 @@ class Main extends hxd.App {
         collider.playerCollisions = new Array<EntityId>();
         collider.collider = new Circle(x, y, 15);
 
-        // collider data is indexed on ID-1
-        if (GameData.colliderData.length > player.GetId() - 1) {
-            GameData.colliderData[player.GetId() - 1] = collider; // I think this is bad????
-        }
-        else {
-            while (GameData.colliderData.length < player.GetId() - 1) {
-                GameData.colliderData.push(new ColliderData());
-            }
-            GameData.colliderData.push(collider);
-        }
+        PlaceColliderData(player.GetId(), collider);
 
         // create object in hxd scene
         var obj = new h2d.Object(s2d);
@@ -111,10 +102,41 @@ class Main extends hxd.App {
         _visualRepresentations.push(visRep);
     }
 
-    function PlaceCrates(count: Int) {
-        var index = 0;
-        while(index < count) {
-            index++;
+    function MakeCrateEntity(x:Float, y:Float) {
+        var crate = new SpaceCrate();
+
+        _sim.AddEntity(crate);
+
+
+        // Make Collider Data
+        var collider:ColliderData = new ColliderData();
+        collider.obstacleCollisions = new Array<EntityId>();
+        collider.playerCollisions = new Array<EntityId>();
+        collider.collider = new Circle(x, y, 15);
+
+        PlaceColliderData(crate.GetId(), collider);
+
+        // create object in hxd scene
+        var obj = new h2d.Object(s2d);
+        var tile = hxd.Res.crate.toTile();
+        tile = tile.center();
+        var bmp = new h2d.Bitmap(tile, obj);
+
+        var visRep = new CrateEntityRepresentation(crate.GetId(), obj);
+        visRep.InitFromGameData(GameData.colliderData);
+        _visualRepresentations.push(visRep);
+    }
+
+    function PlaceColliderData(id:EntityId, collider:ColliderData) {
+        // collider data is indexed on ID-1
+        if (GameData.colliderData.length > id - 1) {
+            GameData.colliderData[id - 1] = collider; // I think this is bad????
+        }
+        else {
+            while (GameData.colliderData.length < id - 1) {
+                GameData.colliderData.push(new ColliderData());
+            }
+            GameData.colliderData.push(collider);
         }
     }
 

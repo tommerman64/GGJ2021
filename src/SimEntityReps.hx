@@ -40,3 +40,18 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
         _obj.rotation = _movement.rotation;
     }
 }
+
+class CrateEntityRepresentation extends EnityRepresentation {
+    var _collider : ColliderData;
+
+    public function InitFromGameData(col:Array<ColliderData>) : Bool {
+        _collider = col[_entityId - 1];
+        return _collider != null;
+    }
+
+    public override function UpdateRepresentation(): Void {
+        _obj.x = _collider.collider.x;
+        _obj.y = _collider.collider.y;
+        _obj.rotate(Math.PI / 600);
+    }
+}
