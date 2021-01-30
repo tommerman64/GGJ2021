@@ -1,3 +1,4 @@
+import hxd.Rand;
 import h2d.col.Circle;
 import jamSim.Entity;
 import shipSim.CollisionSystem;
@@ -64,6 +65,8 @@ class Main extends hxd.App {
 
         MakePlayerEntity(100, 100);
 
+        PlaceCrates(3);
+
         _timeToNextFrame = SIM_FRAME_TIME;
     }
 
@@ -108,6 +111,13 @@ class Main extends hxd.App {
         }
     }
 
+    function PlaceCrates(count: Int) {
+        var index = 0;
+        while(index < count) {
+            index++;
+        }
+    }
+
     override function update(dt:Float) {
         _framerateText.text = ""+1/dt;
         _timeToNextFrame -= dt;
@@ -115,15 +125,23 @@ class Main extends hxd.App {
             _timeToNextFrame += SIM_FRAME_TIME;
             // Update
             _sim.Tick();
-            DrawPlayer();
+            DrawCrates();
+            DrawPlayers();
         }
     }
 
-    function DrawPlayer() {
-        var playerId = GameData.shipMovement[0].entityId;
-        _playerBitmaps[0].x = GameData.colliderData[playerId - 1].collider.x;
-        _playerBitmaps[0].y = GameData.colliderData[playerId - 1].collider.y;
-        _playerBitmaps[0].rotation = GameData.shipMovement[0].rotation;
+    function DrawCrates() {
+    }
+
+    function DrawPlayers() {
+        var index = 0;
+        while(index < _playerBitmaps.length) {
+            var playerId = GameData.shipMovement[0].entityId;
+            _playerBitmaps[index].x = GameData.colliderData[playerId - 1].collider.x;
+            _playerBitmaps[index].y = GameData.colliderData[playerId - 1].collider.y;
+            _playerBitmaps[index].rotation = GameData.shipMovement[index].rotation;
+            index++;
+        }
     }
 
     static function main() {

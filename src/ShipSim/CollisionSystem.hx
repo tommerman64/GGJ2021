@@ -36,18 +36,33 @@ class CollisionSystem extends MovementSystem
     public override function Tick() {
         for (pId in _playerEntityIds) {
             var movementData = FindMovementData(pId);
-            _collisionObjects[pId-1].collider.x += movementData.velocity.x * MovementSystem.SIM_FRAME_LENGTH;
-            _collisionObjects[pId-1].collider.y += movementData.velocity.y * MovementSystem.SIM_FRAME_LENGTH;
-        }
-        /*
-        var i = 0;
-        while (i < _collisionObjects.length) {
-            var j = i + 1;
-            while (j < _collisionObjects.length) {
-                if (_collisionObjects[i].collider.collideCircle(_collisionObjects[j].collider)) {
+            var playerCollider =_collisionObjects[pId-1];
+            playerCollider.collider.x += movementData.velocity.x * MovementSystem.SIM_FRAME_LENGTH;
+            playerCollider.collider.y += movementData.velocity.y * MovementSystem.SIM_FRAME_LENGTH;
+
+            for(crateId in _crateEntityIds) {
+                var crateCollider = _collisionObjects[crateId - 1];
+                if (crateCollider.collider.collideCircle(playerCollider.collider)) {
+                    RecordPlayerCrateCollision(pId, crateId);
+                }
+            }
+
+            for (pId2 in _playerEntityIds) {
+                if (pId2 == pId) {
+                    continue;
+                }
+                var p2Collider =_collisionObjects[pId2-1];
+
+                if (p2Collider.collider.collideCircle(playerCollider.collider)) {
+                    RecordPlayerPlayerCollision(pId, pId2);
                 }
             }
         }
-        */
+    }
+
+    function RecordPlayerCrateCollision(playerId:EntityId, crateId:EntityId) {
+    }
+
+    function RecordPlayerPlayerCollision(p1Id:EntityId, p2Id:EntityId) {
     }
 }
