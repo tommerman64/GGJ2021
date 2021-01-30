@@ -45,7 +45,7 @@ class ShipInventory {
             // Make sure we're not double-attaching the same weapon
             var existingIndex = weaponEntityIds.indexOf(weapon.GetId());
             if (existingIndex == -1) {
-                if (weaponEntityIds[index] == null)
+                if (weaponEntityIds[index] == 0)
                     // Add weapon to attachment-related systems
                     weaponEntityIds[index] = weapon.GetId();
             }

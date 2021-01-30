@@ -17,6 +17,7 @@ import h3d.Vector;
 import jamSim.Sim;
 import SimEntityReps;
 import shipSim.CratePlacement;
+import shipSim.ShipInventory;
 
 class Main extends hxd.App {
 
@@ -33,6 +34,7 @@ class Main extends hxd.App {
         shipMovement : new Array<ShipMovement>(),
         colliderData: new Map<EntityId, ColliderData>(),
         screenBounds: new Rect(0,0,1280,720),
+        playerInventories: new Map<EntityId, ShipInventory>(),
     }
 
     var _playerBitmaps : Array<h2d.Bitmap>;
@@ -197,15 +199,15 @@ class Main extends hxd.App {
                 visRep.UpdateRepresentation();
             }
 
-            if (hxd.Key.isDown("5".code)) {
-                dbgGraphics.beginFill(0xFF00FF, 0.8);
-                for (col in GameData.colliderData) {
-                    dbgGraphics.drawCircle(col.collider.x, col.collider.y, col.collider.ray);
-                }
-            }
-
             if(hxd.Key.isPressed('6'.code)) {
                 MakePickupEntity(300,600);
+            }
+        }
+
+        if (hxd.Key.isDown("5".code)) {
+            dbgGraphics.beginFill(0xFF00FF, 0.8);
+            for (col in GameData.colliderData) {
+                dbgGraphics.drawCircle(col.collider.x, col.collider.y, col.collider.ray);
             }
         }
     }
