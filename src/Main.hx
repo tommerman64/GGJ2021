@@ -41,6 +41,7 @@ class Main extends hxd.App {
         screenBounds: new Rect(0,0,1280,720),
         inventories: new Map<EntityId, ShipInventory>(),
         weaponLibrary: new WeaponLibrary(),
+        pickupData: new Array<PickupData>(),
     }
 
     var _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();

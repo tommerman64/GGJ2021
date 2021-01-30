@@ -16,12 +16,26 @@ class ShipWeaponSlot {
     public var spinFactor:Float;
 }
 
+class PickupData {
+    var _weaponLibraryIndex:Int;
+
+    public function new(i:Int) {
+        _weaponLibraryIndex = i;
+    }
+
+    public function GetWeaponLibIndex() {
+        return _weaponLibraryIndex;
+    }
+}
+
 class ShipInventory {
     public var weaponSlots:Array<ShipWeaponSlot>;
     public var weaponEntityIds:Array<EntityId>; // Entity IDs of attached weapons
 
     public function new() {
     }
+
+    // weapon entity id > pickup > weapon library index
 
     public function InitializeWeaponSlots(slots:Array<ShipWeaponSlot>) {
         weaponSlots = slots;

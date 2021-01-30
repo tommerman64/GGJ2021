@@ -1,4 +1,5 @@
 package shipSim.shootyThings;
+import shipSim.shootyThings.ShipWeaponData.WeaponLibrary;
 import haxe.Log;
 import shipSim.ShipInventory.ShipWeaponSlot;
 import h3d.Vector;
