@@ -119,7 +119,7 @@ class Main extends hxd.App {
     }
 
     override function update(dt:Float) {
-        _framerateText.text = ""+1/dt;
+        _framerateText.text = ""+1/dt+"\n" + s2d.width + "\n" + s2d.height;
         _timeToNextFrame -= dt;
         if (_timeToNextFrame <= 0) {
             _timeToNextFrame += SIM_FRAME_TIME;
