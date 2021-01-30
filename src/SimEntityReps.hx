@@ -1,3 +1,4 @@
+import haxe.Log;
 import h2d.Drawable;
 import h2d.Anim;
 import shipSim.ShipInventory.ShipWeaponSlot;
@@ -107,6 +108,7 @@ class PickupEntityRepresentation extends EnityRepresentation {
         else {
             _obj.x = _collider.collider.x;
             _obj.y = _collider.collider.y;
+            Log.trace(_collider.collider);
             _obj.rotate(Math.PI / 300);
         }
     }

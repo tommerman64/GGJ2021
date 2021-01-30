@@ -1,6 +1,7 @@
 import shipSim.shootyThings.ShipWeaponData;
 import shipSim.shootyThings.WeaponSystem;
 import shipSim.ShipInventory;
+import shipSim.SpawnSystem;
 import shipSim.ShipPickupSystem;
 import shipSim.physics.ShipCollisionResolver;
 import h2d.col.Point;
@@ -45,6 +46,8 @@ class Main extends hxd.App {
     var _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();
     var _crateRepresentations = new Map<EntityId, CrateEntityRepresentation>();
     var _pickupRepresentations = new Map<EntityId, PickupEntityRepresentation>();
+
+    var spawnSystem:SpawnSystem;
 
     var dbgGraphics : h2d.Graphics;
 
@@ -93,6 +96,13 @@ class Main extends hxd.App {
         var pickupSystem = new ShipPickupSystem();
         pickupSystem.SetCollisionSystem(collisionSystem);
 
+        spawnSystem = new SpawnSystem();
+        spawnSystem.SetColliderData(GameData.colliderData);
+        spawnSystem.SetRepresentations(_shipRepresentations, _crateRepresentations, _pickupRepresentations);
+        spawnSystem.SetWeaponLibrary(GameData.weaponLibrary);
+        spawnSystem.SetShipMovement(GameData.shipMovement);
+        spawnSystem.SetScene(s2d);
+
         _sim = new Sim();
         _sim.AddSystem(inputSystem);
         _sim.AddSystem(locomotionSystem);
@@ -100,6 +110,7 @@ class Main extends hxd.App {
         _sim.AddSystem(collisionResolver);
         _sim.AddSystem(weaponSystem);
         _sim.AddSystem(pickupSystem);
+        _sim.AddSystem(spawnSystem);
 
         var player1Id = MakePlayerEntity(100, 100);
         var player2Id = MakePlayerEntity(300, 300);
@@ -134,94 +145,18 @@ class Main extends hxd.App {
     function MakePlayerEntity(x:Float, y: Float): EntityId
     {
         var player = new PlayerShipEntity();
-        _sim.AddEntity(player);
-
-        // Make Movement Data
-        var playerMovement:ShipMovement = new ShipMovement();
-        playerMovement.entityId = player.GetId();
-        GameData.shipMovement.push(playerMovement);
-
-        // Make Collider Data
-        var collider:ColliderData = new ColliderData();
-        collider.obstacleCollisions = new Array<EntityId>();
-        collider.playerCollisions = new Array<EntityId>();
-        collider.collider = new Circle(x, y, 20);
-
-        PlaceColliderData(player.GetId(), collider);
-
-        // create object in hxd scene
-        var obj = new h2d.Object(s2d);
-        var tile = hxd.Res.playership.toTile();
-        tile = tile.center();
-        var bmp = new h2d.Bitmap(tile, obj);
-        bmp.scale(2.0/3.0);
-
-        // load flames
-        var boosterAnim = ResourceLoading.LoadAnim(hxd.Res.booster.toTexture(), hxd.Res.boosterMap);
-
-        obj.addChild(boosterAnim);
-        boosterAnim.loop = true;
-        boosterAnim.scale(1.0/15.0);
-        boosterAnim.setPosition(0, 27);
-
-        var visRep = new PlayerShipEntityRepresentation(player.GetId(), obj);
-        visRep.InitFromGameData(GameData.shipMovement, GameData.colliderData);
-        visRep.SetBoosterAnim(boosterAnim);
-        _shipRepresentations[player.GetId()] = visRep;
-
+        spawnSystem.SpawnEntity(player, x, y);
         return player.GetId();
     }
 
     function MakeCrateEntity(x:Float, y:Float) {
         var crate = new SpaceCrate();
-
-        _sim.AddEntity(crate);
-
-        // Make Collider Data
-        var collider:ColliderData = new ColliderData();
-        collider.obstacleCollisions = new Array<EntityId>();
-        collider.playerCollisions = new Array<EntityId>();
-        collider.collider = new Circle(x, y, 25);
-
-        PlaceColliderData(crate.GetId(), collider);
-
-        // create object in hxd scene
-        var obj = new h2d.Object(s2d);
-        var tile = hxd.Res.spacecrate.toTile();
-        tile = tile.center();
-        var bmp = new h2d.Bitmap(tile, obj);
-        bmp.scale(2.0/3.0);
-        obj.rotate(x + y);
-
-        var visRep = new CrateEntityRepresentation(crate.GetId(), obj);
-        visRep.InitFromGameData(GameData.colliderData);
-        _crateRepresentations[crate.GetId()] = visRep;
+        spawnSystem.SpawnEntity(crate, x, y);
     }
 
     function MakePickupEntity(x:Float, y:Float) {
         var pickup = new Pickup();
-
-        _sim.AddEntity(pickup);
-
-        // Make Collider Data
-        var collider:ColliderData = new ColliderData();
-        collider.obstacleCollisions = new Array<EntityId>();
-        collider.playerCollisions = new Array<EntityId>();
-        collider.collider = new Circle(x, y, 18);
-
-        PlaceColliderData(pickup.GetId(), collider);
-
-        // create object in hxd scene
-        var obj = new h2d.Object(s2d);
-        var tile = hxd.Res.spacecrate.toTile();
-        tile = tile.center();
-        var bmp = new h2d.Bitmap(tile, obj);
-        bmp.scale(2.0/3.6);
-        obj.rotate(x + y);
-
-        var visRep = new PickupEntityRepresentation(pickup.GetId(), obj);
-        visRep.InitFromGameData(GameData.colliderData);
-        _pickupRepresentations[pickup.GetId()] = visRep;
+        spawnSystem.SpawnEntity(pickup, x, y);
     }
 
     function PlaceColliderData(id:EntityId, collider:ColliderData) {
