@@ -64,6 +64,26 @@ class SpawnSystem extends SimSystem {
         }
     }
 
+    public override function OnEntityDestroyed(entity:EntityId) {
+        _colliderData.remove(entity);
+        for(movement in _shipMovement.filter(function(sm) {return sm.entityId == entity;})) {
+            _shipMovement.remove(movement);
+        }
+
+        if(_shipRepresentations.exists(entity)){
+            _scene.removeChild(_shipRepresentations[entity].GetObject());
+            _shipRepresentations.remove(entity);
+        }
+        if(_crateRepresentations.exists(entity)){
+            _scene.removeChild(_crateRepresentations[entity].GetObject());
+            _crateRepresentations.remove(entity);
+        }
+        if(_pickupRepresentations.exists(entity)){
+            _scene.removeChild(_pickupRepresentations[entity].GetObject());
+            _pickupRepresentations.remove(entity);
+        }
+    }
+
     public function SpawnEntity(entity:Entity, x:Float, y:Float) {
         _sim.AddEntity(entity);
         GenerateColliderData(entity, x, y);

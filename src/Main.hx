@@ -116,7 +116,10 @@ class Main extends hxd.App {
         var player2Id = MakePlayerEntity(300, 300);
 
         var slots = new Array<ShipWeaponSlot>();
+        slots.push(new ShipWeaponSlot(new Vector(25, 0)));
+        slots.push(new ShipWeaponSlot(new Vector(-25, 0)));
         slots.push(new ShipWeaponSlot(new Vector(50, 0)));
+        slots.push(new ShipWeaponSlot(new Vector(-50, 0)));
 
         GameData.inventories[player1Id] = new ShipInventory();
         GameData.inventories[player1Id].InitializeWeaponSlots(slots);
@@ -176,7 +179,7 @@ class Main extends hxd.App {
         bigGun.weight = 50;
         bigGun.tile = hxd.Res.mothership.toTile();
         bigGun.tile.center();
-        bigGun.tileScale = 1.0/5.0;
+        bigGun.tileScale = 1.0/15.0;
 
         GameData.weaponLibrary.push(lilGun);
         GameData.weaponLibrary.push(bigGun);
@@ -199,10 +202,6 @@ class Main extends hxd.App {
             for (visRep in _pickupRepresentations) {
                 visRep.UpdateRepresentation();
             }
-
-            if(hxd.Key.isPressed('6'.code)) {
-                MakePickupEntity(300,600);
-            }
         }
 
         if (hxd.Key.isDown("5".code)) {
@@ -212,6 +211,23 @@ class Main extends hxd.App {
             dbgGraphics.beginFill(0xFF00FF, 0.8);
             for (col in GameData.colliderData) {
                 dbgGraphics.drawCircle(col.collider.x, col.collider.y, col.collider.ray);
+            }
+        }
+
+        if(hxd.Key.isPressed('6'.code)) {
+            MakePickupEntity(300,600);
+        }
+
+        if(hxd.Key.isPressed('7'.code)) {
+            // Get a crate
+            var crates = _sim.GetEntities().filter(function(e) {return e.GetSystemTags().contains("Crate");});
+            if(crates.length > 0) {
+                var crate = crates[0];
+                var crateCollider = GameData.colliderData[crate.GetId()].collider;
+                var x = crateCollider.x;
+                var y = crateCollider.y;
+                _sim.DestroyEntity(crate.GetId()); // Yeet
+                spawnSystem.SpawnEntity(new Pickup(), x, y);
             }
         }
     }

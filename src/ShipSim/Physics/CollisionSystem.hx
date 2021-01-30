@@ -57,7 +57,12 @@ class CollisionSystem extends MovementSystem
             _pickupEntityIds.push(ent.GetId());
         }
     }
-    
+
+    public override function OnEntityDestroyed(entity:EntityId) {
+        _crateEntityIds.remove(entity);
+        _pickupEntityIds.remove(entity);
+    }
+
     public override function EarlyTick() {
         super.EarlyTick();
         _playerCrateCollisions.resize(0);
