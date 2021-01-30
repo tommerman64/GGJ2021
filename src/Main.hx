@@ -1,3 +1,5 @@
+import h2d.Bitmap;
+import h2d.Graphics;
 import shipSim.shootyThings.ShipWeaponData;
 import shipSim.shootyThings.WeaponSystem;
 import shipSim.SpawnSystem;
@@ -47,6 +49,10 @@ class Main extends hxd.App {
 
     override function init() {
         super.init();
+        var backgroundTex = hxd.Res.spaaace.toTile();
+        var background = new h2d.Bitmap(backgroundTex, s2d);
+        background.scale(2/3);
+        background.alpha = 0.24;
 
         _framerateText = new h2d.Text(hxd.res.DefaultFont.get(), s2d);
         _framerateText.textColor = 0xFFFFFF;
