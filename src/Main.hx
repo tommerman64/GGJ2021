@@ -1,4 +1,6 @@
 import shipSim.shootyThings.WeaponSystem;
+import shipSim.ShipInventory;
+import shipSim.ShipPickupSystem;
 import shipSim.physics.ShipCollisionResolver;
 import h2d.col.Point;
 import hxd.clipper.Rect;
@@ -35,12 +37,14 @@ class Main extends hxd.App {
         shipMovement : new Array<ShipMovement>(),
         colliderData: new Map<EntityId, ColliderData>(),
         screenBounds: new Rect(0,0,1280,720),
-        playerInventories: new Map<EntityId, ShipInventory>(),
+        inventories: new Map<EntityId, ShipInventory>(),
     }
 
     var _playerBitmaps : Array<h2d.Bitmap>;
 
-    var _visualRepresentations : Array<EnityRepresentation>;
+    var _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();
+    var _crateRepresentations = new Map<EntityId, CrateEntityRepresentation>();
+    var _pickupRepresentations = new Map<EntityId, PickupEntityRepresentation>();
 
     var dbgGraphics : h2d.Graphics;
 
@@ -60,7 +64,9 @@ class Main extends hxd.App {
             _music = res.play(true);
         }
 
-        _visualRepresentations = new Array<EnityRepresentation>();
+        _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();
+        _crateRepresentations = new Map<EntityId, CrateEntityRepresentation>();
+        _pickupRepresentations = new Map<EntityId, PickupEntityRepresentation>();
 
         var inputSystem = new InputSystem();
         inputSystem.MapKeys(["A".code, "S".code, "D".code, "F".code, "G".code]);
@@ -82,6 +88,8 @@ class Main extends hxd.App {
         var weaponSystem = new WeaponSystem();
         weaponSystem.SetInputSystem(inputSystem);
         weaponSystem.InjectShipMovementData(GameData.shipMovement);
+        var pickupSystem = new ShipPickupSystem();
+        pickupSystem.SetCollisionSystem(collisionSystem);
 
         _sim = new Sim();
         _sim.AddSystem(inputSystem);
@@ -89,10 +97,21 @@ class Main extends hxd.App {
         _sim.AddSystem(collisionSystem);
         _sim.AddSystem(collisionResolver);
         _sim.AddSystem(weaponSystem);
+        _sim.AddSystem(pickupSystem);
 
+        var player1Id = MakePlayerEntity(100, 100);
+        var player2Id = MakePlayerEntity(300, 300);
 
-        MakePlayerEntity(100, 100);
-        MakePlayerEntity(300, 300);
+        var slots = new Array<ShipWeaponSlot>();
+        slots.push(new ShipWeaponSlot(new Vector(50, 0)));
+
+        GameData.inventories[player1Id] = new ShipInventory();
+        GameData.inventories[player1Id].InitializeWeaponSlots(slots);
+        GameData.inventories[player2Id] = new ShipInventory();
+        GameData.inventories[player2Id].InitializeWeaponSlots(slots);
+
+        pickupSystem.SetInventories(GameData.inventories);
+        pickupSystem.SetRepresentations(_pickupRepresentations, _shipRepresentations);
 
         var width = GameData.screenBounds.right - GameData.screenBounds.left;
         var height = GameData.screenBounds.bottom - GameData.screenBounds.top;
@@ -107,7 +126,7 @@ class Main extends hxd.App {
         dbgGraphics = new h2d.Graphics(s2d);
     }
 
-    function MakePlayerEntity(x:Float, y: Float)
+    function MakePlayerEntity(x:Float, y: Float): EntityId
     {
         var player = new PlayerShipEntity();
         _sim.AddEntity(player);
@@ -134,7 +153,9 @@ class Main extends hxd.App {
 
         var visRep = new PlayerShipEntityRepresentation(player.GetId(), obj);
         visRep.InitFromGameData(GameData.shipMovement, GameData.colliderData);
-        _visualRepresentations.push(visRep);
+        _shipRepresentations[player.GetId()] = visRep;
+
+        return player.GetId();
     }
 
     function MakeCrateEntity(x:Float, y:Float) {
@@ -160,7 +181,7 @@ class Main extends hxd.App {
 
         var visRep = new CrateEntityRepresentation(crate.GetId(), obj);
         visRep.InitFromGameData(GameData.colliderData);
-        _visualRepresentations.push(visRep);
+        _crateRepresentations[crate.GetId()] = visRep;
     }
 
     function MakePickupEntity(x:Float, y:Float) {
@@ -186,7 +207,7 @@ class Main extends hxd.App {
 
         var visRep = new PickupEntityRepresentation(pickup.GetId(), obj);
         visRep.InitFromGameData(GameData.colliderData);
-        _visualRepresentations.push(visRep);
+        _pickupRepresentations[pickup.GetId()] = visRep;
     }
 
     function PlaceColliderData(id:EntityId, collider:ColliderData) {
@@ -201,7 +222,13 @@ class Main extends hxd.App {
             _timeToNextFrame += SIM_FRAME_TIME;
             // Update
             _sim.Tick();
-            for (visRep in _visualRepresentations) {
+            for (visRep in _shipRepresentations) {
+                visRep.UpdateRepresentation();
+            }
+            for (visRep in _crateRepresentations) {
+                visRep.UpdateRepresentation();
+            }
+            for (visRep in _pickupRepresentations) {
                 visRep.UpdateRepresentation();
             }
 
