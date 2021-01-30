@@ -1,4 +1,7 @@
 import shipSim.physics.ShipCollisionResolver;
+import h2d.col.Point;
+import hxd.clipper.Rect;
+import h2d.col.Bounds;
 import hxd.Rand;
 import h2d.col.Circle;
 import jamSim.Entity;
@@ -13,6 +16,7 @@ import hxd.Key;
 import h3d.Vector;
 import jamSim.Sim;
 import SimEntityReps;
+import shipSim.CratePlacement;
 
 class Main extends hxd.App {
 
@@ -28,6 +32,7 @@ class Main extends hxd.App {
     var GameData = {
         shipMovement : new Array<ShipMovement>(),
         colliderData: new Array<ColliderData>(),
+        screenBounds: new Rect(0,0,1280,720),
     }
 
     var _playerBitmaps : Array<h2d.Bitmap>;
@@ -78,7 +83,13 @@ class Main extends hxd.App {
         MakePlayerEntity(100, 100);
         MakePlayerEntity(300, 300);
 
-        MakeCrateEntity(400, 400);
+        var width = GameData.screenBounds.right - GameData.screenBounds.left;
+        var height = GameData.screenBounds.bottom - GameData.screenBounds.top;
+        var center = new Point(width/2, height/2);
+        var placements = CratePlacement.GenerateCratePlacements(center, cast (width * 0.9), cast (height * 0.9), 12);
+        for(crate in placements) {
+            MakeCrateEntity(crate.x, crate.y);
+        }
 
         _timeToNextFrame = SIM_FRAME_TIME;
     }
@@ -117,7 +128,6 @@ class Main extends hxd.App {
 
         _sim.AddEntity(crate);
 
-
         // Make Collider Data
         var collider:ColliderData = new ColliderData();
         collider.obstacleCollisions = new Array<EntityId>();
@@ -131,6 +141,7 @@ class Main extends hxd.App {
         var tile = hxd.Res.crate.toTile();
         tile = tile.center();
         var bmp = new h2d.Bitmap(tile, obj);
+        obj.rotate(x + y);
 
         var visRep = new CrateEntityRepresentation(crate.GetId(), obj);
         visRep.InitFromGameData(GameData.colliderData);
