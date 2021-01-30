@@ -89,7 +89,7 @@ class Main extends hxd.App {
         var width = GameData.screenBounds.right - GameData.screenBounds.left;
         var height = GameData.screenBounds.bottom - GameData.screenBounds.top;
         var center = new Point(width/2, height/2);
-        var placements = CratePlacement.GenerateCratePlacements(center, cast (width * 0.9), cast (height * 0.9), 12);
+        var placements = CratePlacement.GenerateCratePlacements(center, cast (width*0.6), cast (height*0.7), 12);
         for(crate in placements) {
             MakeCrateEntity(crate.x, crate.y);
         }

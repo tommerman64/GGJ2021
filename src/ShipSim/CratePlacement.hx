@@ -15,23 +15,22 @@ class CratePlacement
 
     static function GenerateLinearPlacement(center:Point, end:Point, numberOfCrates:Int): Array<Point> {
         var cratePlacements = new Array<Point>();
-        
-        if(numberOfCrates % 2 != 0) {
-            cratePlacements.push(center);
-            numberOfCrates -= 1;
-        }
 
-        for(i in 0...(cast numberOfCrates/2)) {
-            var dir = end.sub(center);
-            dir.scale(i/numberOfCrates/2);
-            cratePlacements.push(center.add(dir));
-            cratePlacements.push(center.sub(dir));
+        for(i in 0...numberOfCrates) {
+            var dir = end.sub(center).scale(2);
+            dir.scale(i/numberOfCrates);
+            cratePlacements.push(end.sub(dir));
         }
 
         return cratePlacements;
     }
 
     public static function GenerateCratePlacements(center:Point, width:Int, height:Int, numberOfCrates:Int): Array<Point> {
-        return GenerateLinearPlacement(center, new Point(center.x + width/2, center.y + height/2), numberOfCrates);
+        var crates = GenerateLinearPlacement(center, new Point(center.x - width/2, center.y - height/2), Std.int(numberOfCrates/2));
+        var lineCenter = center.sub(new Point(width*0.2, -height*0.2));
+        crates = crates.concat(GenerateLinearPlacement(lineCenter, new Point(lineCenter.x - width/4, lineCenter.y - height/4), Std.int(numberOfCrates/4)));
+        var lineCenter = center.sub(new Point(-width*0.2, height*0.2));
+        crates = crates.concat(GenerateLinearPlacement(lineCenter, new Point(lineCenter.x - width/4, lineCenter.y - height/4), Std.int(numberOfCrates/4)));
+        return crates;
     }
 }
