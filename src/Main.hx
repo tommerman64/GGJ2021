@@ -42,8 +42,6 @@ class Main extends hxd.App {
         weaponLibrary: new WeaponLibrary(),
     }
 
-    var _playerBitmaps : Array<h2d.Bitmap>;
-
     var _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();
     var _crateRepresentations = new Map<EntityId, CrateEntityRepresentation>();
     var _pickupRepresentations = new Map<EntityId, PickupEntityRepresentation>();
@@ -273,6 +271,9 @@ class Main extends hxd.App {
         }
 
         if (hxd.Key.isDown("5".code)) {
+            // put it back on top
+            s2d.removeChild(dbgGraphics);
+            s2d.addChild(dbgGraphics);
             dbgGraphics.beginFill(0xFF00FF, 0.8);
             for (col in GameData.colliderData) {
                 dbgGraphics.drawCircle(col.collider.x, col.collider.y, col.collider.ray);
