@@ -88,6 +88,7 @@ class Main extends hxd.App {
         var weaponSystem = new WeaponSystem();
         weaponSystem.SetInputSystem(inputSystem);
         weaponSystem.InjectShipMovementData(GameData.shipMovement);
+
         var pickupSystem = new ShipPickupSystem();
         pickupSystem.SetCollisionSystem(collisionSystem);
 
@@ -112,6 +113,8 @@ class Main extends hxd.App {
 
         pickupSystem.SetInventories(GameData.inventories);
         pickupSystem.SetRepresentations(_pickupRepresentations, _shipRepresentations);
+
+        weaponSystem.SetInventory(GameData.inventories);
 
         var width = GameData.screenBounds.right - GameData.screenBounds.left;
         var height = GameData.screenBounds.bottom - GameData.screenBounds.top;

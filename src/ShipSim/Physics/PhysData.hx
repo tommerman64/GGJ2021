@@ -42,4 +42,12 @@ class ShipMovement
         bounce = new Vector();
         boosting = false;
     }
+
+    public function GetForward() : Vector {
+        var forward = new Vector();
+        forward.x = Math.cos(rotation - (Math.PI / 2));
+        forward.y = Math.sin(rotation - (Math.PI / 2));
+
+        return forward;
+    }
 }

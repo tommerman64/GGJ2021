@@ -1,7 +1,9 @@
 package shipSim.shootyThings;
 
+import shipSim.ShipInventory.ShipWeaponSlot;
 import h3d.Vector;
 import hxd.fmt.hmd.Data.Index;
+import shipSim.physics.PhysData;
 import shipSim.physics.MovementSystem;
 import jamSim.Entity;
 import shipSim.Input;
@@ -9,9 +11,13 @@ import shipSim.Input;
 class WeaponSystem extends MovementSystem {
 
     static var s_baseWeaponData:ShipWeaponData;
+
+    var _baseWeaponCooldown:Int;
     var _inputSystem:InputSystem;
-    var _inventories:Map<EntityId, ShipInventory>;
     var _cooldowns:Map<EntityId, Array<Int>>;
+
+    var _inventories:Map<EntityId, ShipInventory>;
+    var _colliderObjects: Map<EntityId,ColliderData>;
 
     public function new() {
         super();
@@ -20,6 +26,10 @@ class WeaponSystem extends MovementSystem {
             s_baseWeaponData.cooldown = 6;
         }
         _cooldowns = new Map<EntityId, Array<Int>>();
+    }
+
+    public function InjectColliderData(col:Map<EntityId,ColliderData>) {
+        _colliderObjects = col;
     }
 
     public function SetInputSystem(inpSys:InputSystem) {
@@ -43,6 +53,7 @@ class WeaponSystem extends MovementSystem {
         if (ent.GetSystemTags().contains("Player"))
         {
             _cooldowns[ent.GetId()] = new Array();
+            _baseWeaponCooldown = 0;
         }
     }
 
@@ -54,7 +65,7 @@ class WeaponSystem extends MovementSystem {
             var moveData = FindMovementData(playerId);
             var wantsToShoot = _inputSystem.GetInputState(inputIndex).Shoot;
             if (wantsToShoot) {
-                TryShoot(playerId, 0);
+                TryShoot(playerId);
             }
             RunCooldowns(playerId);
             inputIndex++;
@@ -63,6 +74,10 @@ class WeaponSystem extends MovementSystem {
 
     function RunCooldowns(playerId:EntityId) {
         var cdIndex = 0;
+        if (_baseWeaponCooldown > 0) {
+            _baseWeaponCooldown--;
+        }
+
         while (cdIndex < _cooldowns[playerId].length) {
             _cooldowns[playerId][cdIndex]--;
             cdIndex++;
@@ -79,10 +94,31 @@ class WeaponSystem extends MovementSystem {
         return _cooldowns[playerId][0]; // (use index here once inventory is implemented)
     }
 
-    public function TryShoot(playerId:EntityId, weaponIndex:Int) {
-        if (GetCooldown(playerId, weaponIndex) <= 0) {
-            GetWeapon(weaponIndex).OnFire(new Vector(), new Vector(), new Vector(), FindMovementData(playerId));
-            _cooldowns[playerId][weaponIndex] = GetWeapon(weaponIndex).cooldown;
+    function GetPlayerPosition(entityId:EntityId) : Vector {
+        return new Vector(_colliderObjects[entityId].collider.x, _colliderObjects[entityId].collider.x);
+    }
+
+    public function TryShoot(playerId:EntityId) {
+        var mov = FindMovementData(playerId);
+        var pos = GetPlayerPosition(playerId);
+
+        if (_baseWeaponCooldown <= 0) {
+            s_baseWeaponData.OnFire(pos, new ShipWeaponSlot(new Vector()), mov);
+            _baseWeaponCooldown = s_baseWeaponData.cooldown;
+        }
+
+        var inventory = _inventories[playerId];
+        var slotIndex = 0;
+        for (weapon in inventory.weaponEntityIds) {
+            if (weapon == 0) {
+                continue;
+            }
+            var weaponSlot = inventory.weaponSlots[slotIndex];
+            if (GetCooldown(playerId, slotIndex) <= 0) {
+                GetWeapon(slotIndex).OnFire(pos, weaponSlot, mov);
+                _cooldowns[playerId][slotIndex] = GetWeapon(slotIndex).cooldown;
+            }
+            slotIndex++;
         }
     }
 }
