@@ -10,21 +10,25 @@ import shipSim.physics.PhysData;
 class CollisionSystem extends MovementSystem
 {
     var _crateEntityIds: Array<EntityId>;
-    var _colliderObjects: Array<ColliderData>;
+    var _pickupEntityIds: Array<EntityId>;
+    var _colliderObjects: Map<EntityId,ColliderData>;
     var _playerPlayerCollisions:Array<ActiveCollision>;
     var _playerCrateCollisions:Array<ActiveCollision>;
+    var _playerPickupCollisions:Array<ActiveCollision>;
 
     var _positionMax:Vector;
 
     public function new() {
         super();
         _crateEntityIds = new Array<EntityId>();
+        _pickupEntityIds = new Array<EntityId>();
         _playerCrateCollisions = new Array<ActiveCollision>();
         _playerPlayerCollisions = new Array<ActiveCollision>();
+        _playerPickupCollisions = new Array<ActiveCollision>();
         _positionMax = new Vector();
     }
 
-    public function InjectColliderData(col:Array<ColliderData>) {
+    public function InjectColliderData(col:Map<EntityId,ColliderData>) {
         _colliderObjects = col;
     }
 
@@ -34,7 +38,7 @@ class CollisionSystem extends MovementSystem
     }
 
     public function GetColliderObject(eId:EntityId) : ColliderData {
-        return _colliderObjects[eId - 1];
+        return _colliderObjects[eId];
     }
 
     public override function Init(entities:Array<Entity>) {
@@ -49,16 +53,20 @@ class CollisionSystem extends MovementSystem
         if (ent.GetSystemTags().contains("Crate")) {
             _crateEntityIds.push(ent.GetId());
         }
+        if (ent.GetSystemTags().contains("Pickup")) {
+            _pickupEntityIds.push(ent.GetId());
+        }
     }
     
     public override function EarlyTick() {
         super.EarlyTick();
         _playerCrateCollisions.resize(0);
         _playerPlayerCollisions.resize(0);
+        _playerPickupCollisions.resize(0);
         for (pId in _playerEntityIds) {
             var movementData = FindMovementData(pId);
             if (movementData.bounce.lengthSq() > 0) {
-                var playerCollider =_colliderObjects[pId-1];
+                var playerCollider =_colliderObjects[pId];
                 playerCollider.collider.x += movementData.bounce.x;
                 playerCollider.collider.y += movementData.bounce.y;
                 movementData.bounce.scale3(0);
@@ -69,16 +77,23 @@ class CollisionSystem extends MovementSystem
     public override function Tick() {
         for (pId in _playerEntityIds) {
             var movementData = FindMovementData(pId);
-            var playerCollider =_colliderObjects[pId-1];
+            var playerCollider =_colliderObjects[pId];
             playerCollider.collider.x += movementData.velocity.x * MovementSystem.SIM_FRAME_LENGTH;
             playerCollider.collider.y += movementData.velocity.y * MovementSystem.SIM_FRAME_LENGTH;
 
             KeepPlayerInBounds(playerCollider);
 
             for(crateId in _crateEntityIds) {
-                var crateCollider = _colliderObjects[crateId - 1];
+                var crateCollider = _colliderObjects[crateId];
                 if (crateCollider.collider.collideCircle(playerCollider.collider)) {
                     RecordPlayerCrateCollision(pId, crateId);
+                }
+            }
+
+            for(pickupId in _pickupEntityIds) {
+                var pickupCollider = _colliderObjects[pickupId];
+                if (pickupCollider.collider.collideCircle(playerCollider.collider)) {
+                    RecordPlayerPickupCollision(pId, pickupId);
                 }
             }
 
@@ -86,7 +101,7 @@ class CollisionSystem extends MovementSystem
                 if (pId2 == pId) {
                     continue;
                 }
-                var p2Collider =_colliderObjects[pId2-1];
+                var p2Collider =_colliderObjects[pId2];
 
                 if (p2Collider.collider.collideCircle(playerCollider.collider)) {
                     RecordPlayerPlayerCollision(pId, pId2);
@@ -117,6 +132,10 @@ class CollisionSystem extends MovementSystem
         _playerCrateCollisions.push(new ActiveCollision(playerId, crateId));
     }
 
+    function RecordPlayerPickupCollision(playerId:EntityId, pickupId:EntityId) {
+        _playerPickupCollisions.push(new ActiveCollision(playerId, pickupId));
+    }
+
     function RecordPlayerPlayerCollision(p1Id:EntityId, p2Id:EntityId) {
         _playerPlayerCollisions.push(new ActiveCollision(p1Id, p2Id));
     }
@@ -127,5 +146,9 @@ class CollisionSystem extends MovementSystem
 
     public function GetCrateCollisions() : Array<ActiveCollision>{
         return _playerCrateCollisions;
+    }
+
+    public function GetPickupCollisions() : Array<ActiveCollision>{
+        return _playerPickupCollisions;
     }
 }

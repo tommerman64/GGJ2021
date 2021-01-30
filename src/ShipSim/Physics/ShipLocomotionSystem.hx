@@ -63,7 +63,7 @@ class ShipLocomotionSystem extends MovementSystem {
     }
 
     public override function Tick() {
-        super.EarlyTick();
+        super.Tick();
         var inputIndex:Int = 0;
         for (playerId in _playerEntityIds) {
             var moveData = FindMovementData(playerId);

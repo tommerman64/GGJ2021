@@ -23,13 +23,13 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
     var _collider : ColliderData;
     var _movement : ShipMovement;
 
-    public function InitFromGameData(mov:Array<ShipMovement>, col:Array<ColliderData>) : Bool {
+    public function InitFromGameData(mov:Array<ShipMovement>, col:Map<EntityId,ColliderData>) : Bool {
         for (shipMovement in mov) {
             if (shipMovement.entityId == _entityId) {
                 _movement = shipMovement;
             }
         }
-        _collider = col[_entityId - 1];
+        _collider = col[_entityId];
 
         return _movement != null && _collider != null;
     }
@@ -44,8 +44,8 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
 class CrateEntityRepresentation extends EnityRepresentation {
     var _collider : ColliderData;
 
-    public function InitFromGameData(col:Array<ColliderData>) : Bool {
-        _collider = col[_entityId - 1];
+    public function InitFromGameData(col:Map<EntityId,ColliderData>) : Bool {
+        _collider = col[_entityId];
         return _collider != null;
     }
 
@@ -53,5 +53,20 @@ class CrateEntityRepresentation extends EnityRepresentation {
         _obj.x = _collider.collider.x;
         _obj.y = _collider.collider.y;
         _obj.rotate(Math.PI / 600);
+    }
+}
+
+class PickupEntityRepresentation extends EnityRepresentation {
+    var _collider : ColliderData;
+
+    public function InitFromGameData(col:Map<EntityId,ColliderData>) : Bool {
+        _collider = col[_entityId];
+        return _collider != null;
+    }
+
+    public override function UpdateRepresentation(): Void {
+        _obj.x = _collider.collider.x;
+        _obj.y = _collider.collider.y;
+        _obj.rotate(Math.PI / 300);
     }
 }

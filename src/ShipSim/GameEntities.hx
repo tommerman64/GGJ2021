@@ -15,3 +15,10 @@ class SpaceCrate extends Entity
         return ["Crate"];
     }
 }
+
+class Pickup extends Entity
+{
+    public override function GetSystemTags():Array<String> {
+        return ["Pickup"];
+    }
+}

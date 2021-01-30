@@ -31,7 +31,7 @@ class Main extends hxd.App {
 
     var GameData = {
         shipMovement : new Array<ShipMovement>(),
-        colliderData: new Array<ColliderData>(),
+        colliderData: new Map<EntityId, ColliderData>(),
         screenBounds: new Rect(0,0,1280,720),
     }
 
@@ -155,17 +155,34 @@ class Main extends hxd.App {
         _visualRepresentations.push(visRep);
     }
 
+    function MakePickupEntity(x:Float, y:Float) {
+        var pickup = new Pickup();
+
+        _sim.AddEntity(pickup);
+
+        // Make Collider Data
+        var collider:ColliderData = new ColliderData();
+        collider.obstacleCollisions = new Array<EntityId>();
+        collider.playerCollisions = new Array<EntityId>();
+        collider.collider = new Circle(x, y, 18);
+
+        PlaceColliderData(pickup.GetId(), collider);
+
+        // create object in hxd scene
+        var obj = new h2d.Object(s2d);
+        var tile = hxd.Res.spacecrate.toTile();
+        tile = tile.center();
+        var bmp = new h2d.Bitmap(tile, obj);
+        bmp.scale(2.0/3.6);
+        obj.rotate(x + y);
+
+        var visRep = new PickupEntityRepresentation(pickup.GetId(), obj);
+        visRep.InitFromGameData(GameData.colliderData);
+        _visualRepresentations.push(visRep);
+    }
+
     function PlaceColliderData(id:EntityId, collider:ColliderData) {
-        // collider data is indexed on ID-1
-        if (GameData.colliderData.length > id - 1) {
-            GameData.colliderData[id - 1] = collider; // I think this is bad????
-        }
-        else {
-            while (GameData.colliderData.length < id - 1) {
-                GameData.colliderData.push(new ColliderData());
-            }
-            GameData.colliderData.push(collider);
-        }
+            GameData.colliderData[id] = collider;
     }
 
     override function update(dt:Float) {
@@ -185,6 +202,10 @@ class Main extends hxd.App {
                 for (col in GameData.colliderData) {
                     dbgGraphics.drawCircle(col.collider.x, col.collider.y, col.collider.ray);
                 }
+            }
+
+            if(hxd.Key.isPressed('6'.code)) {
+                MakePickupEntity(300,600);
             }
         }
     }
