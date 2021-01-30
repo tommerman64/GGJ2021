@@ -1,5 +1,5 @@
-import shipSim.PhysData.ShipMovement;
-import shipSim.PhysData.ColliderData;
+import shipSim.physics.PhysData.ShipMovement;
+import shipSim.physics.PhysData.ColliderData;
 import h2d.Object;
 import jamSim.Entity.EntityId;
 

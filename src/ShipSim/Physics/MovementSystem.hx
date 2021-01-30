@@ -1,8 +1,8 @@
-package shipSim;
+package shipSim.physics;
 
 import jamSim.SimSystem;
 import jamSim.Entity;
-import shipSim.PhysData;
+import shipSim.physics.PhysData;
 
 // Sim system that tracks player movement data
 class MovementSystem extends SimSystem {

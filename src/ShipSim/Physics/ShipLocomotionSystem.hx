@@ -1,10 +1,10 @@
-package shipSim;
+package shipSim.physics;
 
 import h3d.Vector;
 import shipSim.Input.InputState;
 import shipSim.Input.InputSystem;
-import shipSim.PhysData;
-import shipSim.MovementSystem;
+import shipSim.physics.PhysData;
+import shipSim.physics.MovementSystem;
 import jamSim.Entity;
 
 class ShipLocomotionSystem extends MovementSystem {

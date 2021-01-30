@@ -36,4 +36,10 @@ class GameMath
 
         return start + delta * Sign(diff);
     }
+
+    public static function AddInPlace(v1:Vector, v2:Vector) {
+        v1.x += v2.x;
+        v1.y += v2.y;
+        v1.z += v2.z;
+    }
 }

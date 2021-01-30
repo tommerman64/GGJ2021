@@ -1,9 +1,11 @@
+import shipSim.physics.ShipCollisionResolver;
 import hxd.Rand;
 import h2d.col.Circle;
 import jamSim.Entity;
-import shipSim.CollisionSystem;
+import shipSim.physics.CollisionSystem;
+import shipSim.physics.ShipLocomotionSystem;
 import shipSim.Input.InputSystem;
-import shipSim.PhysData;
+import shipSim.physics.PhysData;
 import shipSim.GameEntities;
 import h2d.Bitmap;
 import h2d.Tile;
@@ -24,7 +26,7 @@ class Main extends hxd.App {
     var _timeToNextFrame:Float;
 
     var GameData = {
-        shipMovement : new Array<shipSim.ShipMovement>(),
+        shipMovement : new Array<ShipMovement>(),
         colliderData: new Array<ColliderData>(),
     }
 
@@ -52,8 +54,9 @@ class Main extends hxd.App {
 
         var inputSystem = new InputSystem();
         inputSystem.MapKeys(["A".code, "S".code, "D".code, "F".code, "G".code]);
+        inputSystem.MapKeys(["J".code, "K".code, "L".code, "I".code, "O".code]);
 
-        var locomotionSystem = new shipSim.ShipLocomotionSystem();
+        var locomotionSystem = new ShipLocomotionSystem();
         locomotionSystem.InjectShipMovementData(GameData.shipMovement);
         locomotionSystem.SetInputSystem(inputSystem);
 
@@ -61,12 +64,19 @@ class Main extends hxd.App {
         collisionSystem.InjectShipMovementData(GameData.shipMovement);
         collisionSystem.InjectColliderData(GameData.colliderData);
 
+        var collisionResolver = new ShipCollisionResolver();
+        collisionResolver.InjectShipMovementData(GameData.shipMovement);
+        collisionResolver.SetCollisionSystem(collisionSystem);
+
         _sim = new Sim();
         _sim.AddSystem(inputSystem);
         _sim.AddSystem(locomotionSystem);
         _sim.AddSystem(collisionSystem);
+        _sim.AddSystem(collisionResolver);
+
 
         MakePlayerEntity(100, 100);
+        MakePlayerEntity(300, 300);
 
         MakeCrateEntity(400, 400);
 

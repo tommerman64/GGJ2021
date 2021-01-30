@@ -1,22 +1,30 @@
-package shipSim;
+package shipSim.physics;
 
 import jamSim.Entity;
-import shipSim.PhysData;
+import shipSim.physics.PhysData;
 
 // moves player objects and records all collisions
 // responding to collision events actually happens elsewhere
 class CollisionSystem extends MovementSystem
 {
     var _crateEntityIds: Array<EntityId>;
-    var _collisionObjects: Array<ColliderData>;
+    var _colliderObjects: Array<ColliderData>;
+    var _playerPlayerCollisions:Array<ActiveCollision>;
+    var _playerCrateCollisions:Array<ActiveCollision>;
 
     public function new() {
         super();
         _crateEntityIds = new Array<EntityId>();
+        _playerCrateCollisions = new Array<ActiveCollision>();
+        _playerPlayerCollisions = new Array<ActiveCollision>();
     }
 
     public function InjectColliderData(col:Array<ColliderData>) {
-        _collisionObjects = col;
+        _colliderObjects = col;
+    }
+
+    public function GetColliderObject(eId:EntityId) : ColliderData {
+        return _colliderObjects[eId - 1];
     }
 
     public override function Init(entities:Array<Entity>) {
@@ -32,16 +40,31 @@ class CollisionSystem extends MovementSystem
             _crateEntityIds.push(ent.GetId());
         }
     }
+    
+    public override function EarlyTick() {
+        super.EarlyTick();
+        _playerCrateCollisions.resize(0);
+        _playerPlayerCollisions.resize(0);
+        for (pId in _playerEntityIds) {
+            var movementData = FindMovementData(pId);
+            if (movementData.bounce.lengthSq() > 0) {
+                var playerCollider =_colliderObjects[pId-1];
+                playerCollider.collider.x += movementData.bounce.x;
+                playerCollider.collider.y += movementData.bounce.y;
+                movementData.bounce.scale3(0);
+            }
+        }
+    }
 
     public override function Tick() {
         for (pId in _playerEntityIds) {
             var movementData = FindMovementData(pId);
-            var playerCollider =_collisionObjects[pId-1];
+            var playerCollider =_colliderObjects[pId-1];
             playerCollider.collider.x += movementData.velocity.x * MovementSystem.SIM_FRAME_LENGTH;
             playerCollider.collider.y += movementData.velocity.y * MovementSystem.SIM_FRAME_LENGTH;
 
             for(crateId in _crateEntityIds) {
-                var crateCollider = _collisionObjects[crateId - 1];
+                var crateCollider = _colliderObjects[crateId - 1];
                 if (crateCollider.collider.collideCircle(playerCollider.collider)) {
                     RecordPlayerCrateCollision(pId, crateId);
                 }
@@ -51,7 +74,7 @@ class CollisionSystem extends MovementSystem
                 if (pId2 == pId) {
                     continue;
                 }
-                var p2Collider =_collisionObjects[pId2-1];
+                var p2Collider =_colliderObjects[pId2-1];
 
                 if (p2Collider.collider.collideCircle(playerCollider.collider)) {
                     RecordPlayerPlayerCollision(pId, pId2);
@@ -61,8 +84,18 @@ class CollisionSystem extends MovementSystem
     }
 
     function RecordPlayerCrateCollision(playerId:EntityId, crateId:EntityId) {
+        _playerCrateCollisions.push(new ActiveCollision(playerId, crateId));
     }
 
     function RecordPlayerPlayerCollision(p1Id:EntityId, p2Id:EntityId) {
+        _playerPlayerCollisions.push(new ActiveCollision(p1Id, p2Id));
+    }
+
+    public function GetPlayerCollisions() : Array<ActiveCollision>{
+        return _playerPlayerCollisions;
+    }
+
+    public function GetCrateCollisions() : Array<ActiveCollision>{
+        return _playerCrateCollisions;
     }
 }
