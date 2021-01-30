@@ -1,5 +1,5 @@
 package shipSim.shootyThings;
-
+import haxe.Log;
 import shipSim.ShipInventory.ShipWeaponSlot;
 import h3d.Vector;
 import hxd.fmt.hmd.Data.Index;
@@ -38,6 +38,7 @@ class WeaponSystem extends MovementSystem {
 
     public function SetInventory(invs:Map<EntityId, ShipInventory>) {
         _inventories = invs;
+        InitializeCooldowns();
     }
 
     public override function Init(entities:Array<Entity>) {
@@ -54,6 +55,14 @@ class WeaponSystem extends MovementSystem {
         {
             _cooldowns[ent.GetId()] = new Array();
             _baseWeaponCooldown = 0;
+        }
+    }
+
+    public function InitializeCooldowns() {
+        for (playerId in _playerEntityIds) {
+            for (slot in _inventories[playerId].weaponSlots) {
+                _cooldowns[playerId].push(0);
+            }
         }
     }
 
@@ -115,6 +124,7 @@ class WeaponSystem extends MovementSystem {
             }
             var weaponSlot = inventory.weaponSlots[slotIndex];
             if (GetCooldown(playerId, slotIndex) <= 0) {
+                Log.trace("shooting from weapon slot" + slotIndex);
                 GetWeapon(slotIndex).OnFire(pos, weaponSlot, mov);
                 _cooldowns[playerId][slotIndex] = GetWeapon(slotIndex).cooldown;
             }
