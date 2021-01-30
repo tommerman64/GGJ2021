@@ -3,6 +3,7 @@ package shipSim.physics;
 import haxe.Log;
 import hxsl.Types.Vec;
 import h3d.Vector;
+import shipSim.physics.PhysData;
 import jamSim.Entity;
 
 class ShipCollisionResolver extends MovementSystem {
@@ -43,6 +44,8 @@ class ShipCollisionResolver extends MovementSystem {
             positionDiff.scale3(PVP_BOUNCE);
             GameMath.AddInPlace(p1Movement.bounce, positionDiff);
             Log.trace("pvp collision " + activeCollision.entOne);
+
+            RecalculateVelocity(positionDiff.getNormalized(), p1Movement);
         }
 
         for (activeCollision in _collisionSystem.GetCrateCollisions()) {
@@ -55,9 +58,31 @@ class ShipCollisionResolver extends MovementSystem {
             positionDiff.x = colliderOne.x - colliderTwo.x;
             positionDiff.y = colliderOne.y - colliderTwo.y;
             positionDiff.normalize();
+
+
             positionDiff.scale3(PVE_BOUNCE);
             GameMath.AddInPlace(p1Movement.bounce, positionDiff);
             Log.trace("pve collision " + activeCollision.entOne);
+
+            RecalculateVelocity(positionDiff.getNormalized(), p1Movement);
+
         }
+    }
+
+    function RecalculateVelocity(positionDiff:Vector, mov:ShipMovement) {
+        // if we are standing still we probably should still get a velocity jolt from it
+        if (mov.velocity.lengthSq() < 3)
+        {
+            mov.SetVelocity(positionDiff.getNormalized());
+            mov.velocity.scale3(-60);
+        }
+        var collisionDot = mov.velocity.getNormalized().dot3(positionDiff);
+
+        collisionDot = Math.abs(collisionDot);
+        var velocityImpact = hxd.Math.lerp(1, 0.3, collisionDot);
+        var newV = mov.velocity.reflect(positionDiff);
+        newV.scale3(velocityImpact);
+
+        mov.SetVelocity(newV);
     }
 }

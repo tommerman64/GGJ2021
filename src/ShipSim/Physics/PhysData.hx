@@ -50,4 +50,9 @@ class ShipMovement
 
         return forward;
     }
+
+    public function SetVelocity(vel:Vector) {
+        velocity.x = vel.x;
+        velocity.y = vel.y;
+    }
 }

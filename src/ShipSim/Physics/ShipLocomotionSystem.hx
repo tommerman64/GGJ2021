@@ -11,8 +11,8 @@ class ShipLocomotionSystem extends MovementSystem {
 
     // MOVEMENT CONSTS
     static var BASE_ROTATIONAL_ACCEL = 20 * Math.PI;
-    static var MAX_SPEED = 100;
-    static var BOOSTER_ACCEL = 40;
+    static var MAX_SPEED = 120;
+    static var BOOSTER_ACCEL = 45;
     static var NATURAL_DECEL = 5;
 
     var _inputSystem:InputSystem;
