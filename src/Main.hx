@@ -1,3 +1,4 @@
+import shipSim.shootyThings.WeaponSystem;
 import shipSim.physics.ShipCollisionResolver;
 import h2d.col.Point;
 import hxd.clipper.Rect;
@@ -78,11 +79,16 @@ class Main extends hxd.App {
         collisionResolver.InjectShipMovementData(GameData.shipMovement);
         collisionResolver.SetCollisionSystem(collisionSystem);
 
+        var weaponSystem = new WeaponSystem();
+        weaponSystem.SetInputSystem(inputSystem);
+        weaponSystem.InjectShipMovementData(GameData.shipMovement);
+
         _sim = new Sim();
         _sim.AddSystem(inputSystem);
         _sim.AddSystem(locomotionSystem);
         _sim.AddSystem(collisionSystem);
         _sim.AddSystem(collisionResolver);
+        _sim.AddSystem(weaponSystem);
 
 
         MakePlayerEntity(100, 100);

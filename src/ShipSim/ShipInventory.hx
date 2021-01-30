@@ -3,15 +3,6 @@ package shipSim;
 import jamSim.Entity;
 import h3d.Vector;
 
-class ShipWeapon extends Entity {
-    public var recoilVector:Vector;
-    public var recoilRotationAccelerator:Float;
-    public var projectileSpawnPosition:Vector;
-    public var weight:Float;
-    public var cooldown:Int;
-    public var framesSinceLastFired:Int;
-}
-
 class ShipWeaponSlot {
     // Where to place the weapon relative to the ship
     public var relativeRotation:Float;
