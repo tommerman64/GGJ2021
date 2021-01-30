@@ -48,6 +48,8 @@ class ShipLocomotionSystem extends MovementSystem {
             movement.velocity = GameMath.VecMoveTowards(movement.velocity, targetVelocity, BOOSTER_ACCEL * MovementSystem.SIM_FRAME_LENGTH);
         }
 
+        movement.boosting = inp.Throttle;
+
         var rotationInput : Float = 0;
         if (inp.Left) {
             rotationInput -= BASE_ROTATIONAL_ACCEL * MovementSystem.SIM_FRAME_LENGTH;

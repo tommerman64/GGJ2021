@@ -33,11 +33,13 @@ class ShipMovement
     public var rotation: Float;
     public var rotationalVelocity: Float;
     public var bounce:Vector;
+    public var boosting:Bool;
 
     public function new() {
         rotation = 0;
         rotationalVelocity = 0;
         velocity = new Vector();
         bounce = new Vector();
+        boosting = false;
     }
 }

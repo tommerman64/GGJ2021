@@ -151,8 +151,17 @@ class Main extends hxd.App {
         var bmp = new h2d.Bitmap(tile, obj);
         bmp.scale(2.0/3.0);
 
+        // load flames
+        var boosterAnim = ResourceLoading.LoadAnim(hxd.Res.booster.toTexture(), hxd.Res.boosterMap);
+
+        obj.addChild(boosterAnim);
+        boosterAnim.loop = true;
+        boosterAnim.scale(1.0/15.0);
+        boosterAnim.setPosition(0, 27);
+
         var visRep = new PlayerShipEntityRepresentation(player.GetId(), obj);
         visRep.InitFromGameData(GameData.shipMovement, GameData.colliderData);
+        visRep.SetBoosterAnim(boosterAnim);
         _shipRepresentations[player.GetId()] = visRep;
 
         return player.GetId();

@@ -1,3 +1,5 @@
+import h2d.Drawable;
+import h2d.Anim;
 import shipSim.ShipInventory.ShipWeaponSlot;
 import shipSim.physics.PhysData.ShipMovement;
 import shipSim.physics.PhysData.ColliderData;
@@ -27,6 +29,7 @@ class EnityRepresentation {
 class PlayerShipEntityRepresentation extends EnityRepresentation {
     var _collider : ColliderData;
     var _movement : ShipMovement;
+    var _booster : Drawable;
 
     public function InitFromGameData(mov:Array<ShipMovement>, col:Map<EntityId,ColliderData>) : Bool {
         for (shipMovement in mov) {
@@ -43,6 +46,11 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
         _obj.x = _collider.collider.x;
         _obj.y = _collider.collider.y;
         _obj.rotation = _movement.rotation;
+        _booster.visible = _movement.boosting;
+    }
+
+    public function SetBoosterAnim(b:Anim) {
+        _booster = b;
     }
 }
 
