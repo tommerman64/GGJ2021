@@ -10,6 +10,7 @@ import h2d.Tile;
 import hxd.Key;
 import h3d.Vector;
 import jamSim.Sim;
+import SimEntityReps;
 
 class Main extends hxd.App {
 
@@ -29,6 +30,8 @@ class Main extends hxd.App {
 
     var _playerBitmaps : Array<h2d.Bitmap>;
 
+    var _visualRepresentations : Array<EnityRepresentation>;
+
     override function init() {
         super.init();
 
@@ -39,13 +42,13 @@ class Main extends hxd.App {
         _framerateText.x = 20;
         _framerateText.scale(2);
 
-        InitPlayerVis(1);
-
         if (hxd.res.Sound.supportedFormat(Mp3) || hxd.res.Sound.supportedFormat(OggVorbis))
         {
             var res:hxd.res.Sound = hxd.Res.babycobraz;
             _music = res.play(true);
         }
+
+        _visualRepresentations = new Array<EnityRepresentation>();
 
         var inputSystem = new InputSystem();
         inputSystem.MapKeys(["A".code, "S".code, "D".code, "F".code, "G".code]);
@@ -68,19 +71,6 @@ class Main extends hxd.App {
         PlaceCrates(3);
 
         _timeToNextFrame = SIM_FRAME_TIME;
-    }
-
-    function InitPlayerVis(count:Int) {
-        _playerBitmaps = new Array<h2d.Bitmap>();
-        var playerTile : Tile = hxd.Res.lilship.toTile();
-        playerTile.dx = -playerTile.width / 2;
-        playerTile.dy = -playerTile.height / 2;
-
-        var i = 0;
-        while (i < count) {
-            _playerBitmaps.push(new h2d.Bitmap(playerTile, s2d));
-            i++;
-        }
     }
 
     function MakePlayerEntity(x:Float, y: Float)
@@ -109,6 +99,16 @@ class Main extends hxd.App {
             }
             GameData.colliderData.push(collider);
         }
+
+        // create object in hxd scene
+        var obj = new h2d.Object(s2d);
+        var tile = hxd.Res.lilship.toTile();
+        tile = tile.center();
+        var bmp = new h2d.Bitmap(tile, obj);
+
+        var visRep = new PlayerShipEntityRepresentation(player.GetId(), obj);
+        visRep.InitFromGameData(GameData.shipMovement, GameData.colliderData);
+        _visualRepresentations.push(visRep);
     }
 
     function PlaceCrates(count: Int) {
@@ -125,22 +125,9 @@ class Main extends hxd.App {
             _timeToNextFrame += SIM_FRAME_TIME;
             // Update
             _sim.Tick();
-            DrawCrates();
-            DrawPlayers();
-        }
-    }
-
-    function DrawCrates() {
-    }
-
-    function DrawPlayers() {
-        var index = 0;
-        while(index < _playerBitmaps.length) {
-            var playerId = GameData.shipMovement[0].entityId;
-            _playerBitmaps[index].x = GameData.colliderData[playerId - 1].collider.x;
-            _playerBitmaps[index].y = GameData.colliderData[playerId - 1].collider.y;
-            _playerBitmaps[index].rotation = GameData.shipMovement[index].rotation;
-            index++;
+            for (visRep in _visualRepresentations) {
+                visRep.UpdateRepresentation();
+            }
         }
     }
 
