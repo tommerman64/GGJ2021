@@ -31,8 +31,8 @@ class ShipInventory {
         weaponEntityIds.resize(weaponSlots.length);
     }
 
-    public function AttachWeaponToFirstOpenIndex(weapon:Entity) {
-        if (weapon.IsValid()) {
+    public function AttachWeaponToFirstOpenIndex(weapon:EntityId) {
+        if (Entity.IdIsValid(weapon)) {
             var index = weaponEntityIds.indexOf(0);
             if (index != -1) {
                 AttachWeaponAtIndex(weapon, index);
@@ -40,16 +40,24 @@ class ShipInventory {
         }
     }
 
-    public function AttachWeaponAtIndex(weapon:Entity, index:Int) {
-        if (index < weaponEntityIds.length && index >= 0 && weapon.IsValid()) {
+    public function AttachWeaponAtIndex(weapon:EntityId, index:Int) {
+        if (index < weaponEntityIds.length && index >= 0 && Entity.IdIsValid(weapon)) {
             // Make sure we're not double-attaching the same weapon
-            var existingIndex = weaponEntityIds.indexOf(weapon.GetId());
+            var existingIndex = weaponEntityIds.indexOf(weapon);
             if (existingIndex == -1) {
                 if (weaponEntityIds[index] == null)
                     // Add weapon to attachment-related systems
-                    weaponEntityIds[index] = weapon.GetId();
+                    weaponEntityIds[index] = weapon;
             }
         }
+    }
+
+    public function HasOpenSlots(): Bool {
+        return weaponEntityIds.indexOf(0) != -1;
+    }
+
+    public function ContainsWeapon(weapon:EntityId): Bool {
+        return weaponEntityIds.indexOf(weapon) != -1;
     }
 
     public function DetachWeapon(weapon:EntityId) {
