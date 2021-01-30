@@ -18,13 +18,33 @@ class ShipWeaponSlot {
 
 class PickupData {
     var _weaponLibraryIndex:Int;
+    var _parentEntityId:EntityId;
+    var _slot:ShipWeaponSlot;
 
     public function new(i:Int) {
         _weaponLibraryIndex = i;
+        _parentEntityId = 0;
+    }
+
+    public function AttachToShip(shipEntityId:EntityId, slot:ShipWeaponSlot) {
+        _parentEntityId = shipEntityId;
+        _slot = slot;
+    }
+
+    public function DetachFromShip() {
+        _parentEntityId = 0;
     }
 
     public function GetWeaponLibIndex() {
         return _weaponLibraryIndex;
+    }
+
+    public function GetParentId():EntityId {
+        return _parentEntityId;
+    }
+
+    public function GetSlot() : ShipWeaponSlot {
+        return _slot;
     }
 }
 

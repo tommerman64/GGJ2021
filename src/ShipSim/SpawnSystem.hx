@@ -1,8 +1,8 @@
 package shipSim;
 
 import shipSim.physics.PhysData.ShipMovement;
+import shipSim.ShipInventory;
 import haxe.Log;
-import js.html.ConstrainLongRange;
 import SimEntityReps.CrateEntityRepresentation;
 import SimEntityReps.PlayerShipEntityRepresentation;
 import h2d.col.Circle;
@@ -21,6 +21,7 @@ class SpawnSystem extends SimSystem {
     var _colliderData:Map<EntityId, ColliderData>;
 
     var _shipMovement : Array<ShipMovement>;
+    var _pickupData:Map<EntityId, PickupData>;
 
     var _shipRepresentations: Map<EntityId, PlayerShipEntityRepresentation>;
     var _crateRepresentations: Map<EntityId, CrateEntityRepresentation>;
@@ -54,7 +55,12 @@ class SpawnSystem extends SimSystem {
             _shipRepresentations = ships;
             _crateRepresentations = crates;
             _pickupRepresentations = pickups;
-        }
+    }
+
+
+    public function SetPickupData(data:Map<EntityId, PickupData>) {
+        _pickupData = data;
+    }
 
     public override function Init(entities:Array<Entity>) {
         super.Init(entities);
@@ -83,6 +89,7 @@ class SpawnSystem extends SimSystem {
             _pickupRepresentations.remove(entity);
         }
     }
+
 
     public function SpawnEntity(entity:Entity, x:Float, y:Float) {
         _sim.AddEntity(entity);
@@ -166,8 +173,11 @@ class SpawnSystem extends SimSystem {
         var tile = _weaponLibrary[weaponIndex].tile;
         _weaponLibrary[weaponIndex].AttachBmpToObject(obj);
 
+        _pickupData[entity.GetId()] = new PickupData(weaponIndex);
+
         var visRep = new PickupEntityRepresentation(entity.GetId(), obj);
-        visRep.InitFromGameData(_colliderData);
+        visRep.InitFromGameData(_colliderData, _pickupData);
+        visRep.InjectPlayerReps(_shipRepresentations);
         _pickupRepresentations[entity.GetId()] = visRep;
     }
 }

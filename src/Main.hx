@@ -1,23 +1,16 @@
 import shipSim.shootyThings.ShipWeaponData;
 import shipSim.shootyThings.WeaponSystem;
-import shipSim.ShipInventory;
 import shipSim.SpawnSystem;
 import shipSim.ShipPickupSystem;
 import shipSim.physics.ShipCollisionResolver;
 import h2d.col.Point;
 import hxd.clipper.Rect;
-import h2d.col.Bounds;
-import hxd.Rand;
-import h2d.col.Circle;
 import jamSim.Entity;
 import shipSim.physics.CollisionSystem;
 import shipSim.physics.ShipLocomotionSystem;
 import shipSim.Input.InputSystem;
 import shipSim.physics.PhysData;
 import shipSim.GameEntities;
-import h2d.Bitmap;
-import h2d.Tile;
-import hxd.Key;
 import h3d.Vector;
 import jamSim.Sim;
 import SimEntityReps;
@@ -41,7 +34,7 @@ class Main extends hxd.App {
         screenBounds: new Rect(0,0,1280,720),
         inventories: new Map<EntityId, ShipInventory>(),
         weaponLibrary: new WeaponLibrary(),
-        pickupData: new Array<PickupData>(),
+        pickupData: new Map<EntityId, PickupData>(),
     }
 
     var _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();
@@ -96,12 +89,14 @@ class Main extends hxd.App {
 
         var pickupSystem = new ShipPickupSystem();
         pickupSystem.SetCollisionSystem(collisionSystem);
+        pickupSystem.SetPickupData(GameData.pickupData);
 
         spawnSystem = new SpawnSystem();
         spawnSystem.SetColliderData(GameData.colliderData);
         spawnSystem.SetRepresentations(_shipRepresentations, _crateRepresentations, _pickupRepresentations);
         spawnSystem.SetWeaponLibrary(GameData.weaponLibrary);
         spawnSystem.SetShipMovement(GameData.shipMovement);
+        spawnSystem.SetPickupData(GameData.pickupData);
         spawnSystem.SetScene(s2d);
 
         _sim = new Sim();
@@ -128,7 +123,6 @@ class Main extends hxd.App {
         GameData.inventories[player2Id].InitializeWeaponSlots(slots);
 
         pickupSystem.SetInventories(GameData.inventories);
-        pickupSystem.SetRepresentations(_pickupRepresentations, _shipRepresentations);
 
         weaponSystem.SetInventory(GameData.inventories);
         InitializeWeaponLibrary();
@@ -161,10 +155,6 @@ class Main extends hxd.App {
     function MakePickupEntity(x:Float, y:Float) {
         var pickup = new Pickup();
         spawnSystem.SpawnEntity(pickup, x, y);
-    }
-
-    function PlaceColliderData(id:EntityId, collider:ColliderData) {
-            GameData.colliderData[id] = collider;
     }
 
     function InitializeWeaponLibrary() {

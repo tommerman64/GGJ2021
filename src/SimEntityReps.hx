@@ -1,3 +1,5 @@
+import jamSim.Entity;
+import shipSim.ShipInventory.PickupData;
 import haxe.Log;
 import h2d.Drawable;
 import h2d.Anim;
@@ -72,44 +74,63 @@ class CrateEntityRepresentation extends EnityRepresentation {
 
 class PickupEntityRepresentation extends EnityRepresentation {
     var _collider : ColliderData;
-    var _parent : Object;
-    var _slot : ShipWeaponSlot;
+    var _parent : EnityRepresentation;
+    var _pickupData:PickupData;
+    var _allPlayerReps:Map<EntityId, PlayerShipEntityRepresentation>;
 
-    public function InitFromGameData(col:Map<EntityId,ColliderData>) : Bool {
+    public function InitFromGameData(col:Map<EntityId,ColliderData>, pickupData:Map<EntityId,PickupData>) : Bool {
         _collider = col[_entityId];
+        _pickupData = pickupData[_entityId];
         _parent = null;
-        _slot = null;
         return _collider != null;
     }
 
-    public function Attach(parent:Object, slot:ShipWeaponSlot){
-        _parent = parent;
-        _slot = slot;
-    }
-
-    public function Detach(){
-        _parent = null;
-        _slot = null;
+    public function InjectPlayerReps(reps:Map<EntityId, PlayerShipEntityRepresentation>) {
+        _allPlayerReps = reps;
     }
 
     public override function UpdateRepresentation(): Void {
-        if(_parent != null) {
-            if(_obj.parent != _parent) {
+        if(_pickupData.GetParentId() != 0) {
+            // we are supposed to have a parent. lets make sure we do
+            var desiredParent = FindParentRepresentation(_pickupData.GetParentId());
+
+            if(_parent != desiredParent) {
                 if(_obj.parent != null) {
                     _obj.parent.removeChild(_obj);
                 }
-                _parent.addChild(_obj);
+                _parent = desiredParent;
+                _parent.GetObject().addChild(_obj);
             }
 
-            _obj.x = _slot.relativePosition.x;
-            _obj.y = _slot.relativePosition.y;
+            _obj.x = _pickupData.GetSlot().relativePosition.x;
+            _obj.y = _pickupData.GetSlot().relativePosition.y;
             _obj.rotation = 0;
         }
         else {
+            // we are not supposed to have a parent, make sure we don't
+            if (_parent != null) {
+                if (_obj.parent == _parent.GetObject()) {
+                    _obj.parent.removeChild(_obj);
+                }
+            }
+            _parent = null;
             _obj.x = _collider.collider.x;
             _obj.y = _collider.collider.y;
             Log.trace(_collider.collider);
             _obj.rotate(Math.PI / 300);
         }
+    }
+
+    function FindParentRepresentation(entityId:EntityId)  : EnityRepresentation{
+        if (entityId <= 0) {
+            return null;
+        }
+
+        for (rep in _allPlayerReps) {
+            if (rep._entityId == entityId) {
+                return rep;
+            }
+        }
+        return null;
     }
 }

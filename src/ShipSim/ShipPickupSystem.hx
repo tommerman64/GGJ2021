@@ -1,18 +1,14 @@
 package shipSim;
 
-import shipSim.GameEntities.PlayerShipEntity;
-import SimEntityReps.PlayerShipEntityRepresentation;
-import SimEntityReps.PickupEntityRepresentation;
-import haxe.Log;
 import shipSim.physics.CollisionSystem;
 import jamSim.SimSystem;
 import jamSim.Entity;
+import shipSim.ShipInventory;
 
 class ShipPickupSystem extends SimSystem {
     var _collisionSystem : CollisionSystem;
     var _shipInventories : Map<EntityId, ShipInventory>;
-    var _pickupRepresentations : Map<EntityId, PickupEntityRepresentation>;
-    var _shipRepresentations : Map<EntityId, PlayerShipEntityRepresentation>;
+    var _pickupData : Map<EntityId,PickupData>;
 
     public function new() {
         super();
@@ -30,9 +26,8 @@ class ShipPickupSystem extends SimSystem {
         _collisionSystem = colSys;
     }
 
-    public function SetRepresentations(pickupRepresentations:Map<EntityId, PickupEntityRepresentation>, shipRepresentations:Map<EntityId, PlayerShipEntityRepresentation>) {
-        _pickupRepresentations = pickupRepresentations;
-        _shipRepresentations = shipRepresentations;
+    public function SetPickupData(data:Map<EntityId,PickupData>) {
+        _pickupData = data;
     }
 
     public function SetInventories(inventories:Map<EntityId, ShipInventory>) {
@@ -60,7 +55,7 @@ class ShipPickupSystem extends SimSystem {
             if(canBePickedUp) {
                 var attachedSlot = _shipInventories[shipId].AttachWeaponToFirstOpenIndex(pickupId);
                 if(attachedSlot != null) {
-                    _pickupRepresentations[pickupId].Attach(_shipRepresentations[shipId].GetObject(), attachedSlot);
+                    _pickupData[pickupId].AttachToShip(shipId, attachedSlot);
                 }
             }
         }
