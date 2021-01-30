@@ -1,3 +1,4 @@
+import shipSim.shootyThings.ShipWeaponData;
 import shipSim.shootyThings.WeaponSystem;
 import shipSim.ShipInventory;
 import shipSim.ShipPickupSystem;
@@ -38,6 +39,7 @@ class Main extends hxd.App {
         colliderData: new Map<EntityId, ColliderData>(),
         screenBounds: new Rect(0,0,1280,720),
         inventories: new Map<EntityId, ShipInventory>(),
+        weaponLibrary: new WeaponLibrary(),
     }
 
     var _playerBitmaps : Array<h2d.Bitmap>;
@@ -116,6 +118,7 @@ class Main extends hxd.App {
         pickupSystem.SetRepresentations(_pickupRepresentations, _shipRepresentations);
 
         weaponSystem.SetInventory(GameData.inventories);
+        InitializeWeaponLibrary();
 
         var width = GameData.screenBounds.right - GameData.screenBounds.left;
         var height = GameData.screenBounds.bottom - GameData.screenBounds.top;
@@ -225,6 +228,25 @@ class Main extends hxd.App {
 
     function PlaceColliderData(id:EntityId, collider:ColliderData) {
             GameData.colliderData[id] = collider;
+    }
+
+    function InitializeWeaponLibrary() {
+        var lilGun = new ShipWeaponData();
+        lilGun.cooldown = 20;
+        lilGun.weight = 5;
+        lilGun.tile = hxd.Res.mothership.toTile();
+        lilGun.tile.center();
+        lilGun.tileScale = 1.0/25.0;
+
+        var bigGun = new ShipWeaponData();
+        bigGun.cooldown = 60;
+        bigGun.weight = 50;
+        bigGun.tile = hxd.Res.mothership.toTile();
+        bigGun.tile.center();
+        bigGun.tileScale = 1.0/5.0;
+
+        GameData.weaponLibrary.push(lilGun);
+        GameData.weaponLibrary.push(bigGun);
     }
 
     override function update(dt:Float) {
