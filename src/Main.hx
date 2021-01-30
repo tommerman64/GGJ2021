@@ -88,6 +88,7 @@ class Main extends hxd.App {
         var weaponSystem = new WeaponSystem();
         weaponSystem.SetInputSystem(inputSystem);
         weaponSystem.InjectShipMovementData(GameData.shipMovement);
+        weaponSystem.InjectColliderData(GameData.colliderData);
 
         var pickupSystem = new ShipPickupSystem();
         pickupSystem.SetCollisionSystem(collisionSystem);
