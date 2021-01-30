@@ -68,6 +68,7 @@ class Main extends hxd.App {
         var collisionSystem = new CollisionSystem();
         collisionSystem.InjectShipMovementData(GameData.shipMovement);
         collisionSystem.InjectColliderData(GameData.colliderData);
+        collisionSystem.SetPlayfieldSize(GameData.screenBounds.right, GameData.screenBounds.bottom);
 
         var collisionResolver = new ShipCollisionResolver();
         collisionResolver.InjectShipMovementData(GameData.shipMovement);

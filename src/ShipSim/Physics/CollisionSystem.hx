@@ -1,5 +1,7 @@
 package shipSim.physics;
 
+import hxsl.Types.Vec;
+import h3d.Vector;
 import jamSim.Entity;
 import shipSim.physics.PhysData;
 
@@ -12,15 +14,23 @@ class CollisionSystem extends MovementSystem
     var _playerPlayerCollisions:Array<ActiveCollision>;
     var _playerCrateCollisions:Array<ActiveCollision>;
 
+    var _positionMax:Vector;
+
     public function new() {
         super();
         _crateEntityIds = new Array<EntityId>();
         _playerCrateCollisions = new Array<ActiveCollision>();
         _playerPlayerCollisions = new Array<ActiveCollision>();
+        _positionMax = new Vector();
     }
 
     public function InjectColliderData(col:Array<ColliderData>) {
         _colliderObjects = col;
+    }
+
+    public function SetPlayfieldSize(x:Float, y:Float) {
+        _positionMax.x = x;
+        _positionMax.y = y;
     }
 
     public function GetColliderObject(eId:EntityId) : ColliderData {
@@ -63,6 +73,8 @@ class CollisionSystem extends MovementSystem
             playerCollider.collider.x += movementData.velocity.x * MovementSystem.SIM_FRAME_LENGTH;
             playerCollider.collider.y += movementData.velocity.y * MovementSystem.SIM_FRAME_LENGTH;
 
+            KeepPlayerInBounds(playerCollider);
+
             for(crateId in _crateEntityIds) {
                 var crateCollider = _colliderObjects[crateId - 1];
                 if (crateCollider.collider.collideCircle(playerCollider.collider)) {
@@ -80,6 +92,24 @@ class CollisionSystem extends MovementSystem
                     RecordPlayerPlayerCollision(pId, pId2);
                 }
             }
+        }
+    }
+
+    function KeepPlayerInBounds(colliderData:ColliderData) {
+        if (colliderData.collider.x < 0) {
+            colliderData.collider.x += _positionMax.x;
+        }
+
+        if (colliderData.collider.x > _positionMax.x) {
+            colliderData.collider.x -= _positionMax.x;
+        }
+
+        if (colliderData.collider.y < 0) {
+            colliderData.collider.y += _positionMax.y;
+        }
+
+        if (colliderData.collider.y > _positionMax.y) {
+            colliderData.collider.y -= _positionMax.y;
         }
     }
 
