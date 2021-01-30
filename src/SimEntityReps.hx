@@ -1,3 +1,4 @@
+import shipSim.ShipInventory.ShipWeaponSlot;
 import shipSim.physics.PhysData.ShipMovement;
 import shipSim.physics.PhysData.ColliderData;
 import h2d.Object;
@@ -15,6 +16,10 @@ class EnityRepresentation {
     }
 
     public function UpdateRepresentation(): Void {
+    }
+
+    public function GetObject(): Object {
+        return _obj;
     }
 }
 
@@ -58,15 +63,43 @@ class CrateEntityRepresentation extends EnityRepresentation {
 
 class PickupEntityRepresentation extends EnityRepresentation {
     var _collider : ColliderData;
+    var _parent : Object;
+    var _slot : ShipWeaponSlot;
 
     public function InitFromGameData(col:Map<EntityId,ColliderData>) : Bool {
         _collider = col[_entityId];
+        _parent = null;
+        _slot = null;
         return _collider != null;
     }
 
+    public function Attach(parent:Object, slot:ShipWeaponSlot){
+        _parent = parent;
+        _slot = slot;
+    }
+
+    public function Detach(){
+        _parent = null;
+        _slot = null;
+    }
+
     public override function UpdateRepresentation(): Void {
-        _obj.x = _collider.collider.x;
-        _obj.y = _collider.collider.y;
-        _obj.rotate(Math.PI / 300);
+        if(_parent != null) {
+            if(_obj.parent != _parent) {
+                if(_obj.parent != null) {
+                    _obj.parent.removeChild(_obj);
+                }
+                _parent.addChild(_obj);
+            }
+
+            _obj.x = _slot.relativePosition.x;
+            _obj.y = _slot.relativePosition.y;
+            _obj.rotation = 0;
+        }
+        else {
+            _obj.x = _collider.collider.x;
+            _obj.y = _collider.collider.y;
+            _obj.rotate(Math.PI / 300);
+        }
     }
 }

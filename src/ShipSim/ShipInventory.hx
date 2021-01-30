@@ -1,5 +1,6 @@
 package shipSim;
 
+import haxe.Log;
 import jamSim.Entity;
 import h3d.Vector;
 
@@ -13,8 +14,11 @@ class ShipWeapon extends Entity {
 }
 
 class ShipWeaponSlot {
+    public function new(position:Vector) {
+        relativePosition = position;
+    }
+
     // Where to place the weapon relative to the ship
-    public var relativeRotation:Float;
     public var relativePosition:Vector;
     // Modifiers for the translation and rotation recoil of the weapon respectively
     public var recoilAngle:Float;
@@ -25,19 +29,27 @@ class ShipInventory {
     public var weaponSlots:Array<ShipWeaponSlot>;
     public var weaponEntityIds:Array<EntityId>; // Entity IDs of attached weapons
 
+    public function new() {
+    }
+
     public function InitializeWeaponSlots(slots:Array<ShipWeaponSlot>) {
         weaponSlots = slots;
         weaponEntityIds = new Array<EntityId>();
-        weaponEntityIds.resize(weaponSlots.length);
+        for(i in 0...weaponSlots.length) {
+            weaponEntityIds.push(0);
+        }
     }
 
-    public function AttachWeaponToFirstOpenIndex(weapon:EntityId) {
+    public function AttachWeaponToFirstOpenIndex(weapon:EntityId): ShipWeaponSlot {
         if (Entity.IdIsValid(weapon)) {
             var index = weaponEntityIds.indexOf(0);
             if (index != -1) {
                 AttachWeaponAtIndex(weapon, index);
+                return weaponSlots[index];
             }
         }
+
+        return null;
     }
 
     public function AttachWeaponAtIndex(weapon:EntityId, index:Int) {
@@ -45,7 +57,7 @@ class ShipInventory {
             // Make sure we're not double-attaching the same weapon
             var existingIndex = weaponEntityIds.indexOf(weapon);
             if (existingIndex == -1) {
-                if (weaponEntityIds[index] == null)
+                if (weaponEntityIds[index] == 0)
                     // Add weapon to attachment-related systems
                     weaponEntityIds[index] = weapon;
             }
@@ -53,6 +65,7 @@ class ShipInventory {
     }
 
     public function HasOpenSlots(): Bool {
+        Log.trace(weaponEntityIds[0]);
         return weaponEntityIds.indexOf(0) != -1;
     }
 
