@@ -39,6 +39,8 @@ class Main extends hxd.App {
 
     var _visualRepresentations : Array<EnityRepresentation>;
 
+    var dbgGraphics : h2d.Graphics;
+
     override function init() {
         super.init();
 
@@ -93,6 +95,8 @@ class Main extends hxd.App {
         }
 
         _timeToNextFrame = SIM_FRAME_TIME;
+
+        dbgGraphics = new h2d.Graphics(s2d);
     }
 
     function MakePlayerEntity(x:Float, y: Float)
@@ -109,15 +113,16 @@ class Main extends hxd.App {
         var collider:ColliderData = new ColliderData();
         collider.obstacleCollisions = new Array<EntityId>();
         collider.playerCollisions = new Array<EntityId>();
-        collider.collider = new Circle(x, y, 15);
+        collider.collider = new Circle(x, y, 20);
 
         PlaceColliderData(player.GetId(), collider);
 
         // create object in hxd scene
         var obj = new h2d.Object(s2d);
-        var tile = hxd.Res.lilship.toTile();
+        var tile = hxd.Res.playership.toTile();
         tile = tile.center();
         var bmp = new h2d.Bitmap(tile, obj);
+        bmp.scale(2.0/3.0);
 
         var visRep = new PlayerShipEntityRepresentation(player.GetId(), obj);
         visRep.InitFromGameData(GameData.shipMovement, GameData.colliderData);
@@ -133,15 +138,16 @@ class Main extends hxd.App {
         var collider:ColliderData = new ColliderData();
         collider.obstacleCollisions = new Array<EntityId>();
         collider.playerCollisions = new Array<EntityId>();
-        collider.collider = new Circle(x, y, 15);
+        collider.collider = new Circle(x, y, 25);
 
         PlaceColliderData(crate.GetId(), collider);
 
         // create object in hxd scene
         var obj = new h2d.Object(s2d);
-        var tile = hxd.Res.crate.toTile();
+        var tile = hxd.Res.spacecrate.toTile();
         tile = tile.center();
         var bmp = new h2d.Bitmap(tile, obj);
+        bmp.scale(2.0/3.0);
         obj.rotate(x + y);
 
         var visRep = new CrateEntityRepresentation(crate.GetId(), obj);
@@ -163,6 +169,7 @@ class Main extends hxd.App {
     }
 
     override function update(dt:Float) {
+        dbgGraphics.clear();
         _framerateText.text = ""+1/dt+"\n" + s2d.width + "\n" + s2d.height;
         _timeToNextFrame -= dt;
         if (_timeToNextFrame <= 0) {
@@ -171,6 +178,13 @@ class Main extends hxd.App {
             _sim.Tick();
             for (visRep in _visualRepresentations) {
                 visRep.UpdateRepresentation();
+            }
+
+            if (hxd.Key.isDown("5".code)) {
+                dbgGraphics.beginFill(0xFF00FF, 0.8);
+                for (col in GameData.colliderData) {
+                    dbgGraphics.drawCircle(col.collider.x, col.collider.y, col.collider.ray);
+                }
             }
         }
     }
