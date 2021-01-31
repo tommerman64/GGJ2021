@@ -153,7 +153,6 @@ class WeaponSystem extends MovementSystem {
                 slotIndex++;
                 continue;
             }
-            Log.trace(_cooldowns[playerId]);
             hasWeapons = true;
             var weaponSlot = inventory.weaponSlots[slotIndex];
             if (GetCooldown(playerId, slotIndex) <= 0) {

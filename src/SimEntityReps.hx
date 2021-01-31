@@ -79,7 +79,7 @@ class CrateEntityRepresentation extends EnityRepresentation {
     public override function UpdateRepresentation(s2d:Object): Void {
         _obj.x = _collider.collider.x;
         _obj.y = _collider.collider.y;
-        _obj.rotate(Math.PI / 600);
+        _obj.rotate(Math.PI / 600 * Math.sin(_entityId));
     }
 }
 

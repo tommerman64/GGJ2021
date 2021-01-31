@@ -1,5 +1,8 @@
 package shipSim;
 
+import SimEntityReps.CrateEntityRepresentation;
+import hxd.Rand;
+import h3d.Vector;
 import shipSim.physics.MovementSystem;
 import shipSim.physics.PhysData.ShipMovement;
 import h2d.col.Point;
@@ -22,12 +25,14 @@ class ShipPickupSystem extends SimSystem {
     var _ignoredWeapons:Map<EntityId, Map<EntityId, Int>>;
     var _pickupDrifts: Map<EntityId, Point>;
     var _shipMovement:Array<ShipMovement>;
+    var _random:Rand;
 
     public function new() {
         super();
         _playerIds = new Array<EntityId>();
         _ignoredWeapons = new Map<EntityId, Map<EntityId, Int>>();
         _pickupDrifts = new Map<EntityId, Point>();
+        _random = Rand.create();
     }
 
     public override function Init(entities:Array<Entity>) {
@@ -40,10 +45,16 @@ class ShipPickupSystem extends SimSystem {
 
     public override function OnNewEntity(ent:Entity) {
         super.OnNewEntity(ent);
-        if (ent.GetSystemTags().contains("Player"))
-        {
+        if (ent.GetSystemTags().contains("Player")){
             _playerIds.push(ent.GetId());
             _ignoredWeapons[ent.GetId()] = new Map<EntityId, Int>();
+        }
+        if(ent.GetSystemTags().contains("Pickup")){
+            var r = _random.rand() * 2 * Math.PI;
+            var rt = Math.sqrt(_random.rand());
+            var x = rt * Math.sin(r) * 10;
+            var y = rt * Math.cos(r) * 10;
+            _pickupDrifts[ent.GetId()] = new Point(x,y);
         }
     }
 
@@ -88,13 +99,22 @@ class ShipPickupSystem extends SimSystem {
                 while (weaponId > 0) {
                     // find weapon in pickup data using id
                     var pickup = _pickupData[weaponId];
+                    var slot = pickup.GetSlot();
                     // set the pickup to dropped
                     pickup.DetachFromShip();
                     // find the collision data
                     var weaponCol = _colliderData[weaponId];
                     var shipCol = _colliderData[pId];
-                    weaponCol.collider.x = shipCol.collider.x;
-                    weaponCol.collider.y = shipCol.collider.y;
+
+                    var slotPosition = new Vector(shipCol.collider.x, shipCol.collider.y);
+                    for(move in _shipMovement){
+                        if(move.entityId == pId){
+                            slotPosition = GameMath.GetSlotAbsolutePosition(new Vector(shipCol.collider.x, shipCol.collider.y), slot, move);
+                        }
+                    }
+
+                    weaponCol.collider.x = slotPosition.x;
+                    weaponCol.collider.y = slotPosition.y;
 
                     _ignoredWeapons[pId][weaponId] = 120;
 
