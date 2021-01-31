@@ -25,12 +25,19 @@ class ShipWeaponData {
     public var pickupTile:Tile;
     public var pickupAnimName:String;
 
+    public var isCrystal:Bool;
+
     public function new() {
         warmup = 0;
+        isCrystal = false;
+    }
+
+    public function SetIsCrystal() {
+        isCrystal = true;
     }
 
     public function OnFire(shipPosition: Vector, slotData:ShipWeaponSlot, mov:ShipMovement, projectileSystem:ProjectileSystem) {
-        Log.trace("Boom");
+        // Log.trace("Boom");
     }
 
     public function GetDrawable(equipped:Bool) : Drawable {

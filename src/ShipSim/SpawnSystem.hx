@@ -31,6 +31,10 @@ class SpawnSystem extends SimSystem {
     var _pickupRepresentations: Map<EntityId, PickupEntityRepresentation>;
     var _projectileRepresentations: Map<EntityId, ProjectileEntityRepresentation>;
 
+    // crystal logic
+    var _hasSpawnedCrystal = false;
+    var _crateCount = 0;
+
     public function new() {
         super();
         _random = Rand.create();
@@ -98,6 +102,7 @@ class SpawnSystem extends SimSystem {
         if(_crateRepresentations.exists(entity)){
             _scene.removeChild(_crateRepresentations[entity].GetObject());
             _crateRepresentations.remove(entity);
+            _crateCount--;
         }
         if(_pickupRepresentations.exists(entity)){
             _pickupRepresentations[entity].GetObject().parent.removeChild(_pickupRepresentations[entity].GetObject());
@@ -117,6 +122,7 @@ class SpawnSystem extends SimSystem {
         }
         if(entity.GetSystemTags().contains("Crate")){
             InitializeCrate(entity);
+            _crateCount++;
         }
         if(entity.GetSystemTags().contains("Pickup")){
             InitializePickup(entity);
@@ -198,8 +204,21 @@ class SpawnSystem extends SimSystem {
         // create object in hxd scene
         var obj = new h2d.Object(_scene);
 
-        // Roll a random weapon
         var weaponIndex = _random.random(_weaponLibrary.length);
+        if (_crateCount == 1 && !_hasSpawnedCrystal) {
+            //force spawn crystal
+            var weaponIndex = 0;
+        }
+        
+
+        while (_weaponLibrary[weaponIndex].isCrystal && _hasSpawnedCrystal) {
+            weaponIndex = _random.random(_weaponLibrary.length);
+        }
+
+        if (!_hasSpawnedCrystal) {
+            _hasSpawnedCrystal = _weaponLibrary[weaponIndex].isCrystal;
+            // notify the return zone system
+        }
 
         _pickupData[entity.GetId()] = new PickupData(weaponIndex);
 

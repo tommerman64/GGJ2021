@@ -12,10 +12,11 @@ import shipSim.shootyThings.ShipWeaponData;
 class ReturnZoneSystem extends SimSystem {
     var _pickupEntityIds : Array<EntityId>;
     var _pickupData:Map<EntityId,PickupData>;
-    var _weaponLib:WeaponLibrary;
     var _colliderObjects: Map<EntityId,ColliderData>;
 
     var _returnZones : Array<Bounds>;
+
+    var _gameEnd : Bool = false;
 
     public override function new() {
         super();
@@ -25,10 +26,6 @@ class ReturnZoneSystem extends SimSystem {
 
     public function InjectColliderData(col:Map<EntityId,ColliderData>) {
         _colliderObjects = col;
-    }
-
-    public function SetWeaponLibrary(lib:WeaponLibrary) {
-        _weaponLib = lib;
     }
 
     public function InjectPickupData(pu:Map<EntityId,PickupData>) {
@@ -61,14 +58,19 @@ class ReturnZoneSystem extends SimSystem {
             for (eId in _pickupEntityIds) {
                 var col = _colliderObjects[eId];
                 var position : Point = new Point(col.collider.x, col.collider.y);
-
                 if (bounds.contains(position)) {
-                    // give someone points
+                    if (_pickupData[eId].GetWeaponLibIndex() == 0) { // it was the crystal, game is over
+                        _gameEnd = true;
+                    }
                     _sim.DestroyEntity(eId);
                     _pickupEntityIds.remove(eId);
                 }
             }
         }
+    }
+
+    public function HasGameEnded() {
+        return _gameEnd;
     }
 
     public function GetReturnZones() : Array<Bounds> {

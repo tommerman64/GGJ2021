@@ -146,7 +146,6 @@ class Main extends hxd.App {
         _returnZoneSys = new ReturnZoneSystem();
         _returnZoneSys.InjectColliderData(GameData.colliderData);
         _returnZoneSys.InjectPickupData(GameData.pickupData);
-        _returnZoneSys.SetWeaponLibrary(GameData.weaponLibrary);
         _returnZoneSys.AddReturnZone(Bounds.fromValues(0, 540, 180, 180));
         _returnZoneSys.AddReturnZone(Bounds.fromValues(1100, 0, 180, 180));
 
@@ -270,15 +269,18 @@ class Main extends hxd.App {
         brrr.projectileSpeed = 45;
 
 
-        /*
+        //*
         var prize = new ShipWeaponData();
-        prize.animName = "crystal";
+        prize.eqAnimName = "crystal";
+        prize.pickupAnimName = "crystal";
         prize.tileScale = 1.0/2.0;
         prize.cooldown = 10000;
         prize.weight = 200;
+        prize.SetIsCrystal();
 
+        // PRIZE HAS TO BE FIRST
         GameData.weaponLibrary.push(prize);
-        /*/
+        //*/
         GameData.weaponLibrary.push(zapper);
         GameData.weaponLibrary.push(fatMan);
         GameData.weaponLibrary.push(brrr);
@@ -310,6 +312,11 @@ class Main extends hxd.App {
             for (visRep in _projectileRepresentations) {
                 visRep.UpdateRepresentation(s2d);
             }
+        }
+
+        if (_returnZoneSys.HasGameEnded())
+        {
+            // EndRound();
         }
 
         if (hxd.Key.isDown("5".code)) {
