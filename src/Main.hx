@@ -308,6 +308,7 @@ class Main extends hxd.App {
         brrr.recoil = 5;
         brrr.recoilRotationAccelerator = 3;
         brrr.projectileSpeed = 45;
+        brrr.projectileTex = hxd.Res.redlaser.toTile();
         brrr.sound = hxd.Res.brrr;
 
 
