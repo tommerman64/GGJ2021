@@ -54,10 +54,10 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
     public function AttachArmorPieces(tiles:Array<Tile>) {
         var positions = [
             { x:0, y:0 },
-            { x:0, y:0 },
-            { x:0, y:0 },
-            { x:0, y:0 },
-            { x:0, y:0 },
+            { x:0, y: -17 },
+            { x:0, y: 16 },
+            { x:35, y:0 },
+            { x:-35, y:0 },
         ];
         _armorPieces = new Array<Drawable>();
         for (i in 0...tiles.length) {
@@ -81,7 +81,6 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
         }
         _booster.visible = _movement.boosting;
 
-        Log.trace("should be showing armor level: " + _inventory.armor);
         for (a in 0...5) {
             _armorPieces[a].visible = a < _inventory.armor;
         }
