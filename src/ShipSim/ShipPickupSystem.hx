@@ -82,6 +82,45 @@ class ShipPickupSystem extends SimSystem {
         _shipInventories = inventories;
     }
 
+    public function JettisonRandomWeaponOrArmor(pId:EntityId){
+        var inventory = _shipInventories[pId];
+        if(inventory.armor > 0){
+            inventory.armor -= 1;
+            return;
+        }
+        var weaponId = inventory.DetachNextWeapon();
+        if(weaponId > 0){
+            // copy pasta'd; maybe put in a function later
+            // find weapon in pickup data using id
+            var pickup = _pickupData[weaponId];
+            var slot = pickup.GetSlot();
+            // set the pickup to dropped
+            pickup.DetachFromShip();
+            // find the collision data
+            var weaponCol = _colliderData[weaponId];
+            var shipCol = _colliderData[pId];
+
+            var slotPosition = new Vector(shipCol.collider.x, shipCol.collider.y);
+            for(move in _shipMovement){
+                if(move.entityId == pId){
+                    slotPosition = GameMath.GetSlotAbsolutePosition(new Vector(shipCol.collider.x, shipCol.collider.y), slot, move);
+                }
+            }
+
+            weaponCol.collider.x = slotPosition.x;
+            weaponCol.collider.y = slotPosition.y;
+
+            _ignoredWeapons[pId][weaponId] = 120;
+
+            // Apply ship drift
+            for(move in _shipMovement){
+                if(move.entityId == pId){
+                    _pickupDrifts[weaponId] = new Point(move.velocity.x + 25 - _random.random(50), move.velocity.y + 25 - _random.random(50));
+                }
+            }
+        }
+    }
+
     public override function EarlyTick() {
         for(pickupId in _pickupDrifts.keys()){
             if(_colliderData.exists(pickupId)){

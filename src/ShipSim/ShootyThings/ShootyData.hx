@@ -77,23 +77,15 @@ class ShootableCrate extends Shootable {
 
 class ShootableShip extends Shootable {
     public var colliderData:ColliderData;
-    public var sim:Sim;
-    public var health:Int;
-    public var shipInventory:ShipInventory;
+    public var pickupSystem:ShipPickupSystem;
 
     public function new(eId:EntityId){
         super(eId);
-        health = 5;
     }
 
     public override function TakeHit(projectile:ProjectileData): Void {
-        if(health > 0){
-            health -= projectile.damage;
-            hxd.Res.cratehit.play();
-            if(health <= 0){
-                // Jettison equipment
-                sim.DestroyEntity(entityId);
-            }
-        }
+        hxd.Res.cratehit.play();
+        pickupSystem.JettisonRandomWeaponOrArmor(entityId);
     }
+
 }

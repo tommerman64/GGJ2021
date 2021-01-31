@@ -141,6 +141,7 @@ class Main extends hxd.App {
         projectileSystem.SetColliderData(GameData.colliderData);
         projectileSystem.SetSpawner(spawnSystem);
         projectileSystem.SetPlayfieldSize(GameData.screenBounds.right, GameData.screenBounds.bottom);
+        projectileSystem.SetPickupSystem(pickupSystem);
 
         var weaponSystem = new WeaponSystem();
         weaponSystem.SetInputSystem(inputSystem);

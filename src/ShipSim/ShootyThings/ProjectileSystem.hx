@@ -21,6 +21,7 @@ class ProjectileSystem extends SimSystem {
     var _projectileRepresentations: Map<EntityId, ProjectileEntityRepresentation>;
     var _spawner:SpawnSystem;
     var _positionMax:Vector;
+    var _pickupSystem:ShipPickupSystem;
 
     public function new() {
         super();
@@ -39,6 +40,10 @@ class ProjectileSystem extends SimSystem {
 
     public function SetSpawner(spawner:SpawnSystem){
         _spawner = spawner;
+    }
+
+    public function SetPickupSystem(sys:ShipPickupSystem){
+        _pickupSystem = sys;
     }
 
     public function SetPlayfieldSize(x:Float, y:Float) {
@@ -65,7 +70,7 @@ class ProjectileSystem extends SimSystem {
         }
         if(entity.GetSystemTags().contains("Player")) {
             var ship = new ShootableShip(entity.GetId());
-            ship.sim = _sim;
+            ship.pickupSystem = _pickupSystem;
             _shootables.push(ship);
         }
     }
