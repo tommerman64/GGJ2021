@@ -39,6 +39,8 @@ class Main extends hxd.App {
     // sim and systems
     var _sim:jamSim.Sim;
     var _framerateText : h2d.Text;
+    var _background:h2d.Bitmap;
+    var _title:h2d.Bitmap;
 
     var _timeToNextFrame:Float;
 
@@ -76,8 +78,6 @@ class Main extends hxd.App {
             var res:hxd.res.Sound = hxd.Res.menuMusic;
             _music = res.play(true, 1, _musicGroup, _musicSG);
             _music.priority = 10; 
-            // remove this line when shipping
-            // _music.volume = 0;
         }
 
         _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();
@@ -96,9 +96,15 @@ class Main extends hxd.App {
 
     function LoadStars() {
         var backgroundTex = hxd.Res.spaaace.toTile();
-        var background = new h2d.Bitmap(backgroundTex, s2d);
-        background.scale(2/3);
-        background.alpha = 0.24;
+        _background = new h2d.Bitmap(backgroundTex, s2d);
+        _background.scale(2/3);
+        _background.alpha = 0.24;
+
+        _title = new Bitmap(hxd.Res.title.toTile().center(), s2d);
+
+        _title.x = s2d.width/3;
+        _title.y = s2d.height/2;
+        _title.scale(0.66);
 
         _parallaxStars = new Array<h2d.Bitmap>();
         var parallaxSeed = Rand.create();
@@ -120,6 +126,7 @@ class Main extends hxd.App {
     }
 
     function StartGame() {
+        _title.visible = false;
         _music.stop();
         _music = GetBattleMusic().play(true, 1, _musicGroup, _musicSG);
         var inputSystem = new InputSystem();
@@ -297,10 +304,6 @@ class Main extends hxd.App {
         brrr.cooldown = 10;
         brrr.warmup = 90;
         brrr.weight = 5;
-        /*
-        brrr.eqTile = hxd.Res.laserCannon.toTile();
-        brrr.eqTile = brrr.eqTile.center();
-        //*/
         brrr.eqAnimName = "minigun";
         brrr.pickupTile = hxd.Res.pinkOrb.toTile();
         brrr.pickupTile = brrr.pickupTile.center();
@@ -312,7 +315,6 @@ class Main extends hxd.App {
         brrr.sound = hxd.Res.brrr;
 
 
-        //*
         var prize = new ShipWeaponData();
         prize.eqAnimName = "crystal";
         prize.pickupAnimName = "crystal";
@@ -323,32 +325,31 @@ class Main extends hxd.App {
 
         var armor = new ShipWeaponData();
         armor.eqTile = hxd.Res.armoricon.toTile();
-        // armor.eqTile = armor.eqTile.center();
         armor.pickupTile = hxd.Res.armoricon.toTile();
         armor.pickupTile = armor.pickupTile.center();
         armor.tileScale = 1;
 
         // PRIZE HAS TO BE FIRST
         GameData.weaponLibrary.push(prize);
+        // ARMOR HAS TO BE SECOND
         GameData.weaponLibrary.push(armor);
-        //*/
+
         GameData.weaponLibrary.push(zapper);
         GameData.weaponLibrary.push(fatMan);
         GameData.weaponLibrary.push(brrr);
     }
 
     override function update(dt:Float) {
-        _framerateText.text = ""+1/dt+"\n" + s2d.width + "\n" + s2d.height;
+        // _framerateText.text = ""+1/dt+"\n" + s2d.width + "\n" + s2d.height;
         if (_sim == null) {
+            _framerateText.text = "Press T to start!";
             if (Key.isPressed("T".code)) {
                 StartGame();
             }
             return;
         }
-        else if (Key.isPressed("Y".code)) {
-            EndRound(false);
-            return;
-        }
+
+        _framerateText.text = "";
 
         if (dbgGraphics != null) {
             dbgGraphics.clear();
@@ -377,6 +378,7 @@ class Main extends hxd.App {
             EndRound(true);
         }
 
+        /*
         if (hxd.Key.isDown("5".code)) {
             // put it back on top
             s2d.removeChild(dbgGraphics);
@@ -417,6 +419,7 @@ class Main extends hxd.App {
                 GameData.inventories[id].armor++;
             }
         }
+        //*/
 
         var parallaxSpeed = 1.0;
         for(parallaxLayer in _parallaxStars) {
