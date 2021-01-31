@@ -67,6 +67,9 @@ class ShootableCrate extends Shootable {
                 spawnSystem.SpawnEntity(new Pickup(), x, y);
                 sim.DestroyEntity(entityId);
             }
+            else{
+                hxd.Res.cratehit.play();
+            }
         }
     }
 }

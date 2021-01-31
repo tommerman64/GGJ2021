@@ -31,6 +31,7 @@ class WeaponSystem extends MovementSystem {
             s_baseWeaponData = new ProjectileWeaponData();
             s_baseWeaponData.cooldown = 60;
             s_baseWeaponData.projectileSpeed = 25;
+            s_baseWeaponData.sound = hxd.Res.defaultGun;
         }
         _cooldowns = new Map<EntityId, Array<Int>>();
         _warmups = new Map<EntityId, Array<Int>>();

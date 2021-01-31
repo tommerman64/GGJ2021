@@ -1,4 +1,5 @@
 package shipSim.shootyThings;
+import hxd.res.Sound;
 import h2d.Drawable;
 import shipSim.shootyThings.ShootyData;
 import h2d.Bitmap;
@@ -83,12 +84,14 @@ class ProjectileWeaponData extends ShipWeaponData {
     public var recoilRotationAccelerator:Float;
     public var projectileTex:Tile;
     public var projectileSpeed:Float;
+    public var sound:Sound;
 
     public function new() {
         super();
         recoil = 1;
         recoilRotationAccelerator = 0;
         projectileSpeed = 0;
+        sound = null;
     }
 
     public override function OnFire(shipPosition:Vector, slotData:ShipWeaponSlot, mov:ShipMovement, projectileSystem:ProjectileSystem) {
@@ -110,5 +113,11 @@ class ProjectileWeaponData extends ShipWeaponData {
         recoilVector.scale3(recoil);
         mov.velocity = mov.velocity.sub(recoilVector);
         mov.rotationalVelocity += recoilRotationAccelerator * slotData.spinFactor;
+
+        // Play the projectile sound
+        if(sound != null) {
+            sound.stop();
+            sound.play();
+        }
     }
 }

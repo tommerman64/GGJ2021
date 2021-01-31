@@ -241,6 +241,7 @@ class Main extends hxd.App {
         zapper.recoil = 10;
         zapper.recoilRotationAccelerator = 2;
         zapper.projectileSpeed = 40;
+        zapper.sound = hxd.Res.laser;
 
         var fatMan = new ProjectileWeaponData();
         fatMan.cooldown = 60;
@@ -254,6 +255,7 @@ class Main extends hxd.App {
         fatMan.recoil = 40;
         fatMan.recoilRotationAccelerator = 10;
         fatMan.projectileSpeed = 10;
+        fatMan.sound = hxd.Res.fatmanLaunch;
 
         var brrr = new ProjectileWeaponData();
         brrr.cooldown = 10;
@@ -267,6 +269,7 @@ class Main extends hxd.App {
         brrr.recoil = 5;
         brrr.recoilRotationAccelerator = 3;
         brrr.projectileSpeed = 45;
+        brrr.sound = hxd.Res.brrr;
 
 
         //*

@@ -171,6 +171,7 @@ class ShipPickupSystem extends SimSystem {
             }
             if(canBePickedUp) {
                 var attachedSlot = _shipInventories[shipId].AttachWeaponToFirstOpenIndex(pickupId);
+                hxd.Res.pickup.play();
                 if(attachedSlot != null) {
                     _pickupData[pickupId].AttachToShip(shipId, attachedSlot);
                     _pickupDrifts.remove(pickupId);
