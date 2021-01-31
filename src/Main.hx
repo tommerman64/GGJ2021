@@ -1,3 +1,4 @@
+import hxd.Key;
 import hxd.Rand;
 import h2d.col.Bounds;
 import shipSim.physics.MovementSystem;
@@ -85,12 +86,17 @@ class Main extends hxd.App {
         {
             var res:hxd.res.Sound = hxd.Res.babycobraz;
             _music = res.play(true);
+            // remove this line when shipping
+            _music.volume = 0;
         }
 
         _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();
         _crateRepresentations = new Map<EntityId, CrateEntityRepresentation>();
         _pickupRepresentations = new Map<EntityId, PickupEntityRepresentation>();
 
+    }
+
+    function StartGame() {
         var inputSystem = new InputSystem();
         inputSystem.MapKeys(["A".code, "S".code, "D".code, "F".code, "G".code]);
         inputSystem.MapKeys(["J".code, "K".code, "L".code, "I".code, "O".code]);
@@ -279,8 +285,14 @@ class Main extends hxd.App {
     }
 
     override function update(dt:Float) {
-        dbgGraphics.clear();
         _framerateText.text = ""+1/dt+"\n" + s2d.width + "\n" + s2d.height;
+        if (_sim == null) {
+            if (Key.isPressed("T".code)) {
+                StartGame();
+            }
+            return;
+        }
+        dbgGraphics.clear();
         _timeToNextFrame -= dt;
         if (_timeToNextFrame <= 0) {
             _timeToNextFrame += SIM_FRAME_TIME;
