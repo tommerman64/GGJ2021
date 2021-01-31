@@ -86,6 +86,7 @@ class ProjectileSystem extends SimSystem {
                 for(projectile in _activeProjectiles){
                     if(collider.contains(projectile.position)){
                         shootable.TakeHit(projectile);
+                        _sim.DestroyEntity(projectile.entityId);
                     }
                 }
             }

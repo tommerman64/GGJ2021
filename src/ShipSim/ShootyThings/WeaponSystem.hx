@@ -127,7 +127,7 @@ class WeaponSystem extends MovementSystem {
 
     function GetCooldown(playerId:EntityId, weaponIndex:Int) :Int
     {
-        return _cooldowns[playerId][0]; // (use index here once inventory is implemented)
+        return _cooldowns[playerId][weaponIndex]; // (use index here once inventory is implemented)
     }
 
     function GetPlayerPosition(entityId:EntityId) : Vector {
@@ -144,6 +144,7 @@ class WeaponSystem extends MovementSystem {
         var slotIndex = 0;
         for (weapon in inventory.weaponEntityIds) {
             if (weapon == 0) {
+                slotIndex++;
                 continue;
             }
 

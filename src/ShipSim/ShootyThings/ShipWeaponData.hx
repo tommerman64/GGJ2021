@@ -42,7 +42,7 @@ class ProjectileWeaponData extends ShipWeaponData {
         projectile.direction = mov.GetForward();
         projectile.position.x = shipPosition.x + slotData.relativePosition.x;
         projectile.position.y = shipPosition.y + slotData.relativePosition.y;
-        projectile.speed = 100;
+        projectile.speed = 40;
         projectile.ownerId = mov.entityId;
 
         projectileSystem.FireProjectile(projectile);
