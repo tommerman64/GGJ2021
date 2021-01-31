@@ -128,8 +128,9 @@ class Main extends hxd.App {
         _sim.AddSystem(spawnSystem);
         _sim.AddSystem(projectileSystem);
 
-        var player1Id = MakePlayerEntity(100, 100);
-        var player2Id = MakePlayerEntity(300, 300);
+        var bounds = GameData.screenBounds;
+        var player1Id = MakePlayerEntity(bounds.left + ((bounds.right - bounds.left) * 0.15) , bounds.bottom - ((bounds.bottom - bounds.top) * 0.15));
+        var player2Id = MakePlayerEntity(bounds.right - ((bounds.right - bounds.left) * 0.15) , bounds.top + ((bounds.bottom - bounds.top) * 0.15));
 
         var slots = new Array<ShipWeaponSlot>();
         slots.push(new ShipWeaponSlot(new Vector(25, 0), 0.5));
