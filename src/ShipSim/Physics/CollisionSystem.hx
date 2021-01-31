@@ -59,6 +59,7 @@ class CollisionSystem extends MovementSystem
     }
 
     public override function OnEntityDestroyed(entity:EntityId) {
+        super.OnEntityDestroyed(entity);
         _crateEntityIds.remove(entity);
         _pickupEntityIds.remove(entity);
     }

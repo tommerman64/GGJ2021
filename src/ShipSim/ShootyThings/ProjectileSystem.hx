@@ -1,5 +1,6 @@
 package shipSim.shootyThings;
 
+import shipSim.shootyThings.ShootyData.ShootableShip;
 import shipSim.shootyThings.ShootyData.ShootableCrate;
 import h3d.Vector;
 import haxe.Log;
@@ -63,7 +64,9 @@ class ProjectileSystem extends SimSystem {
             _shootables.push(crate);
         }
         if(entity.GetSystemTags().contains("Player")) {
-            _shootables.push(new Shootable(entity.GetId()));
+            var ship = new ShootableShip(entity.GetId());
+            ship.sim = _sim;
+            _shootables.push(ship);
         }
     }
 
@@ -108,7 +111,6 @@ class ProjectileSystem extends SimSystem {
         var projectile= new Projectile();
         _spawner.SpawnEntity(projectile, projectileData.position.x, projectileData.position.y);
         projectileData.entityId = projectile.GetId();
-        Log.trace(projectileData.position);
         _projectileRepresentations[projectile.GetId()].SetProjectileData(projectileData);
         _activeProjectiles.push(projectileData);
     }

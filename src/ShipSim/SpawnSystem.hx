@@ -18,6 +18,8 @@ import jamSim.SimSystem;
 class SpawnSystem extends SimSystem {
     var _scene:Scene;
     var _weaponLibrary:WeaponLibrary;
+    var _inventorySlots:Array<ShipWeaponSlot>;
+    var _inventories:Map<EntityId,ShipInventory>;
     var _random:Rand;
     var _colliderData:Map<EntityId, ColliderData>;
 
@@ -40,6 +42,11 @@ class SpawnSystem extends SimSystem {
 
     public function SetWeaponLibrary(library:WeaponLibrary) {
         _weaponLibrary = library;
+    }
+
+    public function SetupInventories(slots:Array<ShipWeaponSlot>, inventories:Map<EntityId,ShipInventory>){
+        _inventorySlots = slots;
+        _inventories = inventories;
     }
 
     public function SetColliderData(colliderData:Map<EntityId, ColliderData>) {
@@ -78,6 +85,10 @@ class SpawnSystem extends SimSystem {
         _colliderData.remove(entity);
         for(movement in _shipMovement.filter(function(sm) {return sm.entityId == entity;})) {
             _shipMovement.remove(movement);
+        }
+
+        if(_inventories.exists(entity)){
+            _inventories.remove(entity);
         }
 
         if(_shipRepresentations.exists(entity)){
@@ -160,6 +171,10 @@ class SpawnSystem extends SimSystem {
         var playerMovement:ShipMovement = new ShipMovement();
         playerMovement.entityId = entity.GetId();
         _shipMovement.push(playerMovement);
+
+        // Set up inventory
+        _inventories[entity.GetId()] = new ShipInventory();
+        _inventories[entity.GetId()].InitializeWeaponSlots(_inventorySlots);
 
         var visRep = new PlayerShipEntityRepresentation(entity.GetId(), obj);
         visRep.InitFromGameData(_shipMovement, _colliderData);

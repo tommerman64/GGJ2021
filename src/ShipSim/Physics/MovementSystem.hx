@@ -22,6 +22,10 @@ class MovementSystem extends SimSystem {
         }
     }
 
+    public override function OnEntityDestroyed(entId:EntityId){
+        _playerEntityIds.remove(entId);
+    }
+
     public function InjectShipMovementData(moveData:Array<ShipMovement>) {
         _shipMovementData = moveData;
     }

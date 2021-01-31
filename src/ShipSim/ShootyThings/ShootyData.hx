@@ -66,3 +66,25 @@ class ShootableCrate extends Shootable {
         }
     }
 }
+
+class ShootableShip extends Shootable {
+    public var colliderData:ColliderData;
+    public var sim:Sim;
+    public var health:Int;
+    public var shipInventory:ShipInventory;
+
+    public function new(eId:EntityId){
+        super(eId);
+        health = 5;
+    }
+
+    public override function TakeHit(projectile:ProjectileData): Void {
+        if(health > 0){
+            health -= projectile.damage;
+            if(health <= 0){
+                // Jettison equipment
+                sim.DestroyEntity(entityId);
+            }
+        }
+    }
+}

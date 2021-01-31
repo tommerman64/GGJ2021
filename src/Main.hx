@@ -128,24 +128,20 @@ class Main extends hxd.App {
         _sim.AddSystem(spawnSystem);
         _sim.AddSystem(projectileSystem);
 
-        var bounds = GameData.screenBounds;
-        var player1Id = MakePlayerEntity(bounds.left + ((bounds.right - bounds.left) * 0.15) , bounds.bottom - ((bounds.bottom - bounds.top) * 0.15));
-        var player2Id = MakePlayerEntity(bounds.right - ((bounds.right - bounds.left) * 0.15) , bounds.top + ((bounds.bottom - bounds.top) * 0.15));
-
+        // Hook up weapons and inventories
         var slots = new Array<ShipWeaponSlot>();
         slots.push(new ShipWeaponSlot(new Vector(25, 0), 0.5));
         slots.push(new ShipWeaponSlot(new Vector(-25, 0), -0.5));
         slots.push(new ShipWeaponSlot(new Vector(50, 0), 1));
         slots.push(new ShipWeaponSlot(new Vector(-50, 0), -1));
-
-        GameData.inventories[player1Id] = new ShipInventory();
-        GameData.inventories[player1Id].InitializeWeaponSlots(slots);
-        GameData.inventories[player2Id] = new ShipInventory();
-        GameData.inventories[player2Id].InitializeWeaponSlots(slots);
-
+        spawnSystem.SetupInventories(slots, GameData.inventories);
         pickupSystem.SetInventories(GameData.inventories);
         weaponSystem.SetInventory(GameData.inventories);
         InitializeWeaponLibrary();
+
+        var bounds = GameData.screenBounds;
+        MakePlayerEntity(bounds.left + ((bounds.right - bounds.left) * 0.15) , bounds.bottom - ((bounds.bottom - bounds.top) * 0.15));
+        MakePlayerEntity(bounds.right - ((bounds.right - bounds.left) * 0.15) , bounds.top + ((bounds.bottom - bounds.top) * 0.15));
 
         var width = GameData.screenBounds.right - GameData.screenBounds.left;
         var height = GameData.screenBounds.bottom - GameData.screenBounds.top;
@@ -185,7 +181,7 @@ class Main extends hxd.App {
         lilGun.tile.center();
         lilGun.tileScale = 1.0/25.0;
         lilGun.recoil = 50;
-        lilGun.recoilRotationAccelerator = 5;
+        lilGun.recoilRotationAccelerator = 2;
 
         var bigGun = new ProjectileWeaponData();
         bigGun.cooldown = 60;
@@ -194,7 +190,7 @@ class Main extends hxd.App {
         bigGun.tile.center();
         bigGun.tileScale = 1.0/15.0;
         bigGun.recoil = 100;
-        bigGun.recoilRotationAccelerator = 25;
+        bigGun.recoilRotationAccelerator = 10;
 
         /*
         var prize = new ShipWeaponData();

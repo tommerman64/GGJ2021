@@ -55,7 +55,6 @@ class WeaponSystem extends MovementSystem {
 
     public function SetInventory(invs:Map<EntityId, ShipInventory>) {
         _inventories = invs;
-        InitializeCooldowns();
     }
 
     public override function Init(entities:Array<Entity>) {
@@ -75,11 +74,14 @@ class WeaponSystem extends MovementSystem {
         }
     }
 
-    public function InitializeCooldowns() {
-        for (playerId in _playerEntityIds) {
-            for (slot in _inventories[playerId].weaponSlots) {
-                _cooldowns[playerId].push(0);
-            }
+    public override function OnEntityDestroyed(entId:EntityId) {
+        super.OnEntityDestroyed(entId);
+        _cooldowns.remove(entId);
+    }
+
+    public function InitializeCooldowns(playerId:EntityId) {
+        for(i in 0..._inventories[playerId].weaponSlots.length){
+            _cooldowns[playerId].push(0);
         }
     }
 
@@ -88,7 +90,11 @@ class WeaponSystem extends MovementSystem {
 
         var inputIndex:Int = 0;
         for (playerId in _playerEntityIds) {
-            var moveData = FindMovementData(playerId);
+            // Lazy initialize cooldowns
+            if(_cooldowns[playerId].length == 0){
+                InitializeCooldowns(playerId);
+            }
+
             var wantsToShoot = _inputSystem.GetInputState(inputIndex).Shoot;
             if (wantsToShoot) {
                 TryShoot(playerId);
@@ -147,7 +153,7 @@ class WeaponSystem extends MovementSystem {
                 slotIndex++;
                 continue;
             }
-
+            Log.trace(_cooldowns[playerId]);
             hasWeapons = true;
             var weaponSlot = inventory.weaponSlots[slotIndex];
             if (GetCooldown(playerId, slotIndex) <= 0) {
