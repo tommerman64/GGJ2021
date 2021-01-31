@@ -157,10 +157,10 @@ class Main extends hxd.App {
 
         // Hook up weapons and inventories
         var slots = new Array<ShipWeaponSlot>();
-        slots.push(new ShipWeaponSlot(new Vector(25, 0), 0.5));
-        slots.push(new ShipWeaponSlot(new Vector(-25, 0), -0.5));
-        slots.push(new ShipWeaponSlot(new Vector(50, 0), 1));
-        slots.push(new ShipWeaponSlot(new Vector(-50, 0), -1));
+        slots.push(new ShipWeaponSlot(new Vector(15, 0), 0.5));
+        slots.push(new ShipWeaponSlot(new Vector(-15, 0), -0.5));
+        slots.push(new ShipWeaponSlot(new Vector(30, 0), 1));
+        slots.push(new ShipWeaponSlot(new Vector(-30, 0), -1));
         spawnSystem.SetupInventories(slots, GameData.inventories);
         pickupSystem.SetInventories(GameData.inventories);
         weaponSystem.SetInventory(GameData.inventories);

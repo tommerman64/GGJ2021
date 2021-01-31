@@ -123,11 +123,13 @@ class WeaponSystem extends MovementSystem {
 
         var index = 0;
         while (index < _warmups[playerId].length) {
-            if(wantsToShoot){
-                _warmups[playerId][index] = Std.int(Math.min(200, _warmups[playerId][index]+1));
-            }
-            else {
-                _warmups[playerId][index] = Std.int(Math.max(0, _warmups[playerId][index]-1));
+            if(_inventories[playerId].weaponEntityIds[index] > 0){
+                if(wantsToShoot){
+                    _warmups[playerId][index] = Std.int(Math.min(200, _warmups[playerId][index]+1));
+                }
+                else {
+                    _warmups[playerId][index] = Std.int(Math.max(0, _warmups[playerId][index]-1));
+                }
             }
             index++;
         }
