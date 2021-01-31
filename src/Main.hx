@@ -253,12 +253,12 @@ class Main extends hxd.App {
         fatMan.eqTile = hxd.Res.fatman.toTile();
         fatMan.projectileTex = hxd.Res.fatman.toTile();
         fatMan.eqTile = fatMan.eqTile.center();
-        fatMan.tileScale = .8;
+        fatMan.tileScale = .7;
         fatMan.pickupTile = hxd.Res.blueOrb.toTile();
         fatMan.pickupTile = fatMan.pickupTile.center();
         fatMan.recoil = 40;
         fatMan.recoilRotationAccelerator = 10;
-        fatMan.projectileSpeed = 10;
+        fatMan.projectileSpeed = 6;
         fatMan.sound = hxd.Res.fatmanLaunch;
 
         var brrr = new ProjectileWeaponData();

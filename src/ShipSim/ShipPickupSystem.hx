@@ -96,6 +96,9 @@ class ShipPickupSystem extends SimSystem {
         for(pId in _playerIds) {
             if (_inputSystem.GetInputState(inpIndex).Jettison) {
                 var weaponId = _shipInventories[pId].DetachNextWeapon();
+                if(weaponId > 0){
+                    hxd.Res.jettison.play();
+                }
                 while (weaponId > 0) {
                     // find weapon in pickup data using id
                     var pickup = _pickupData[weaponId];

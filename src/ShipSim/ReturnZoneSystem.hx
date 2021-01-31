@@ -62,6 +62,9 @@ class ReturnZoneSystem extends SimSystem {
                     if (_pickupData[eId].GetWeaponLibIndex() == 0) { // it was the crystal, game is over
                         _gameEnd = true;
                     }
+                    else {
+                        hxd.Res.score.play();
+                    }
                     _sim.DestroyEntity(eId);
                     _pickupEntityIds.remove(eId);
                 }
