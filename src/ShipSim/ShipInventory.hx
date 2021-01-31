@@ -5,8 +5,9 @@ import jamSim.Entity;
 import h3d.Vector;
 
 class ShipWeaponSlot {
-    public function new(position:Vector) {
+    public function new(position:Vector, spin:Float) {
         relativePosition = position;
+        spinFactor = spin;
     }
 
     // Where to place the weapon relative to the ship

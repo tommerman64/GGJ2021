@@ -17,6 +17,7 @@ class ProjectileData {
     public var direction:Vector;
     public var speed:Float;
     public var ownerId:EntityId;
+    public var damage:Int;
 
     public function new(eId:EntityId = -1)
     {
@@ -24,6 +25,7 @@ class ProjectileData {
         position = new Point();
         direction = new Vector();
         speed = 0;
+        damage = 1;
     }
 }
 
@@ -41,15 +43,26 @@ class ShootableCrate extends Shootable {
     public var spawnSystem:SpawnSystem;
     public var colliderData:ColliderData;
     public var sim:Sim;
+    public var health:Int;
+
+    public function new(eId:EntityId){
+        super(eId);
+        health = 5;
+    }
 
     public override function TakeHit(projectile:ProjectileData): Void {
-        var x = projectile.position.x;
-        var y = projectile.position.y;
-        if(colliderData != null){
-            x = colliderData.collider.x;
-            y = colliderData.collider.y;
+        if(health > 0){
+            health -= projectile.damage;
+            if(health <= 0){
+                var x = projectile.position.x;
+                var y = projectile.position.y;
+                if(colliderData != null){
+                    x = colliderData.collider.x;
+                    y = colliderData.collider.y;
+                }
+                spawnSystem.SpawnEntity(new Pickup(), x, y);
+                sim.DestroyEntity(entityId);
+            }
         }
-        spawnSystem.SpawnEntity(new Pickup(), x, y);
-        sim.DestroyEntity(entityId);
     }
 }

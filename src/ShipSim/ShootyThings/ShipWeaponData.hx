@@ -53,6 +53,12 @@ class ProjectileWeaponData extends ShipWeaponData {
     public var recoil:Float;
     public var recoilRotationAccelerator:Float;
 
+    public function new() {
+        super();
+        recoil = 1;
+        recoilRotationAccelerator = 0;
+    }
+
     public override function OnFire(shipPosition:Vector, slotData:ShipWeaponSlot, mov:ShipMovement, projectileSystem:ProjectileSystem) {
         // spawn projectile
         // do recoil on ship
@@ -65,5 +71,10 @@ class ProjectileWeaponData extends ShipWeaponData {
         projectile.ownerId = mov.entityId;
 
         projectileSystem.FireProjectile(projectile);
+
+        var recoilVector = mov.GetForward();
+        recoilVector.scale3(recoil);
+        mov.velocity = mov.velocity.sub(recoilVector);
+        mov.rotationalVelocity += recoilRotationAccelerator * slotData.spinFactor;
     }
 }

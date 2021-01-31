@@ -36,8 +36,12 @@ class ShipLocomotionSystem extends MovementSystem {
     private function UpdateMovementData(inp:InputState, movement:ShipMovement) {
         // velocity and rotational velocity should naturally decelerate
         var targetVelocity = movement.GetForward();
-        movement.velocity = GameMath.VecMoveTowards(movement.velocity, targetVelocity, NATURAL_DECEL * MovementSystem.SIM_FRAME_LENGTH);
-        movement.rotationalVelocity = GameMath.MoveTowards(movement.rotationalVelocity, 0, BASE_ROTATIONAL_ACCEL / 10);
+        if(!inp.Throttle && !inp.Shoot){
+            movement.velocity = GameMath.VecMoveTowards(movement.velocity, targetVelocity, NATURAL_DECEL * MovementSystem.SIM_FRAME_LENGTH);
+        }
+        if(!inp.Shoot){
+            movement.rotationalVelocity = GameMath.MoveTowards(movement.rotationalVelocity, 0, BASE_ROTATIONAL_ACCEL / 10);
+        }
 
         if (inp.Throttle) {
             targetVelocity.scale3(MAX_SPEED);

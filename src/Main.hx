@@ -132,10 +132,10 @@ class Main extends hxd.App {
         var player2Id = MakePlayerEntity(300, 300);
 
         var slots = new Array<ShipWeaponSlot>();
-        slots.push(new ShipWeaponSlot(new Vector(25, 0)));
-        slots.push(new ShipWeaponSlot(new Vector(-25, 0)));
-        slots.push(new ShipWeaponSlot(new Vector(50, 0)));
-        slots.push(new ShipWeaponSlot(new Vector(-50, 0)));
+        slots.push(new ShipWeaponSlot(new Vector(25, 0), 0.5));
+        slots.push(new ShipWeaponSlot(new Vector(-25, 0), -0.5));
+        slots.push(new ShipWeaponSlot(new Vector(50, 0), 1));
+        slots.push(new ShipWeaponSlot(new Vector(-50, 0), -1));
 
         GameData.inventories[player1Id] = new ShipInventory();
         GameData.inventories[player1Id].InitializeWeaponSlots(slots);
@@ -183,6 +183,8 @@ class Main extends hxd.App {
         lilGun.tile = hxd.Res.mothership.toTile();
         lilGun.tile.center();
         lilGun.tileScale = 1.0/25.0;
+        lilGun.recoil = 50;
+        lilGun.recoilRotationAccelerator = 5;
 
         var bigGun = new ProjectileWeaponData();
         bigGun.cooldown = 60;
@@ -190,6 +192,8 @@ class Main extends hxd.App {
         bigGun.tile = hxd.Res.mothership.toTile();
         bigGun.tile.center();
         bigGun.tileScale = 1.0/15.0;
+        bigGun.recoil = 100;
+        bigGun.recoilRotationAccelerator = 25;
 
         /*
         var prize = new ShipWeaponData();

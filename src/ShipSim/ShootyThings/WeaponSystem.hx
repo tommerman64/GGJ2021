@@ -28,7 +28,7 @@ class WeaponSystem extends MovementSystem {
         super();
         if (s_baseWeaponData == null) {
             s_baseWeaponData = new ProjectileWeaponData();
-            s_baseWeaponData.cooldown = 6;
+            s_baseWeaponData.cooldown = 45;
         }
         _cooldowns = new Map<EntityId, Array<Int>>();
     }
@@ -160,7 +160,7 @@ class WeaponSystem extends MovementSystem {
 
 
         if (_baseWeaponCooldown <= 0 && !hasWeapons) {
-            s_baseWeaponData.OnFire(pos, new ShipWeaponSlot(new Vector()), mov, _projectileSystem);
+            s_baseWeaponData.OnFire(pos, new ShipWeaponSlot(new Vector(), 0), mov, _projectileSystem);
             _baseWeaponCooldown = s_baseWeaponData.cooldown;
         }
     }
