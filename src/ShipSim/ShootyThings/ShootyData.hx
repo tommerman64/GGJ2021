@@ -14,7 +14,7 @@ class ProjectileData {
     public var speed:Float;
     public var ownerId:EntityId;
 
-    public function new(eId:EntityId)
+    public function new(eId:EntityId = -1)
     {
         entityId = eId;
         position = new Point();

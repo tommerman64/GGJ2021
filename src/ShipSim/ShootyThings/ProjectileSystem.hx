@@ -1,5 +1,8 @@
 package shipSim.shootyThings;
 
+import h3d.Vector;
+import haxe.Log;
+import SimEntityReps.ProjectileEntityRepresentation;
 import shipSim.shootyThings.ShootyData.ProjectileData;
 import h2d.col.Point;
 import shipSim.physics.PhysData.ColliderData;
@@ -13,12 +16,19 @@ class ProjectileSystem extends SimSystem {
     var _activeProjectiles:Array<ProjectileData>;
     var _shootables:Array<Shootable>;
     var _colliderData:Map<EntityId, ColliderData>;
+    var _projectileRepresentations: Map<EntityId, ProjectileEntityRepresentation>;
     var _spawner:SpawnSystem;
+    var _positionMax:Vector;
 
     public function new() {
         super();
-        _activeProjectiles = new Array<ProjectileData>();
         _shootables = new Array<Shootable>();
+        _activeProjectiles = new Array<ProjectileData>();
+        _positionMax = new Vector();
+    }
+
+    public function SetProjectileRepresentations(projectiles: Map<EntityId, ProjectileEntityRepresentation>){
+        _projectileRepresentations = projectiles;
     }
 
     public function SetColliderData(colliderData:Map<EntityId, ColliderData>){
@@ -27,6 +37,11 @@ class ProjectileSystem extends SimSystem {
 
     public function SetSpawner(spawner:SpawnSystem){
         _spawner = spawner;
+    }
+
+    public function SetPlayfieldSize(x:Float, y:Float) {
+        _positionMax.x = x;
+        _positionMax.y = y;
     }
 
     public override function Init(entities:Array<Entity>) {
@@ -52,6 +67,18 @@ class ProjectileSystem extends SimSystem {
         }
     }
 
+    public override function EarlyTick() {
+        for(projectile in _activeProjectiles){
+            projectile.position.x += projectile.direction.x * projectile.speed;
+            projectile.position.y += projectile.direction.y * projectile.speed;
+
+            if (projectile.position.x < 0 || projectile.position.x > _positionMax.x
+                || projectile.position.y < 0 || projectile.position.y > _positionMax.y) {
+                _sim.DestroyEntity(projectile.entityId);
+            }
+        }
+    }
+
     public override function LateTick() {
         for(shootable in _shootables){
             if(_colliderData.exists(shootable.entityId)){
@@ -69,6 +96,8 @@ class ProjectileSystem extends SimSystem {
         var projectile= new Projectile();
         _spawner.SpawnEntity(projectile, projectileData.position.x, projectileData.position.y);
         projectileData.entityId = projectile.GetId();
+        Log.trace(projectileData.position);
+        _projectileRepresentations[projectile.GetId()].SetProjectileData(projectileData);
         _activeProjectiles.push(projectileData);
     }
 }

@@ -1,4 +1,5 @@
 package shipSim.shootyThings;
+import shipSim.shootyThings.ShootyData.ProjectileData;
 import h2d.Bitmap;
 import h2d.Object;
 import h2d.Tile;
@@ -19,7 +20,7 @@ class ShipWeaponData {
     public function new() {
     }
 
-    public function OnFire(shipPosition: Vector, slotData:ShipWeaponSlot, mov:ShipMovement) {
+    public function OnFire(shipPosition: Vector, slotData:ShipWeaponSlot, mov:ShipMovement, projectileSystem:ProjectileSystem) {
         Log.trace("Boom");
     }
 
@@ -34,8 +35,16 @@ class ProjectileWeaponData extends ShipWeaponData {
     public var recoil:Float;
     public var recoilRotationAccelerator:Float;
 
-    public override function OnFire(shipPosition:Vector, slotData:ShipWeaponSlot, mov:ShipMovement) {
+    public override function OnFire(shipPosition:Vector, slotData:ShipWeaponSlot, mov:ShipMovement, projectileSystem:ProjectileSystem) {
         // spawn projectile
         // do recoil on ship
+        var projectile = new ProjectileData();
+        projectile.direction = mov.GetForward();
+        projectile.position.x = shipPosition.x + slotData.relativePosition.x;
+        projectile.position.y = shipPosition.y + slotData.relativePosition.y;
+        projectile.speed = 100;
+        projectile.ownerId = mov.entityId;
+
+        projectileSystem.FireProjectile(projectile);
     }
 }

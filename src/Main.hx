@@ -44,6 +44,7 @@ class Main extends hxd.App {
     var _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();
     var _crateRepresentations = new Map<EntityId, CrateEntityRepresentation>();
     var _pickupRepresentations = new Map<EntityId, PickupEntityRepresentation>();
+    var _projectileRepresentations = new Map<EntityId, ProjectileEntityRepresentation>();
 
     var spawnSystem:SpawnSystem;
 
@@ -90,13 +91,6 @@ class Main extends hxd.App {
         collisionResolver.InjectShipMovementData(GameData.shipMovement);
         collisionResolver.SetCollisionSystem(collisionSystem);
 
-        var weaponSystem = new WeaponSystem();
-        weaponSystem.SetInputSystem(inputSystem);
-        weaponSystem.InjectShipMovementData(GameData.shipMovement);
-        weaponSystem.InjectColliderData(GameData.colliderData);
-        weaponSystem.InjectPickupData(GameData.pickupData);
-        weaponSystem.SetWeaponLibrary(GameData.weaponLibrary);
-
         var pickupSystem = new ShipPickupSystem();
         pickupSystem.SetCollisionSystem(collisionSystem);
         pickupSystem.SetPickupData(GameData.pickupData);
@@ -105,15 +99,25 @@ class Main extends hxd.App {
 
         spawnSystem = new SpawnSystem();
         spawnSystem.SetColliderData(GameData.colliderData);
-        spawnSystem.SetRepresentations(_shipRepresentations, _crateRepresentations, _pickupRepresentations);
+        spawnSystem.SetRepresentations(_shipRepresentations, _crateRepresentations, _pickupRepresentations, _projectileRepresentations);
         spawnSystem.SetWeaponLibrary(GameData.weaponLibrary);
         spawnSystem.SetShipMovement(GameData.shipMovement);
         spawnSystem.SetPickupData(GameData.pickupData);
         spawnSystem.SetScene(s2d);
 
         var projectileSystem = new ProjectileSystem();
+        projectileSystem.SetProjectileRepresentations(_projectileRepresentations);
         projectileSystem.SetColliderData(GameData.colliderData);
         projectileSystem.SetSpawner(spawnSystem);
+        projectileSystem.SetPlayfieldSize(GameData.screenBounds.right, GameData.screenBounds.bottom);
+
+        var weaponSystem = new WeaponSystem();
+        weaponSystem.SetInputSystem(inputSystem);
+        weaponSystem.SetProjectileSystem(projectileSystem);
+        weaponSystem.InjectShipMovementData(GameData.shipMovement);
+        weaponSystem.InjectColliderData(GameData.colliderData);
+        weaponSystem.InjectPickupData(GameData.pickupData);
+        weaponSystem.SetWeaponLibrary(GameData.weaponLibrary);
 
         _sim = new Sim();
         _sim.AddSystem(inputSystem);
@@ -174,14 +178,14 @@ class Main extends hxd.App {
     }
 
     function InitializeWeaponLibrary() {
-        var lilGun = new ShipWeaponData();
+        var lilGun = new ProjectileWeaponData();
         lilGun.cooldown = 20;
         lilGun.weight = 5;
         lilGun.tile = hxd.Res.mothership.toTile();
         lilGun.tile.center();
         lilGun.tileScale = 1.0/25.0;
 
-        var bigGun = new ShipWeaponData();
+        var bigGun = new ProjectileWeaponData();
         bigGun.cooldown = 60;
         bigGun.weight = 50;
         bigGun.tile = hxd.Res.mothership.toTile();
@@ -211,6 +215,9 @@ class Main extends hxd.App {
                 if (visRep.GetObject().parent == null) {
                     s2d.addChild(visRep.GetObject());
                 }
+            }
+            for (visRep in _projectileRepresentations) {
+                visRep.UpdateRepresentation();
             }
         }
 

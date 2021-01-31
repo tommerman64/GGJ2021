@@ -1,5 +1,6 @@
 package shipSim;
 
+import SimEntityReps.ProjectileEntityRepresentation;
 import shipSim.physics.PhysData.ShipMovement;
 import shipSim.ShipInventory;
 import haxe.Log;
@@ -26,6 +27,7 @@ class SpawnSystem extends SimSystem {
     var _shipRepresentations: Map<EntityId, PlayerShipEntityRepresentation>;
     var _crateRepresentations: Map<EntityId, CrateEntityRepresentation>;
     var _pickupRepresentations: Map<EntityId, PickupEntityRepresentation>;
+    var _projectileRepresentations: Map<EntityId, ProjectileEntityRepresentation>;
 
     public function new() {
         super();
@@ -51,10 +53,12 @@ class SpawnSystem extends SimSystem {
     public function SetRepresentations(
         ships:Map<EntityId, PlayerShipEntityRepresentation>,
         crates: Map<EntityId, CrateEntityRepresentation>,
-        pickups: Map<EntityId, PickupEntityRepresentation>){
+        pickups: Map<EntityId, PickupEntityRepresentation>,
+        projectiles: Map<EntityId, ProjectileEntityRepresentation>){
             _shipRepresentations = ships;
             _crateRepresentations = crates;
             _pickupRepresentations = pickups;
+            _projectileRepresentations = projectiles;
     }
 
 
@@ -88,6 +92,10 @@ class SpawnSystem extends SimSystem {
             _scene.removeChild(_pickupRepresentations[entity].GetObject());
             _pickupRepresentations.remove(entity);
         }
+        if(_projectileRepresentations.exists(entity)){
+            _scene.removeChild(_projectileRepresentations[entity].GetObject());
+            _projectileRepresentations.remove(entity);
+        }
     }
 
 
@@ -103,9 +111,17 @@ class SpawnSystem extends SimSystem {
         if(entity.GetSystemTags().contains("Pickup")){
             InitializePickup(entity);
         }
+        if(entity.GetSystemTags().contains("Projectile")){
+            InitializeProjectile(entity);
+        }
     }
 
     function GenerateColliderData(entity:Entity, x:Float, y:Float) {
+        // Projectiles don't use the collision system
+        if(entity.GetSystemTags().contains("Projectile")) {
+            return;
+        }
+
         // Make Collider Data
         var collider:ColliderData = new ColliderData();
         collider.obstacleCollisions = new Array<EntityId>();
@@ -179,5 +195,17 @@ class SpawnSystem extends SimSystem {
         visRep.InitFromGameData(_colliderData, _pickupData);
         visRep.InjectPlayerReps(_shipRepresentations);
         _pickupRepresentations[entity.GetId()] = visRep;
+    }
+
+    function InitializeProjectile(entity:Entity) {
+        // create object in hxd scene
+        var obj = new h2d.Object(_scene);
+        var tile = hxd.Res.spacecrate.toTile();
+        tile = tile.center();
+        var bmp = new h2d.Bitmap(tile, obj);
+        bmp.scale(1.0/5.0);
+
+        var visRep = new ProjectileEntityRepresentation(entity.GetId(), obj);
+        _projectileRepresentations[entity.GetId()] = visRep;
     }
 }
