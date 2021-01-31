@@ -116,7 +116,7 @@ class PickupEntityRepresentation extends EnityRepresentation {
             _parent = null;
             _obj.x = _collider.collider.x;
             _obj.y = _collider.collider.y;
-            Log.trace(_collider.collider);
+            // Log.trace(_collider.collider);
             _obj.rotate(Math.PI / 300);
         }
     }

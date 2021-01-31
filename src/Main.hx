@@ -92,6 +92,8 @@ class Main extends hxd.App {
         weaponSystem.SetInputSystem(inputSystem);
         weaponSystem.InjectShipMovementData(GameData.shipMovement);
         weaponSystem.InjectColliderData(GameData.colliderData);
+        weaponSystem.InjectPickupData(GameData.pickupData);
+        weaponSystem.SetWeaponLibrary(GameData.weaponLibrary);
 
         var pickupSystem = new ShipPickupSystem();
         pickupSystem.SetCollisionSystem(collisionSystem);
@@ -129,7 +131,6 @@ class Main extends hxd.App {
         GameData.inventories[player2Id].InitializeWeaponSlots(slots);
 
         pickupSystem.SetInventories(GameData.inventories);
-
         weaponSystem.SetInventory(GameData.inventories);
         InitializeWeaponLibrary();
 

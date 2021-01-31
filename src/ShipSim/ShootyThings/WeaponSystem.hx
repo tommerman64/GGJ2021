@@ -1,4 +1,5 @@
 package shipSim.shootyThings;
+import shipSim.ShipInventory.PickupData;
 import shipSim.shootyThings.ShipWeaponData.WeaponLibrary;
 import haxe.Log;
 import shipSim.ShipInventory.ShipWeaponSlot;
@@ -19,6 +20,8 @@ class WeaponSystem extends MovementSystem {
 
     var _inventories:Map<EntityId, ShipInventory>;
     var _colliderObjects: Map<EntityId,ColliderData>;
+    var _pickupData:Map<EntityId,PickupData>;
+    var _weaponLib:WeaponLibrary;
 
     public function new() {
         super();
@@ -31,6 +34,14 @@ class WeaponSystem extends MovementSystem {
 
     public function InjectColliderData(col:Map<EntityId,ColliderData>) {
         _colliderObjects = col;
+    }
+
+    public function SetWeaponLibrary(lib:WeaponLibrary) {
+        _weaponLib = lib;
+    }
+
+    public function InjectPickupData(pu:Map<EntityId,PickupData>) {
+        _pickupData = pu;
     }
 
     public function SetInputSystem(inpSys:InputSystem) {
@@ -94,9 +105,19 @@ class WeaponSystem extends MovementSystem {
         }
     }
 
-    function GetWeapon(index:Int) : ShipWeaponData {
+    function GetWeapon(inventory:ShipInventory, index:Int) : ShipWeaponData {
         // Should be getting this from the player inventories
-        return s_baseWeaponData;
+        if (_pickupData == null) {
+            return s_baseWeaponData;
+        }
+
+        if (_weaponLib == null) {
+            return s_baseWeaponData;
+        }
+
+        var weaponEntityId = inventory.weaponEntityIds[index];
+        var pickupIndex = _pickupData[weaponEntityId].GetWeaponLibIndex();
+        return _weaponLib[pickupIndex];
     }
 
     function GetCooldown(playerId:EntityId, weaponIndex:Int) :Int
@@ -112,10 +133,7 @@ class WeaponSystem extends MovementSystem {
         var mov = FindMovementData(playerId);
         var pos = GetPlayerPosition(playerId);
 
-        if (_baseWeaponCooldown <= 0) {
-            s_baseWeaponData.OnFire(pos, new ShipWeaponSlot(new Vector()), mov);
-            _baseWeaponCooldown = s_baseWeaponData.cooldown;
-        }
+        var hasWeapons:Bool = false;
 
         var inventory = _inventories[playerId];
         var slotIndex = 0;
@@ -123,13 +141,21 @@ class WeaponSystem extends MovementSystem {
             if (weapon == 0) {
                 continue;
             }
+
+            hasWeapons = true;
             var weaponSlot = inventory.weaponSlots[slotIndex];
             if (GetCooldown(playerId, slotIndex) <= 0) {
                 Log.trace("shooting from weapon slot" + slotIndex);
-                GetWeapon(slotIndex).OnFire(pos, weaponSlot, mov);
-                _cooldowns[playerId][slotIndex] = GetWeapon(slotIndex).cooldown;
+                GetWeapon(inventory, slotIndex).OnFire(pos, weaponSlot, mov);
+                _cooldowns[playerId][slotIndex] = GetWeapon(inventory, slotIndex).cooldown;
             }
             slotIndex++;
+        }
+
+
+        if (_baseWeaponCooldown <= 0 && !hasWeapons) {
+            s_baseWeaponData.OnFire(pos, new ShipWeaponSlot(new Vector()), mov);
+            _baseWeaponCooldown = s_baseWeaponData.cooldown;
         }
     }
 }

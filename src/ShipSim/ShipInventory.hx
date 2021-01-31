@@ -90,7 +90,7 @@ class ShipInventory {
     }
 
     public function HasOpenSlots(): Bool {
-        Log.trace(weaponEntityIds[0]);
+        // Log.trace(weaponEntityIds[0]);
         return weaponEntityIds.indexOf(0) != -1;
     }
 

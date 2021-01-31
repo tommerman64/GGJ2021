@@ -43,7 +43,7 @@ class ShipCollisionResolver extends MovementSystem {
             positionDiff.normalize();
             positionDiff.scale3(PVP_BOUNCE);
             GameMath.AddInPlace(p1Movement.bounce, positionDiff);
-            Log.trace("pvp collision " + activeCollision.entOne);
+            // Log.trace("pvp collision " + activeCollision.entOne);
 
             RecalculateVelocity(positionDiff.getNormalized(), p1Movement);
         }
@@ -62,7 +62,7 @@ class ShipCollisionResolver extends MovementSystem {
 
             positionDiff.scale3(PVE_BOUNCE);
             GameMath.AddInPlace(p1Movement.bounce, positionDiff);
-            Log.trace("pve collision " + activeCollision.entOne);
+            // Log.trace("pve collision " + activeCollision.entOne);
 
             RecalculateVelocity(positionDiff.getNormalized(), p1Movement);
 
