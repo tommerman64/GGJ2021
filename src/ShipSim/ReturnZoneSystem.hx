@@ -63,7 +63,7 @@ class ReturnZoneSystem extends SimSystem {
                         _gameEnd = true;
                     }
                     else {
-                        hxd.Res.score.play();
+                        hxd.Res.score.play().priority = 2;
                     }
                     _sim.DestroyEntity(eId);
                     _pickupEntityIds.remove(eId);

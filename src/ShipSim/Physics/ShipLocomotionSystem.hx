@@ -1,5 +1,6 @@
 package shipSim.physics;
 
+import hxd.Pixels.Channel;
 import hxd.snd.ChannelGroup;
 import h3d.Vector;
 import shipSim.Input.InputState;
@@ -39,7 +40,7 @@ class ShipLocomotionSystem extends MovementSystem {
         _anyPlayerBoosting = false;
         _boostAudio = new hxd.snd.ChannelGroup("booster");
         _boostAudio.volume = 0;
-        hxd.Res.boostLoop.play(true, 1, _boostAudio);
+        hxd.Res.boostLoop.play(true, 1, _boostAudio).priority = 1;
     }
 
     private function UpdateMovementData(inp:InputState, movement:ShipMovement) {

@@ -65,11 +65,11 @@ class ShootableCrate extends Shootable {
                     y = colliderData.collider.y;
                 }
                 spawnSystem.SpawnEntity(new Pickup(), x, y);
-                hxd.Res.crateBreak.play();
+                hxd.Res.crateBreak.play().priority = 1;
                 sim.DestroyEntity(entityId);
             }
             else{
-                hxd.Res.cratehit.play();
+                hxd.Res.cratehit.play().priority = 1;
             }
         }
     }
@@ -84,7 +84,7 @@ class ShootableShip extends Shootable {
     }
 
     public override function TakeHit(projectile:ProjectileData): Void {
-        hxd.Res.cratehit.play();
+        hxd.Res.cratehit.play().priority = 1;
         pickupSystem.JettisonRandomWeaponOrArmor(entityId);
     }
 

@@ -1,3 +1,5 @@
+import hxd.snd.SoundGroup;
+import haxe.Resource;
 import hxd.snd.Manager;
 import hxd.Key;
 import hxd.Rand;
@@ -30,6 +32,8 @@ class Main extends hxd.App {
 
     static var SIM_FRAME_TIME =  1.0/60.0;
     var _music:hxd.snd.Channel;
+    var _musicGroup: hxd.snd.ChannelGroup;
+    var _musicSG: SoundGroup;
 
     // sim and systems
     var _sim:jamSim.Sim;
@@ -66,10 +70,13 @@ class Main extends hxd.App {
 
         if (hxd.res.Sound.supportedFormat(Mp3) || hxd.res.Sound.supportedFormat(OggVorbis))
         {
-            var res:hxd.res.Sound = hxd.Res.babycobraz;
-            _music = res.play(true);
+            _musicGroup = new hxd.snd.ChannelGroup("music");
+            _musicSG = new hxd.snd.SoundGroup("musicSg");
+            var res:hxd.res.Sound = hxd.Res.menuMusic;
+            _music = res.play(true, 1, _musicGroup, _musicSG);
+            _music.priority = 10; 
             // remove this line when shipping
-            _music.volume = 0;
+            // _music.volume = 0;
         }
 
         _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();
@@ -103,7 +110,17 @@ class Main extends hxd.App {
         }
     }
 
+    function GetBattleMusic(): hxd.res.Sound {
+        if (hxd.res.Sound.supportedFormat(Mp3) || hxd.res.Sound.supportedFormat(OggVorbis))
+        {
+                return hxd.Res.battleMusic;
+        }
+        return null;
+    }
+
     function StartGame() {
+        _music.stop();
+        _music = GetBattleMusic().play(true, 1, _musicGroup, _musicSG);
         var inputSystem = new InputSystem();
         inputSystem.MapKeys(["A".code, "S".code, "D".code, "F".code, "G".code]);
         inputSystem.MapKeys(["J".code, "K".code, "L".code, "I".code, "O".code]);
@@ -313,9 +330,12 @@ class Main extends hxd.App {
         }
         else if (Key.isPressed("Y".code)) {
             EndRound(false);
+            return;
         }
 
-        dbgGraphics.clear();
+        if (dbgGraphics != null) {
+            dbgGraphics.clear();
+        }
         _timeToNextFrame -= dt;
         if (_timeToNextFrame <= 0) {
             _timeToNextFrame += SIM_FRAME_TIME;

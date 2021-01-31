@@ -218,7 +218,7 @@ class SpawnSystem extends SimSystem {
         if (!_hasSpawnedCrystal) {
             _hasSpawnedCrystal = _weaponLibrary[weaponIndex].isCrystal;
             if(_hasSpawnedCrystal){
-                hxd.Res.crystalSpawn.play();
+                hxd.Res.crystalSpawn.play().priority = 3;
             }
         }
 

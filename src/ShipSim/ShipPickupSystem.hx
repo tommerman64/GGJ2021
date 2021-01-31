@@ -136,7 +136,7 @@ class ShipPickupSystem extends SimSystem {
             if (_inputSystem.GetInputState(inpIndex).Jettison) {
                 var weaponId = _shipInventories[pId].DetachNextWeapon();
                 if(weaponId > 0){
-                    hxd.Res.jettison.play();
+                    hxd.Res.jettison.play().priority = 1;
                 }
                 while (weaponId > 0) {
                     // find weapon in pickup data using id
@@ -213,7 +213,7 @@ class ShipPickupSystem extends SimSystem {
             }
             if(canBePickedUp) {
                 var attachedSlot = _shipInventories[shipId].AttachWeaponToFirstOpenIndex(pickupId);
-                hxd.Res.pickup.play();
+                hxd.Res.pickup.play().priority = 1;
                 if(attachedSlot != null) {
                     _pickupData[pickupId].AttachToShip(shipId, attachedSlot);
                     _pickupDrifts.remove(pickupId);

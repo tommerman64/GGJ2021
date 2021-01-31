@@ -117,7 +117,7 @@ class ProjectileWeaponData extends ShipWeaponData {
 
         // Play the projectile sound
         if(sound != null) {
-            sound.play();
+            sound.play().priority = 1;
         }
     }
 }
