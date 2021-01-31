@@ -1,4 +1,5 @@
 package shipSim.shootyThings;
+import shipSim.shootyThings.ShipWeaponData.ProjectileWeaponData;
 import shipSim.ShipInventory.PickupData;
 import shipSim.shootyThings.ShipWeaponData.WeaponLibrary;
 import haxe.Log;
@@ -26,7 +27,7 @@ class WeaponSystem extends MovementSystem {
     public function new() {
         super();
         if (s_baseWeaponData == null) {
-            s_baseWeaponData = new ShipWeaponData();
+            s_baseWeaponData = new ProjectileWeaponData();
             s_baseWeaponData.cooldown = 6;
         }
         _cooldowns = new Map<EntityId, Array<Int>>();

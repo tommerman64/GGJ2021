@@ -1,5 +1,6 @@
 package shipSim.shootyThings;
 
+import shipSim.shootyThings.ShootyData.ShootableCrate;
 import h3d.Vector;
 import haxe.Log;
 import SimEntityReps.ProjectileEntityRepresentation;
@@ -52,8 +53,16 @@ class ProjectileSystem extends SimSystem {
     }
 
     public override function OnNewEntity(entity:Entity){
-        if(entity.GetSystemTags().contains("Crate")
-        || entity.GetSystemTags().contains("Player")) {
+        if(entity.GetSystemTags().contains("Crate")) {
+            var crate = new ShootableCrate(entity.GetId());
+            crate.spawnSystem = _spawner;
+            crate.sim = _sim;
+            if(_colliderData.exists(entity.GetId())){
+                crate.colliderData = _colliderData[entity.GetId()];
+            }
+            _shootables.push(crate);
+        }
+        if(entity.GetSystemTags().contains("Player")) {
             _shootables.push(new Shootable(entity.GetId()));
         }
     }
@@ -84,9 +93,11 @@ class ProjectileSystem extends SimSystem {
             if(_colliderData.exists(shootable.entityId)){
                 var collider = _colliderData[shootable.entityId].collider;
                 for(projectile in _activeProjectiles){
-                    if(collider.contains(projectile.position)){
-                        shootable.TakeHit(projectile);
-                        _sim.DestroyEntity(projectile.entityId);
+                    if(shootable.entityId != projectile.ownerId){
+                        if(collider.contains(projectile.position)){
+                            shootable.TakeHit(projectile);
+                            _sim.DestroyEntity(projectile.entityId);
+                        }
                     }
                 }
             }
