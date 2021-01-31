@@ -1,6 +1,7 @@
 import hxd.snd.openal.PitchDriver;
 import h2d.Bitmap;
 import h2d.Graphics;
+import shipSim.shootyThings.ProjectileSystem;
 import shipSim.shootyThings.ShipWeaponData;
 import shipSim.shootyThings.WeaponSystem;
 import shipSim.SpawnSystem;
@@ -110,6 +111,10 @@ class Main extends hxd.App {
         spawnSystem.SetPickupData(GameData.pickupData);
         spawnSystem.SetScene(s2d);
 
+        var projectileSystem = new ProjectileSystem();
+        projectileSystem.SetColliderData(GameData.colliderData);
+        projectileSystem.SetSpawner(spawnSystem);
+
         _sim = new Sim();
         _sim.AddSystem(inputSystem);
         _sim.AddSystem(locomotionSystem);
@@ -118,6 +123,7 @@ class Main extends hxd.App {
         _sim.AddSystem(weaponSystem);
         _sim.AddSystem(pickupSystem);
         _sim.AddSystem(spawnSystem);
+        _sim.AddSystem(projectileSystem);
 
         var player1Id = MakePlayerEntity(100, 100);
         var player2Id = MakePlayerEntity(300, 300);

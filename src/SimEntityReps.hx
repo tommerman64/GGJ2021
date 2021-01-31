@@ -1,3 +1,4 @@
+import shipSim.shootyThings.ShootyData.ProjectileData;
 import jamSim.Entity;
 import shipSim.ShipInventory.PickupData;
 import haxe.Log;
@@ -132,5 +133,17 @@ class PickupEntityRepresentation extends EnityRepresentation {
             }
         }
         return null;
+    }
+}
+
+class ProjectileEntityRepresentation extends EnityRepresentation {
+    var _projectileData:ProjectileData;
+
+    public function SetProjectileData(data:ProjectileData){
+        _projectileData = data;
+    }
+
+    public override function UpdateRepresentation() {
+        _obj.setPosition(_projectileData.position.x, _projectileData.position.y);
     }
 }

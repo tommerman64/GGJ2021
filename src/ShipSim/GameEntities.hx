@@ -22,3 +22,10 @@ class Pickup extends Entity
         return ["Pickup"];
     }
 }
+
+class Projectile extends Entity
+{
+    public override function GetSystemTags():Array<String> {
+        return ["Projectile"];
+    }
+}
