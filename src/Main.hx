@@ -61,27 +61,8 @@ class Main extends hxd.App {
 
     override function init() {
         super.init();
-        var backgroundTex = hxd.Res.spaaace.toTile();
-        var background = new h2d.Bitmap(backgroundTex, s2d);
-        background.scale(2/3);
-        background.alpha = 0.24;
-        _parallaxStars = new Array<h2d.Bitmap>();
-        var parallaxSeed = Rand.create();
-        for (i in 0...4) {
-            var tile = i % 2 == 0 ? hxd.Res.Stars1.toTile() : hxd.Res.Stars2.toTile();
-            _parallaxStars.push(new Bitmap(tile, s2d));
-            _parallaxStars[_parallaxStars.length - 1].alpha = parallaxSeed.rand();
-            _parallaxStars[_parallaxStars.length - 1].x = parallaxSeed.random(2*s2d.width) - s2d.width;
-            _parallaxStars[_parallaxStars.length - 1].rotation = parallaxSeed.rand() * Math.PI;
-        }
-
-
-        _framerateText = new h2d.Text(hxd.res.DefaultFont.get(), s2d);
-        _framerateText.textColor = 0xFFFFFF;
-
-        _framerateText.y = 20;
-        _framerateText.x = 20;
-        _framerateText.scale(2);
+        LoadStars();
+        LoadFramerateText();
 
         if (hxd.res.Sound.supportedFormat(Mp3) || hxd.res.Sound.supportedFormat(OggVorbis))
         {
@@ -94,7 +75,32 @@ class Main extends hxd.App {
         _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();
         _crateRepresentations = new Map<EntityId, CrateEntityRepresentation>();
         _pickupRepresentations = new Map<EntityId, PickupEntityRepresentation>();
+    }
 
+    function LoadFramerateText() {
+        _framerateText = new h2d.Text(hxd.res.DefaultFont.get(), s2d);
+        _framerateText.textColor = 0xFFFFFF;
+
+        _framerateText.y = 20;
+        _framerateText.x = 20;
+        _framerateText.scale(2);
+    }
+
+    function LoadStars() {
+        var backgroundTex = hxd.Res.spaaace.toTile();
+        var background = new h2d.Bitmap(backgroundTex, s2d);
+        background.scale(2/3);
+        background.alpha = 0.24;
+
+        _parallaxStars = new Array<h2d.Bitmap>();
+        var parallaxSeed = Rand.create();
+        for (i in 0...4) {
+            var tile = i % 2 == 0 ? hxd.Res.Stars1.toTile() : hxd.Res.Stars2.toTile();
+            _parallaxStars.push(new Bitmap(tile, s2d));
+            _parallaxStars[_parallaxStars.length - 1].alpha = parallaxSeed.rand();
+            _parallaxStars[_parallaxStars.length - 1].x = parallaxSeed.random(2*s2d.width) - s2d.width;
+            _parallaxStars[_parallaxStars.length - 1].rotation = parallaxSeed.rand() * Math.PI;
+        }
     }
 
     function StartGame() {
@@ -301,6 +307,10 @@ class Main extends hxd.App {
             }
             return;
         }
+        else if (Key.isPressed("Y".code)) {
+            EndRound(false);
+        }
+
         dbgGraphics.clear();
         _timeToNextFrame -= dt;
         if (_timeToNextFrame <= 0) {
@@ -323,7 +333,7 @@ class Main extends hxd.App {
 
         if (_returnZoneSys.HasGameEnded())
         {
-            // EndRound();
+            EndRound(true);
         }
 
         if (hxd.Key.isDown("5".code)) {
@@ -365,6 +375,43 @@ class Main extends hxd.App {
                 parallaxLayer.x = - s2d.width * 2;
             }
             parallaxSpeed += .35;
+        }
+    }
+
+    function EndRound(restart:Bool) {
+        _sim = null;
+        // clear GameData
+        GameData.shipMovement = new Array<ShipMovement>();
+        GameData.colliderData = new Map<EntityId, ColliderData>();
+        GameData.screenBounds = new Rect(0,0,1280,720);
+        GameData.inventories = new Map<EntityId, ShipInventory>();
+        GameData.weaponLibrary = new WeaponLibrary();
+        GameData.pickupData = new Map<EntityId, PickupData>();
+
+        // clear representations
+        _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();
+        _crateRepresentations = new Map<EntityId, CrateEntityRepresentation>();
+        _pickupRepresentations = new Map<EntityId, PickupEntityRepresentation>();
+        _projectileRepresentations = new Map<EntityId, ProjectileEntityRepresentation>();
+
+        // clear member systems
+        spawnSystem = null;
+        _returnZoneSys = null;
+
+        // dbg graphics and parallax stars
+        // var dbgGraphics : h2d.Graphics;
+        dbgGraphics = null;
+        _parallaxStars = null;
+
+        // clear s2d
+        // setScene2D(new h2d.Scene());
+        s2d = new h2d.Scene();
+
+        LoadStars();
+        LoadFramerateText();
+
+        if (restart) {
+            StartGame();
         }
     }
 
