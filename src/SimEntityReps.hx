@@ -164,6 +164,13 @@ class ProjectileEntityRepresentation extends EnityRepresentation {
 
     public function SetProjectileData(data:ProjectileData){
         _projectileData = data;
+        if (_projectileData.tile == null) {
+            _projectileData.tile = hxd.Res.laserBeam.toTile();
+        }
+
+        _projectileData.tile = _projectileData.tile.center();
+        var bmp = new h2d.Bitmap(_projectileData.tile, _obj);
+        bmp.scale(1.0/3.0);
     }
 
     public override function UpdateRepresentation(s2d:Object) {

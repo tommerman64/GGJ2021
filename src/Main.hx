@@ -216,7 +216,7 @@ class Main extends hxd.App {
         lilGun.weight = 5;
         lilGun.eqTile = hxd.Res.laserCannon.toTile();
         lilGun.eqTile = lilGun.eqTile.center();
-        lilGun.pickupTile = hxd.Res.orb.toTile();
+        lilGun.pickupTile = hxd.Res.pinkOrb.toTile();
         lilGun.pickupTile = lilGun.pickupTile.center();
         lilGun.tileScale = 1;
         lilGun.recoil = 10;
@@ -225,10 +225,11 @@ class Main extends hxd.App {
         var bigGun = new ProjectileWeaponData();
         bigGun.cooldown = 60;
         bigGun.weight = 50;
-        bigGun.eqTile = hxd.Res.mothership.toTile();
+        bigGun.eqTile = hxd.Res.fatman.toTile();
+        bigGun.projectileTex = hxd.Res.fatman.toTile();
         bigGun.eqTile = bigGun.eqTile.center();
-        bigGun.tileScale = 1.0/15.0;
-        bigGun.pickupTile = hxd.Res.orb.toTile();
+        bigGun.tileScale = .8;
+        bigGun.pickupTile = hxd.Res.blueOrb.toTile();
         bigGun.pickupTile = bigGun.pickupTile.center();
         bigGun.recoil = 40;
         bigGun.recoilRotationAccelerator = 10;

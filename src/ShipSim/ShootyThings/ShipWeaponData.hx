@@ -74,6 +74,7 @@ class ShipWeaponData {
 class ProjectileWeaponData extends ShipWeaponData {
     public var recoil:Float;
     public var recoilRotationAccelerator:Float;
+    public var projectileTex:Tile;
 
     public function new() {
         super();
@@ -92,6 +93,7 @@ class ProjectileWeaponData extends ShipWeaponData {
         projectile.speed = 40;
         projectile.ownerId = mov.entityId;
         projectile.rotation = mov.rotation;
+        projectile.tile = projectileTex;
 
         projectileSystem.FireProjectile(projectile);
 

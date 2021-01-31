@@ -1,5 +1,6 @@
 package shipSim.shootyThings;
 
+import h2d.Tile;
 import jamSim.Sim;
 import shipSim.physics.PhysData.ColliderData;
 import h2d.col.Collider;
@@ -19,6 +20,7 @@ class ProjectileData {
     public var ownerId:EntityId;
     public var damage:Int;
     public var rotation:Float;
+    public var tile:Tile;
 
     public function new(eId:EntityId = -1)
     {

@@ -214,10 +214,6 @@ class SpawnSystem extends SimSystem {
     function InitializeProjectile(entity:Entity) {
         // create object in hxd scene
         var obj = new h2d.Object(_scene);
-        var tile = hxd.Res.laserBeam.toTile();
-        tile = tile.center();
-        var bmp = new h2d.Bitmap(tile, obj);
-        bmp.scale(1.0/3.0);
 
         var visRep = new ProjectileEntityRepresentation(entity.GetId(), obj);
         _projectileRepresentations[entity.GetId()] = visRep;
