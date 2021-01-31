@@ -21,6 +21,7 @@ class PickupData {
     var _parentEntityId:EntityId;
     var _slot:ShipWeaponSlot;
 
+
     public function new(i:Int) {
         _weaponLibraryIndex = i;
         _parentEntityId = 0;
@@ -33,6 +34,7 @@ class PickupData {
 
     public function DetachFromShip() {
         _parentEntityId = 0;
+        _slot = null;
     }
 
     public function GetWeaponLibIndex() {
@@ -94,6 +96,16 @@ class ShipInventory {
         return weaponEntityIds.indexOf(0) != -1;
     }
 
+    public function IsEmpty() : Bool {
+        for (i in 0...weaponEntityIds.length) {
+            if (weaponEntityIds[i] > 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function ContainsWeapon(weapon:EntityId): Bool {
         return weaponEntityIds.indexOf(weapon) != -1;
     }
@@ -108,9 +120,16 @@ class ShipInventory {
         }
     }
 
-    public function Jettison() {
-        for (weapon in weaponEntityIds) {
-            DetachWeapon(weapon);
+    // returns the entity id of the newly detached weapon
+    public function DetachNextWeapon() : EntityId {
+        for (i in 0...weaponEntityIds.length) {
+            if (weaponEntityIds[i] > 0) {
+                var weaponId = weaponEntityIds[i];
+                DetachWeapon(weaponId);
+                return weaponId;
+            }
         }
+        return -1;
     }
+
 }

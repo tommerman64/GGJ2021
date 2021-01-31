@@ -1,3 +1,4 @@
+import hxd.snd.openal.PitchDriver;
 import h2d.Bitmap;
 import h2d.Graphics;
 import shipSim.shootyThings.ShipWeaponData;
@@ -98,6 +99,8 @@ class Main extends hxd.App {
         var pickupSystem = new ShipPickupSystem();
         pickupSystem.SetCollisionSystem(collisionSystem);
         pickupSystem.SetPickupData(GameData.pickupData);
+        pickupSystem.InjectColliderData(GameData.colliderData);
+        pickupSystem.SetInputSystem(inputSystem);
 
         spawnSystem = new SpawnSystem();
         spawnSystem.SetColliderData(GameData.colliderData);
@@ -199,6 +202,9 @@ class Main extends hxd.App {
             }
             for (visRep in _pickupRepresentations) {
                 visRep.UpdateRepresentation();
+                if (visRep.GetObject().parent == null) {
+                    s2d.addChild(visRep.GetObject());
+                }
             }
         }
 

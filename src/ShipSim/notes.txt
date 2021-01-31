@@ -1,8 +1,8 @@
 needed systems:
 A) ship movement and collision DONE
-B) bullets and hit events - Tom
-C) Pickup and drop off - Colby
-D) Attachment and inventory
+B) bullets and hit events - Colby
+C) Pickup and drop off - Tom
+D) Attachment and inventory DONE
 
 ABC all need to share transform/bounding box info. So that will probably all be one shared cache that only is written to by movement system
 
