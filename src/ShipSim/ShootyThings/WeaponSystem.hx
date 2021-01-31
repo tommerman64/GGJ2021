@@ -4,7 +4,6 @@ import shipSim.shootyThings.ShipWeaponData.WeaponLibrary;
 import haxe.Log;
 import shipSim.ShipInventory.ShipWeaponSlot;
 import h3d.Vector;
-import hxd.fmt.hmd.Data.Index;
 import shipSim.physics.PhysData;
 import shipSim.physics.MovementSystem;
 import jamSim.Entity;
