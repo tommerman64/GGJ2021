@@ -41,16 +41,20 @@ class GameMath
     }
 
     public static function GetSlotAbsolutePosition(shipPosition: Vector, slotData:ShipWeaponSlot, mov:ShipMovement) : Vector{
-        var relativePos = slotData.relativePosition;
+        var relativePos = slotData.relativePosition.clone();
         GameMath.RotateInPlace(relativePos, mov.rotation);
         GameMath.AddInPlace(relativePos, shipPosition);
-
         return relativePos;
     }
 
     public static function RotateInPlace(v1:Vector, rot:Float) {
-        var x = hxd.Math.cos(rot) * v1.x - Math.sin(rot) * v1.y;
-        var y = hxd.Math.sin(rot) * v1.x + Math.cos(rot) * v1.y;
+        var cos = hxd.Math.cos(rot);
+        var sin =  hxd.Math.sin(rot);
+        var x =  cos * v1.x - sin * v1.y;
+        var y = sin * v1.x + cos * v1.y;
+
+        v1.x = x;
+        v1.y = y;
     }
 
     public static function AddInPlace(v1:Vector, v2:Vector) {

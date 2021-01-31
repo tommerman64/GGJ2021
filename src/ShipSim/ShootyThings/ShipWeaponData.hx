@@ -40,8 +40,9 @@ class ProjectileWeaponData extends ShipWeaponData {
         // do recoil on ship
         var projectile = new ProjectileData();
         projectile.direction = mov.GetForward();
-        projectile.position.x = shipPosition.x + slotData.relativePosition.x;
-        projectile.position.y = shipPosition.y + slotData.relativePosition.y;
+        var projectileStart = GameMath.GetSlotAbsolutePosition(shipPosition, slotData, mov);
+        projectile.position.x = projectileStart.x;
+        projectile.position.y = projectileStart.y;
         projectile.speed = 40;
         projectile.ownerId = mov.entityId;
 
