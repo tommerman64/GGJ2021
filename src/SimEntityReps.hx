@@ -1,3 +1,5 @@
+import shipSim.shootyThings.ShipWeaponData;
+import format.as1.Constants.ActionCode;
 import shipSim.shootyThings.ShootyData.ProjectileData;
 import jamSim.Entity;
 import shipSim.ShipInventory.PickupData;
@@ -86,11 +88,19 @@ class PickupEntityRepresentation extends EnityRepresentation {
     var _parent : EnityRepresentation;
     var _pickupData:PickupData;
     var _allPlayerReps:Map<EntityId, PlayerShipEntityRepresentation>;
+    var _equippedDrawable:Drawable;
+    var _floatingDrawable:Drawable;
 
-    public function InitFromGameData(col:Map<EntityId,ColliderData>, pickupData:Map<EntityId,PickupData>) : Bool {
+    public function InitFromGameData(col:Map<EntityId,ColliderData>, pickupData:Map<EntityId,PickupData>, eqDraw:Drawable, flDraw:Drawable) : Bool {
         _collider = col[_entityId];
         _pickupData = pickupData[_entityId];
         _parent = null;
+        _equippedDrawable = eqDraw;
+        _floatingDrawable = flDraw;
+
+        _obj.addChild(_equippedDrawable);
+        _obj.addChild(_floatingDrawable);
+        _floatingDrawable.visible = false;
         return _collider != null;
     }
 
@@ -102,6 +112,8 @@ class PickupEntityRepresentation extends EnityRepresentation {
         if(_pickupData.GetParentId() != 0) {
             // we are supposed to have a parent. lets make sure we do
             var desiredParent = FindParentRepresentation(_pickupData.GetParentId());
+            _equippedDrawable.visible = true;
+            _floatingDrawable.visible = false;
 
             if(_parent != desiredParent) {
                 if(_obj.parent != null) {
@@ -117,6 +129,8 @@ class PickupEntityRepresentation extends EnityRepresentation {
         }
         else {
             // we are not supposed to have a parent, make sure we don't
+            _equippedDrawable.visible = false;
+            _floatingDrawable.visible = true;
             if (_parent != null) {
                 if (_obj.parent == _parent.GetObject()) {
                     _obj.parent.removeChild(_obj);
@@ -154,5 +168,6 @@ class ProjectileEntityRepresentation extends EnityRepresentation {
 
     public override function UpdateRepresentation(s2d:Object) {
         _obj.setPosition(_projectileData.position.x, _projectileData.position.y);
+        _obj.rotation = _projectileData.rotation;
     }
 }

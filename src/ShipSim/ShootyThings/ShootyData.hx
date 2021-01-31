@@ -18,6 +18,7 @@ class ProjectileData {
     public var speed:Float;
     public var ownerId:EntityId;
     public var damage:Int;
+    public var rotation:Float;
 
     public function new(eId:EntityId = -1)
     {
@@ -26,6 +27,7 @@ class ProjectileData {
         direction = new Vector();
         speed = 0;
         damage = 1;
+        rotation = 0;
     }
 }
 

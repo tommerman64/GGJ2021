@@ -184,7 +184,7 @@ class SpawnSystem extends SimSystem {
     function InitializeCrate(entity:Entity) {
         // create object in hxd scene
         var obj = new h2d.Object(_scene);
-        var tile = hxd.Res.spacecrate.toTile();
+        var tile = _random.random(2) > 0 ? hxd.Res.spacecrate.toTile() : hxd.Res.crate2.toTile();
         tile = tile.center();
         var bmp = new h2d.Bitmap(tile, obj);
         bmp.scale(2.0/3.0);
@@ -201,12 +201,12 @@ class SpawnSystem extends SimSystem {
         // Roll a random weapon
         var weaponIndex = _random.random(_weaponLibrary.length);
 
-        _weaponLibrary[weaponIndex].AttachDrawableToObject(obj);
-
         _pickupData[entity.GetId()] = new PickupData(weaponIndex);
 
         var visRep = new PickupEntityRepresentation(entity.GetId(), obj);
-        visRep.InitFromGameData(_colliderData, _pickupData);
+        visRep.InitFromGameData(_colliderData, _pickupData,
+            _weaponLibrary[weaponIndex].GetDrawable(true),
+            _weaponLibrary[weaponIndex].GetDrawable(false));
         visRep.InjectPlayerReps(_shipRepresentations);
         _pickupRepresentations[entity.GetId()] = visRep;
     }
@@ -214,10 +214,10 @@ class SpawnSystem extends SimSystem {
     function InitializeProjectile(entity:Entity) {
         // create object in hxd scene
         var obj = new h2d.Object(_scene);
-        var tile = hxd.Res.spacecrate.toTile();
+        var tile = hxd.Res.laserBeam.toTile();
         tile = tile.center();
         var bmp = new h2d.Bitmap(tile, obj);
-        bmp.scale(1.0/5.0);
+        bmp.scale(1.0/3.0);
 
         var visRep = new ProjectileEntityRepresentation(entity.GetId(), obj);
         _projectileRepresentations[entity.GetId()] = visRep;

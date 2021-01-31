@@ -1,4 +1,5 @@
 package shipSim.shootyThings;
+import h2d.Drawable;
 import shipSim.shootyThings.ShootyData;
 import h2d.Bitmap;
 import h2d.Object;
@@ -14,9 +15,16 @@ typedef WeaponLibrary = Array<ShipWeaponData>;
 class ShipWeaponData {
     public var weight:Float;
     public var cooldown:Int;
-    public var tile:Tile;
+
+    //Drawable Info for visRep
     public var tileScale:Float;
-    public var animName:String;
+    public var eqTile:Tile;
+    public var eqAnimName:String;
+
+    public var pickupTile:Tile;
+    public var pickupAnimName:String;
+
+
 
     public function new() {
     }
@@ -25,27 +33,41 @@ class ShipWeaponData {
         Log.trace("Boom");
     }
 
-    public function AttachDrawableToObject(obj:Object) : Void {
-        if (tile != null) {
-            AttachBmpToObject(obj);
-            return;
+    public function GetDrawable(equipped:Bool) : Drawable {
+        if (equipped) {
+            if (eqTile != null) {
+                return GetEquippedBmp();
+            }
+    
+            return GetAnim(eqAnimName);
         }
-
-        LoadAndAttachAnim(obj);
+        else {
+            if (eqTile != null) {
+                return GetPickupBmp();
+            }
+            return GetAnim(pickupAnimName);
+        }
+        
     }
 
-    public function AttachBmpToObject(obj:Object) : Void {
-        var bmp = new h2d.Bitmap(tile, obj);
+    public function GetEquippedBmp() : Drawable {
+        var bmp = new h2d.Bitmap(eqTile);
         bmp.scale(tileScale);
+        return bmp;
     }
 
-    public function LoadAndAttachAnim(obj:Object) : Void {
+    public function GetPickupBmp() : Drawable {
+        var bmp = new h2d.Bitmap(pickupTile);
+        bmp.scale(tileScale);
+        return bmp;
+    }
+
+    public function GetAnim(animName:String) : Drawable {
         var texture = hxd.Res.loader.load("" +animName + ".png").toTexture();
         var jsonData = hxd.Res.loader.load("" +animName + "Map.json");
         var anim = ResourceLoading.LoadAnimFromSpriteSheet(texture, jsonData);
         anim.scale(tileScale);
-
-        obj.addChild(anim);
+        return anim;
     }
 }
 
@@ -69,6 +91,7 @@ class ProjectileWeaponData extends ShipWeaponData {
         projectile.position.y = projectileStart.y;
         projectile.speed = 40;
         projectile.ownerId = mov.entityId;
+        projectile.rotation = mov.rotation;
 
         projectileSystem.FireProjectile(projectile);
 
