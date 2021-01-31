@@ -1,4 +1,5 @@
 import h2d.col.Bounds;
+import shipSim.physics.MovementSystem;
 import h2d.Bitmap;
 import h2d.Graphics;
 import shipSim.shootyThings.ProjectileSystem;
@@ -151,9 +152,19 @@ class Main extends hxd.App {
         weaponSystem.SetInventory(GameData.inventories);
         InitializeWeaponLibrary();
 
+        // Create player ships
         var bounds = GameData.screenBounds;
-        MakePlayerEntity(bounds.left + ((bounds.right - bounds.left) * 0.15) , bounds.bottom - ((bounds.bottom - bounds.top) * 0.15));
-        MakePlayerEntity(bounds.right - ((bounds.right - bounds.left) * 0.15) , bounds.top + ((bounds.bottom - bounds.top) * 0.15));
+        var player1 = MakePlayerEntity(bounds.left + ((bounds.right - bounds.left) * 0.15) , bounds.bottom - ((bounds.bottom - bounds.top) * 0.15));
+        var player2 = MakePlayerEntity(bounds.right - ((bounds.right - bounds.left) * 0.15) , bounds.top + ((bounds.bottom - bounds.top) * 0.15));
+        // Rotate for initial facing
+        for(movement in GameData.shipMovement){
+            if(movement.entityId == player1){
+                movement.rotation = Math.PI/4;
+            }
+            if(movement.entityId == player2){
+                movement.rotation = 5*Math.PI/4;
+            }
+        }
 
         var width = GameData.screenBounds.right - GameData.screenBounds.left;
         var height = GameData.screenBounds.bottom - GameData.screenBounds.top;
@@ -192,7 +203,7 @@ class Main extends hxd.App {
         lilGun.tile = hxd.Res.mothership.toTile();
         lilGun.tile.center();
         lilGun.tileScale = 1.0/25.0;
-        lilGun.recoil = 50;
+        lilGun.recoil = 10;
         lilGun.recoilRotationAccelerator = 2;
 
         var bigGun = new ProjectileWeaponData();
@@ -201,7 +212,7 @@ class Main extends hxd.App {
         bigGun.tile = hxd.Res.mothership.toTile();
         bigGun.tile.center();
         bigGun.tileScale = 1.0/15.0;
-        bigGun.recoil = 100;
+        bigGun.recoil = 40;
         bigGun.recoilRotationAccelerator = 10;
 
         /*

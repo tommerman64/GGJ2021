@@ -109,7 +109,6 @@ class SpawnSystem extends SimSystem {
         }
     }
 
-
     public function SpawnEntity(entity:Entity, x:Float, y:Float) {
         _sim.AddEntity(entity);
         GenerateColliderData(entity, x, y);

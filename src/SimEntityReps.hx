@@ -34,6 +34,7 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
     var _collider : ColliderData;
     var _movement : ShipMovement;
     var _booster : Drawable;
+    var _scaleUpFrames : Int;
 
     public function InitFromGameData(mov:Array<ShipMovement>, col:Map<EntityId,ColliderData>) : Bool {
         for (shipMovement in mov) {
@@ -42,6 +43,7 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
             }
         }
         _collider = col[_entityId];
+        _scaleUpFrames = 60;
 
         return _movement != null && _collider != null;
     }
@@ -50,6 +52,12 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
         _obj.x = _collider.collider.x;
         _obj.y = _collider.collider.y;
         _obj.rotation = _movement.rotation;
+        if(_scaleUpFrames >= 0) {
+            _obj.setScale(0.25 + 0.75 * (60-_scaleUpFrames)/60);
+            _scaleUpFrames -= 1;
+            _obj.x -= _movement.GetForward().x * 50 * (_scaleUpFrames)/60;
+            _obj.y -= _movement.GetForward().y * 50 * (_scaleUpFrames)/60;
+        }
         _booster.visible = _movement.boosting;
     }
 
