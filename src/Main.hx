@@ -225,28 +225,44 @@ class Main extends hxd.App {
     }
 
     function InitializeWeaponLibrary() {
-        var lilGun = new ProjectileWeaponData();
-        lilGun.cooldown = 20;
-        lilGun.weight = 5;
-        lilGun.eqTile = hxd.Res.laserCannon.toTile();
-        lilGun.eqTile = lilGun.eqTile.center();
-        lilGun.pickupTile = hxd.Res.pinkOrb.toTile();
-        lilGun.pickupTile = lilGun.pickupTile.center();
-        lilGun.tileScale = 1;
-        lilGun.recoil = 10;
-        lilGun.recoilRotationAccelerator = 2;
+        var zapper = new ProjectileWeaponData();
+        zapper.cooldown = 35;
+        zapper.weight = 5;
+        zapper.eqTile = hxd.Res.laserCannon.toTile();
+        zapper.eqTile = zapper.eqTile.center();
+        zapper.pickupTile = hxd.Res.pinkOrb.toTile();
+        zapper.pickupTile = zapper.pickupTile.center();
+        zapper.tileScale = 1;
+        zapper.recoil = 10;
+        zapper.recoilRotationAccelerator = 2;
+        zapper.projectileSpeed = 40;
 
-        var bigGun = new ProjectileWeaponData();
-        bigGun.cooldown = 60;
-        bigGun.weight = 50;
-        bigGun.eqTile = hxd.Res.fatman.toTile();
-        bigGun.projectileTex = hxd.Res.fatman.toTile();
-        bigGun.eqTile = bigGun.eqTile.center();
-        bigGun.tileScale = .8;
-        bigGun.pickupTile = hxd.Res.blueOrb.toTile();
-        bigGun.pickupTile = bigGun.pickupTile.center();
-        bigGun.recoil = 40;
-        bigGun.recoilRotationAccelerator = 10;
+        var fatMan = new ProjectileWeaponData();
+        fatMan.cooldown = 60;
+        fatMan.weight = 50;
+        fatMan.eqTile = hxd.Res.fatman.toTile();
+        fatMan.projectileTex = hxd.Res.fatman.toTile();
+        fatMan.eqTile = fatMan.eqTile.center();
+        fatMan.tileScale = .8;
+        fatMan.pickupTile = hxd.Res.blueOrb.toTile();
+        fatMan.pickupTile = fatMan.pickupTile.center();
+        fatMan.recoil = 40;
+        fatMan.recoilRotationAccelerator = 10;
+        fatMan.projectileSpeed = 10;
+
+        var brrr = new ProjectileWeaponData();
+        brrr.cooldown = 10;
+        brrr.warmup = 90;
+        brrr.weight = 5;
+        brrr.eqTile = hxd.Res.laserCannon.toTile();
+        brrr.eqTile = brrr.eqTile.center();
+        brrr.pickupTile = hxd.Res.pinkOrb.toTile();
+        brrr.pickupTile = brrr.pickupTile.center();
+        brrr.tileScale = 1;
+        brrr.recoil = 5;
+        brrr.recoilRotationAccelerator = 3;
+        brrr.projectileSpeed = 45;
+
 
         /*
         var prize = new ShipWeaponData();
@@ -257,8 +273,9 @@ class Main extends hxd.App {
 
         GameData.weaponLibrary.push(prize);
         /*/
-        GameData.weaponLibrary.push(lilGun);
-        GameData.weaponLibrary.push(bigGun);
+        GameData.weaponLibrary.push(zapper);
+        GameData.weaponLibrary.push(fatMan);
+        GameData.weaponLibrary.push(brrr);
     }
 
     override function update(dt:Float) {

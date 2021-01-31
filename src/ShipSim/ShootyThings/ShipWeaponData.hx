@@ -15,6 +15,7 @@ typedef WeaponLibrary = Array<ShipWeaponData>;
 class ShipWeaponData {
     public var weight:Float;
     public var cooldown:Int;
+    public var warmup:Int;
 
     //Drawable Info for visRep
     public var tileScale:Float;
@@ -24,9 +25,8 @@ class ShipWeaponData {
     public var pickupTile:Tile;
     public var pickupAnimName:String;
 
-
-
     public function new() {
+        warmup = 0;
     }
 
     public function OnFire(shipPosition: Vector, slotData:ShipWeaponSlot, mov:ShipMovement, projectileSystem:ProjectileSystem) {
@@ -75,11 +75,13 @@ class ProjectileWeaponData extends ShipWeaponData {
     public var recoil:Float;
     public var recoilRotationAccelerator:Float;
     public var projectileTex:Tile;
+    public var projectileSpeed:Float;
 
     public function new() {
         super();
         recoil = 1;
         recoilRotationAccelerator = 0;
+        projectileSpeed = 0;
     }
 
     public override function OnFire(shipPosition:Vector, slotData:ShipWeaponSlot, mov:ShipMovement, projectileSystem:ProjectileSystem) {

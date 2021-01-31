@@ -12,12 +12,13 @@ import shipSim.Input;
 
 class WeaponSystem extends MovementSystem {
 
-    static var s_baseWeaponData:ShipWeaponData;
+    static var s_baseWeaponData:ProjectileWeaponData;
 
     var _baseWeaponCooldown:Int;
     var _inputSystem:InputSystem;
     var _projectileSystem:ProjectileSystem;
     var _cooldowns:Map<EntityId, Array<Int>>;
+    var _warmups:Map<EntityId, Array<Int>>;
 
     var _inventories:Map<EntityId, ShipInventory>;
     var _colliderObjects: Map<EntityId,ColliderData>;
@@ -28,9 +29,11 @@ class WeaponSystem extends MovementSystem {
         super();
         if (s_baseWeaponData == null) {
             s_baseWeaponData = new ProjectileWeaponData();
-            s_baseWeaponData.cooldown = 45;
+            s_baseWeaponData.cooldown = 60;
+            s_baseWeaponData.projectileSpeed = 25;
         }
         _cooldowns = new Map<EntityId, Array<Int>>();
+        _warmups = new Map<EntityId, Array<Int>>();
     }
 
     public function InjectColliderData(col:Map<EntityId,ColliderData>) {
@@ -70,6 +73,7 @@ class WeaponSystem extends MovementSystem {
         if (ent.GetSystemTags().contains("Player"))
         {
             _cooldowns[ent.GetId()] = new Array();
+            _warmups[ent.GetId()] = new Array();
             _baseWeaponCooldown = 0;
         }
     }
@@ -77,11 +81,13 @@ class WeaponSystem extends MovementSystem {
     public override function OnEntityDestroyed(entId:EntityId) {
         super.OnEntityDestroyed(entId);
         _cooldowns.remove(entId);
+        _warmups.remove(entId);
     }
 
-    public function InitializeCooldowns(playerId:EntityId) {
+    public function InitializeHeat(playerId:EntityId) {
         for(i in 0..._inventories[playerId].weaponSlots.length){
             _cooldowns[playerId].push(0);
+            _warmups[playerId].push(0);
         }
     }
 
@@ -90,29 +96,40 @@ class WeaponSystem extends MovementSystem {
 
         var inputIndex:Int = 0;
         for (playerId in _playerEntityIds) {
-            // Lazy initialize cooldowns
+            // Lazy initialize cooldowns/warmups
             if(_cooldowns[playerId].length == 0){
-                InitializeCooldowns(playerId);
+                InitializeHeat(playerId);
             }
 
             var wantsToShoot = _inputSystem.GetInputState(inputIndex).Shoot;
             if (wantsToShoot) {
                 TryShoot(playerId);
             }
-            RunCooldowns(playerId);
+            UpdateHeat(playerId, wantsToShoot);
             inputIndex++;
         }
     }
 
-    function RunCooldowns(playerId:EntityId) {
-        var cdIndex = 0;
+    function UpdateHeat(playerId:EntityId, wantsToShoot:Bool) {
         if (_baseWeaponCooldown > 0) {
             _baseWeaponCooldown--;
         }
 
+        var cdIndex = 0;
         while (cdIndex < _cooldowns[playerId].length) {
-            _cooldowns[playerId][cdIndex]--;
+            _cooldowns[playerId][cdIndex] = Std.int(Math.max(0, _cooldowns[playerId][cdIndex]-1));
             cdIndex++;
+        }
+
+        var index = 0;
+        while (index < _warmups[playerId].length) {
+            if(wantsToShoot){
+                _warmups[playerId][index] = Std.int(Math.min(200, _warmups[playerId][index]+1));
+            }
+            else {
+                _warmups[playerId][index] = Std.int(Math.max(0, _warmups[playerId][index]-1));
+            }
+            index++;
         }
     }
 
@@ -133,7 +150,11 @@ class WeaponSystem extends MovementSystem {
 
     function GetCooldown(playerId:EntityId, weaponIndex:Int) :Int
     {
-        return _cooldowns[playerId][weaponIndex]; // (use index here once inventory is implemented)
+        return _cooldowns[playerId][weaponIndex];
+    }
+    function GetWarmup(playerId:EntityId, weaponIndex:Int) :Int
+    {
+        return _warmups[playerId][weaponIndex];
     }
 
     function GetPlayerPosition(entityId:EntityId) : Vector {
@@ -155,10 +176,11 @@ class WeaponSystem extends MovementSystem {
             }
             hasWeapons = true;
             var weaponSlot = inventory.weaponSlots[slotIndex];
-            if (GetCooldown(playerId, slotIndex) <= 0) {
+            if (GetCooldown(playerId, slotIndex) <= 0 && GetWarmup(playerId, slotIndex) > GetWeapon(inventory, slotIndex).warmup) {
                 Log.trace("shooting from weapon slot" + slotIndex);
                 GetWeapon(inventory, slotIndex).OnFire(pos, weaponSlot, mov, _projectileSystem);
                 _cooldowns[playerId][slotIndex] = GetWeapon(inventory, slotIndex).cooldown;
+                _warmups[playerId][slotIndex] = GetWeapon(inventory, slotIndex).warmup;
             }
             slotIndex++;
         }
