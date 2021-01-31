@@ -22,6 +22,7 @@ class PickupData {
     var _parentEntityId:EntityId;
     var _slot:ShipWeaponSlot;
     var _shooting:Bool;
+    public var armorValue:Int = 0;
 
 
     public function new(i:Int) {

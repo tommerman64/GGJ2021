@@ -1,5 +1,6 @@
 package shipSim;
 
+import haxe.Log;
 import SimEntityReps.CrateEntityRepresentation;
 import hxd.Rand;
 import h3d.Vector;
@@ -202,8 +203,17 @@ class ShipPickupSystem extends SimSystem {
         for (activeCollision in _collisionSystem.GetPickupCollisions()) {
             var shipId = activeCollision.entOne;
             var pickupId = activeCollision.entTwo;
+            var pickup = _pickupData[pickupId];
 
-            if(!_shipInventories[shipId].HasOpenSlots()){
+            if (pickup == null) { // pickup was an armor that was grabbed by opponent on THIS frame
+                return;
+            }
+
+            if(!_shipInventories[shipId].HasOpenSlots() && pickup.armorValue <= 0) {
+                return;
+            }
+
+            if (pickup.armorValue > 0 && _shipInventories[shipId].armor == 5) {
                 return;
             }
 
@@ -219,11 +229,18 @@ class ShipPickupSystem extends SimSystem {
                 }
             }
             if(canBePickedUp) {
-                var attachedSlot = _shipInventories[shipId].AttachWeaponToFirstOpenIndex(pickupId);
-                hxd.Res.pickup.play().priority = 1;
-                if(attachedSlot != null) {
-                    _pickupData[pickupId].AttachToShip(shipId, attachedSlot);
-                    _pickupDrifts.remove(pickupId);
+                if (pickup.armorValue > 0) {
+                    _shipInventories[shipId].armor++;
+                    _sim.DestroyEntity(pickupId);
+                    Log.trace("GOT ARMOR");
+                }
+                else {
+                    var attachedSlot = _shipInventories[shipId].AttachWeaponToFirstOpenIndex(pickupId);
+                    hxd.Res.pickup.play().priority = 1;
+                    if(attachedSlot != null) {
+                        _pickupData[pickupId].AttachToShip(shipId, attachedSlot);
+                        _pickupDrifts.remove(pickupId);
+                    }
                 }
             }
         }

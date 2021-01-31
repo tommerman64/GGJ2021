@@ -224,6 +224,10 @@ class SpawnSystem extends SimSystem {
 
         _pickupData[entity.GetId()] = new PickupData(weaponIndex);
 
+        if (weaponIndex == 1) {
+            _pickupData[entity.GetId()].armorValue = 1;
+        }
+
         var visRep = new PickupEntityRepresentation(entity.GetId(), obj);
         var eqAnim : h2d.Anim = null;
         var eqDrawable = _weaponLibrary[weaponIndex].GetDrawable(true);
@@ -231,9 +235,7 @@ class SpawnSystem extends SimSystem {
             eqAnim = _weaponLibrary[weaponIndex].GetAnim(_weaponLibrary[weaponIndex].eqAnimName);
             eqDrawable = null; // leave old drawaable behind in favor of anim
         }
-        else {
 
-        }
         visRep.InitFromGameData(_colliderData, _pickupData,
             eqDrawable,
             _weaponLibrary[weaponIndex].GetDrawable(false),

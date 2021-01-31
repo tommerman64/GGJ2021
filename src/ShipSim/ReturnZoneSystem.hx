@@ -98,6 +98,12 @@ class ReturnZoneSystem extends SimSystem {
         }
     }
 
+    public override function OnEntityDestroyed(eId:EntityId) {
+        if (_pickupEntityIds.contains(eId)) {
+            _pickupEntityIds.remove(eId);
+        }
+    }
+
     public function HasGameEnded() {
         return _gameEnd;
     }

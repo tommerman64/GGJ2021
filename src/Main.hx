@@ -320,8 +320,16 @@ class Main extends hxd.App {
         prize.weight = 200;
         prize.SetIsCrystal();
 
+        var armor = new ShipWeaponData();
+        armor.eqTile = hxd.Res.armoricon.toTile();
+        // armor.eqTile = armor.eqTile.center();
+        armor.pickupTile = hxd.Res.armoricon.toTile();
+        armor.pickupTile = armor.pickupTile.center();
+        armor.tileScale = 1;
+
         // PRIZE HAS TO BE FIRST
         GameData.weaponLibrary.push(prize);
+        GameData.weaponLibrary.push(armor);
         //*/
         GameData.weaponLibrary.push(zapper);
         GameData.weaponLibrary.push(fatMan);
