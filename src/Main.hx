@@ -176,6 +176,20 @@ class Main extends hxd.App {
 
         _timeToNextFrame = SIM_FRAME_TIME;
 
+        var mothershipTile = hxd.Res.mothership.toTile().center();
+
+        var ship = new h2d.Bitmap(mothershipTile, s2d);
+        ship.scale(0.6);
+        ship.rotate(Math.PI);
+        var pos = _returnZoneSys.GetReturnZones()[0].getCenter();
+        pos = pos.add(new Point(20, -20));
+        ship.setPosition(pos.x, pos.y);
+
+        ship = new h2d.Bitmap(mothershipTile, s2d);
+        ship.scale(0.6);
+        pos = _returnZoneSys.GetReturnZones()[1].getCenter();
+        pos = pos.sub(new Point(20, -20));
+        ship.setPosition(pos.x, pos.y);
         dbgGraphics = new h2d.Graphics(s2d);
     }
 

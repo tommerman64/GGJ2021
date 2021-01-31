@@ -1,6 +1,6 @@
 package shipSim;
 
-import SimEntityReps.ProjectileEntityRepresentation;
+import SimEntityReps;
 import shipSim.physics.PhysData.ShipMovement;
 import shipSim.ShipInventory;
 import haxe.Log;
