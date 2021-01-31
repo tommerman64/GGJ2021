@@ -21,7 +21,7 @@ class EnityRepresentation {
         _obj = obj;
     }
 
-    public function UpdateRepresentation(): Void {
+    public function UpdateRepresentation(s2d:Object): Void {
     }
 
     public function GetObject(): Object {
@@ -46,7 +46,7 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
         return _movement != null && _collider != null;
     }
 
-    public override function UpdateRepresentation(): Void {
+    public override function UpdateRepresentation(s2d:Object): Void {
         _obj.x = _collider.collider.x;
         _obj.y = _collider.collider.y;
         _obj.rotation = _movement.rotation;
@@ -66,7 +66,7 @@ class CrateEntityRepresentation extends EnityRepresentation {
         return _collider != null;
     }
 
-    public override function UpdateRepresentation(): Void {
+    public override function UpdateRepresentation(s2d:Object): Void {
         _obj.x = _collider.collider.x;
         _obj.y = _collider.collider.y;
         _obj.rotate(Math.PI / 600);
@@ -90,7 +90,7 @@ class PickupEntityRepresentation extends EnityRepresentation {
         _allPlayerReps = reps;
     }
 
-    public override function UpdateRepresentation(): Void {
+    public override function UpdateRepresentation(s2d:Object): Void {
         if(_pickupData.GetParentId() != 0) {
             // we are supposed to have a parent. lets make sure we do
             var desiredParent = FindParentRepresentation(_pickupData.GetParentId());
@@ -113,6 +113,7 @@ class PickupEntityRepresentation extends EnityRepresentation {
                 if (_obj.parent == _parent.GetObject()) {
                     _obj.parent.removeChild(_obj);
                 }
+                s2d.addChild(_obj);
             }
             _parent = null;
             _obj.x = _collider.collider.x;
@@ -143,7 +144,7 @@ class ProjectileEntityRepresentation extends EnityRepresentation {
         _projectileData = data;
     }
 
-    public override function UpdateRepresentation() {
+    public override function UpdateRepresentation(s2d:Object) {
         _obj.setPosition(_projectileData.position.x, _projectileData.position.y);
     }
 }

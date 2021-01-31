@@ -1,3 +1,4 @@
+import h2d.col.Bounds;
 import h2d.Bitmap;
 import h2d.Graphics;
 import shipSim.shootyThings.ProjectileSystem;
@@ -19,6 +20,7 @@ import jamSim.Sim;
 import SimEntityReps;
 import shipSim.CratePlacement;
 import shipSim.ShipInventory;
+import shipSim.ReturnZoneSystem;
 
 class Main extends hxd.App {
 
@@ -46,6 +48,8 @@ class Main extends hxd.App {
     var _projectileRepresentations = new Map<EntityId, ProjectileEntityRepresentation>();
 
     var spawnSystem:SpawnSystem;
+
+    var _returnZoneSys:ReturnZoneSystem;
 
     var dbgGraphics : h2d.Graphics;
 
@@ -118,6 +122,13 @@ class Main extends hxd.App {
         weaponSystem.InjectPickupData(GameData.pickupData);
         weaponSystem.SetWeaponLibrary(GameData.weaponLibrary);
 
+        _returnZoneSys = new ReturnZoneSystem();
+        _returnZoneSys.InjectColliderData(GameData.colliderData);
+        _returnZoneSys.InjectPickupData(GameData.pickupData);
+        _returnZoneSys.SetWeaponLibrary(GameData.weaponLibrary);
+        _returnZoneSys.AddReturnZone(Bounds.fromValues(0, 540, 180, 180));
+        _returnZoneSys.AddReturnZone(Bounds.fromValues(1100, 0, 180, 180));
+
         _sim = new Sim();
         _sim.AddSystem(inputSystem);
         _sim.AddSystem(locomotionSystem);
@@ -127,6 +138,7 @@ class Main extends hxd.App {
         _sim.AddSystem(pickupSystem);
         _sim.AddSystem(spawnSystem);
         _sim.AddSystem(projectileSystem);
+        _sim.AddSystem(_returnZoneSys);
 
         // Hook up weapons and inventories
         var slots = new Array<ShipWeaponSlot>();
@@ -214,19 +226,16 @@ class Main extends hxd.App {
             // Update
             _sim.Tick();
             for (visRep in _shipRepresentations) {
-                visRep.UpdateRepresentation();
+                visRep.UpdateRepresentation(s2d);
             }
             for (visRep in _crateRepresentations) {
-                visRep.UpdateRepresentation();
+                visRep.UpdateRepresentation(s2d);
             }
             for (visRep in _pickupRepresentations) {
-                visRep.UpdateRepresentation();
-                if (visRep.GetObject().parent == null) {
-                    s2d.addChild(visRep.GetObject());
-                }
+                visRep.UpdateRepresentation(s2d);
             }
             for (visRep in _projectileRepresentations) {
-                visRep.UpdateRepresentation();
+                visRep.UpdateRepresentation(s2d);
             }
         }
 
@@ -237,6 +246,10 @@ class Main extends hxd.App {
             dbgGraphics.beginFill(0xFF00FF, 0.8);
             for (col in GameData.colliderData) {
                 dbgGraphics.drawCircle(col.collider.x, col.collider.y, col.collider.ray);
+            }
+
+            for (retZone in _returnZoneSys.GetReturnZones()) {
+                dbgGraphics.drawRect(retZone.x, retZone.y, retZone.width, retZone.height);
             }
         }
 

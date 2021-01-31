@@ -100,7 +100,7 @@ class SpawnSystem extends SimSystem {
             _crateRepresentations.remove(entity);
         }
         if(_pickupRepresentations.exists(entity)){
-            _scene.removeChild(_pickupRepresentations[entity].GetObject());
+            _pickupRepresentations[entity].GetObject().parent.removeChild(_pickupRepresentations[entity].GetObject());
             _pickupRepresentations.remove(entity);
         }
         if(_projectileRepresentations.exists(entity)){

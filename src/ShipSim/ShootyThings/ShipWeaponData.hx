@@ -1,5 +1,5 @@
 package shipSim.shootyThings;
-import shipSim.shootyThings.ShootyData.ProjectileData;
+import shipSim.shootyThings.ShootyData;
 import h2d.Bitmap;
 import h2d.Object;
 import h2d.Tile;
