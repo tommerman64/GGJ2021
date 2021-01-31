@@ -1,4 +1,3 @@
-import hxd.snd.openal.PitchDriver;
 import h2d.Bitmap;
 import h2d.Graphics;
 import shipSim.shootyThings.ProjectileSystem;
