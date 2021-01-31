@@ -16,6 +16,7 @@ class ShipWeaponData {
     public var cooldown:Int;
     public var tile:Tile;
     public var tileScale:Float;
+    public var animName:String;
 
     public function new() {
     }
@@ -24,10 +25,27 @@ class ShipWeaponData {
         Log.trace("Boom");
     }
 
-    public function AttachBmpToObject(obj:Object):Bitmap {
+    public function AttachDrawableToObject(obj:Object) : Void {
+        if (tile != null) {
+            AttachBmpToObject(obj);
+            return;
+        }
+
+        LoadAndAttachAnim(obj);
+    }
+
+    public function AttachBmpToObject(obj:Object) : Void {
         var bmp = new h2d.Bitmap(tile, obj);
         bmp.scale(tileScale);
-        return bmp;
+    }
+
+    public function LoadAndAttachAnim(obj:Object) : Void {
+        var texture = hxd.Res.loader.load("" +animName + ".png").toTexture();
+        var jsonData = hxd.Res.loader.load("" +animName + "Map.json");
+        var anim = ResourceLoading.LoadAnimFromSpriteSheet(texture, jsonData);
+        anim.scale(tileScale);
+
+        obj.addChild(anim);
     }
 }
 

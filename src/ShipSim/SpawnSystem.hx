@@ -149,7 +149,7 @@ class SpawnSystem extends SimSystem {
         bmp.scale(2.0/3.0);
 
         // load flames
-        var boosterAnim = ResourceLoading.LoadAnim(hxd.Res.booster.toTexture(), hxd.Res.boosterMap);
+        var boosterAnim = ResourceLoading.LoadAnimFromTexAtlas(hxd.Res.booster.toTexture(), hxd.Res.boosterMap);
 
         obj.addChild(boosterAnim);
         boosterAnim.loop = true;
@@ -186,8 +186,8 @@ class SpawnSystem extends SimSystem {
 
         // Roll a random weapon
         var weaponIndex = _random.random(_weaponLibrary.length);
-        var tile = _weaponLibrary[weaponIndex].tile;
-        _weaponLibrary[weaponIndex].AttachBmpToObject(obj);
+
+        _weaponLibrary[weaponIndex].AttachDrawableToObject(obj);
 
         _pickupData[entity.GetId()] = new PickupData(weaponIndex);
 

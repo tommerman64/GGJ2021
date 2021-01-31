@@ -191,6 +191,15 @@ class Main extends hxd.App {
         bigGun.tile.center();
         bigGun.tileScale = 1.0/15.0;
 
+        /*
+        var prize = new ShipWeaponData();
+        prize.animName = "crystal";
+        prize.tileScale = 1.0/2.0;
+        prize.cooldown = 10000;
+        prize.weight = 200;
+
+        GameData.weaponLibrary.push(prize);
+        /*/
         GameData.weaponLibrary.push(lilGun);
         GameData.weaponLibrary.push(bigGun);
     }
