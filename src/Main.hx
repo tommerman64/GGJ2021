@@ -1,5 +1,6 @@
 import hxd.snd.SoundGroup;
 import haxe.Resource;
+import h2d.col.Circle;
 import hxd.snd.Manager;
 import hxd.Key;
 import hxd.Rand;
@@ -171,8 +172,15 @@ class Main extends hxd.App {
         _returnZoneSys = new ReturnZoneSystem();
         _returnZoneSys.InjectColliderData(GameData.colliderData);
         _returnZoneSys.InjectPickupData(GameData.pickupData);
-        _returnZoneSys.AddReturnZone(Bounds.fromValues(0, 540, 180, 180));
-        _returnZoneSys.AddReturnZone(Bounds.fromValues(1100, 0, 180, 180));
+        _returnZoneSys.SetPickupSystem(pickupSystem);
+
+        var bounds = GameData.screenBounds;
+        var screenWidth = bounds.right - bounds.left;
+        var screenHeight = bounds.bottom - bounds.top;
+        _returnZoneSys.AddReturnZone(new Circle(bounds.left + (0.1 * screenWidth), bounds.bottom - (0.175 * screenHeight), 60));
+        _returnZoneSys.AddMagnet(new Circle(bounds.left + (0.1 * screenWidth), bounds.bottom - (0.175 * screenHeight), 160));
+        _returnZoneSys.AddReturnZone(new Circle(bounds.right - (0.1 * screenWidth), bounds.top + (0.175 * screenHeight), 60));
+        _returnZoneSys.AddMagnet(new Circle(bounds.right - (0.1 * screenWidth), bounds.top + (0.175 * screenHeight), 160));
 
         _sim = new Sim();
         _sim.AddSystem(inputSystem);
@@ -200,9 +208,8 @@ class Main extends hxd.App {
         InitializeWeaponLibrary();
 
         // Create player ships
-        var bounds = GameData.screenBounds;
-        var player1 = MakePlayerEntity(bounds.left + ((bounds.right - bounds.left) * 0.15) , bounds.bottom - ((bounds.bottom - bounds.top) * 0.15));
-        var player2 = MakePlayerEntity(bounds.right - ((bounds.right - bounds.left) * 0.15) , bounds.top + ((bounds.bottom - bounds.top) * 0.15));
+        var player1 = MakePlayerEntity(bounds.left + (screenWidth * 0.12) , bounds.bottom - (screenHeight * 0.2));
+        var player2 = MakePlayerEntity(bounds.right - (screenWidth * 0.12) , bounds.top + (screenHeight * 0.2));
         // Rotate for initial facing
         for(movement in GameData.shipMovement){
             if(movement.entityId == player1){
@@ -226,16 +233,17 @@ class Main extends hxd.App {
         var mothershipTile = hxd.Res.mothership.toTile().center();
 
         var ship = new h2d.Bitmap(mothershipTile, s2d);
+        var offset = new Point(-15,15);
         ship.scale(0.6);
         ship.rotate(Math.PI);
-        var pos = _returnZoneSys.GetReturnZones()[0].getCenter();
-        pos = pos.add(new Point(20, -20));
+        var pos = new Point(_returnZoneSys.GetReturnZones()[0].x, _returnZoneSys.GetReturnZones()[0].y);
+        pos = pos.add(offset);
         ship.setPosition(pos.x, pos.y);
 
         ship = new h2d.Bitmap(mothershipTile, s2d);
         ship.scale(0.6);
-        pos = _returnZoneSys.GetReturnZones()[1].getCenter();
-        pos = pos.sub(new Point(20, -20));
+        pos = new Point(_returnZoneSys.GetReturnZones()[1].x, _returnZoneSys.GetReturnZones()[1].y);
+        pos = pos.sub(offset);
         ship.setPosition(pos.x, pos.y);
         dbgGraphics = new h2d.Graphics(s2d);
     }
@@ -370,7 +378,11 @@ class Main extends hxd.App {
             }
 
             for (retZone in _returnZoneSys.GetReturnZones()) {
-                dbgGraphics.drawRect(retZone.x, retZone.y, retZone.width, retZone.height);
+                dbgGraphics.drawCircle(retZone.x, retZone.y, retZone.ray);
+            }
+            dbgGraphics.beginFill(0x0000FF, 0.8);
+            for (mag in _returnZoneSys.GetMagnets()) {
+                dbgGraphics.drawCircle(mag.x, mag.y, mag.ray);
             }
         }
 

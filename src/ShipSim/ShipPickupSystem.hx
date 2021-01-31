@@ -121,6 +121,13 @@ class ShipPickupSystem extends SimSystem {
         }
     }
 
+    public function AdjustDrift(pickupId:EntityId, target:Vector) {
+        var driftVec = new Vector(_pickupDrifts[pickupId].x, _pickupDrifts[pickupId].y);
+        driftVec = GameMath.VecMoveTowards(driftVec, target, 10);
+        _pickupDrifts[pickupId].x = driftVec.x;
+        _pickupDrifts[pickupId].y = driftVec.y;
+    }
+
     public override function EarlyTick() {
         for(pickupId in _pickupDrifts.keys()){
             if(_colliderData.exists(pickupId)){

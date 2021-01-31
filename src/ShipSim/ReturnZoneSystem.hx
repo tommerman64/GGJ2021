@@ -1,5 +1,7 @@
 package shipSim;
 
+import h3d.Vector;
+import h2d.col.Circle;
 import h2d.col.Point;
 import h2d.col.Bounds;
 import hxd.clipper.Rect;
@@ -13,15 +15,18 @@ class ReturnZoneSystem extends SimSystem {
     var _pickupEntityIds : Array<EntityId>;
     var _pickupData:Map<EntityId,PickupData>;
     var _colliderObjects: Map<EntityId,ColliderData>;
+    var _pickupSystem:ShipPickupSystem;
 
-    var _returnZones : Array<Bounds>;
+    var _returnZones : Array<Circle>;
+    var _magnets : Array<Circle>;
 
     var _gameEnd : Bool = false;
 
     public override function new() {
         super();
         _pickupEntityIds = new Array<EntityId>();
-        _returnZones = new Array<Bounds>();
+        _returnZones = new Array<Circle>();
+        _magnets = new Array<Circle>();
     }
 
     public function InjectColliderData(col:Map<EntityId,ColliderData>) {
@@ -32,8 +37,16 @@ class ReturnZoneSystem extends SimSystem {
         _pickupData = pu;
     }
 
-    public function AddReturnZone(bounds:Bounds) {
-        _returnZones.push(bounds);
+    public function SetPickupSystem(sys:ShipPickupSystem) {
+        _pickupSystem = sys;
+    }
+
+    public function AddReturnZone(zone:Circle) {
+        _returnZones.push(zone);
+    }
+
+    public function AddMagnet(magnet:Circle) {
+        _magnets.push(magnet);
     }
 
     public override function Init(entities:Array<Entity>) {
@@ -54,11 +67,11 @@ class ReturnZoneSystem extends SimSystem {
     public override function LateTick() {
         super.LateTick();
 
-        for(bounds in _returnZones) {
+        for(zone in _returnZones) {
             for (eId in _pickupEntityIds) {
                 var col = _colliderObjects[eId];
                 var position : Point = new Point(col.collider.x, col.collider.y);
-                if (bounds.contains(position)) {
+                if (zone.contains(position)) {
                     if (_pickupData[eId].GetWeaponLibIndex() == 0) { // it was the crystal, game is over
                         _gameEnd = true;
                     }
@@ -70,13 +83,30 @@ class ReturnZoneSystem extends SimSystem {
                 }
             }
         }
+
+        for(magnet in _magnets) {
+            for (eId in _pickupEntityIds) {
+                var col = _colliderObjects[eId];
+                var position : Point = new Point(col.collider.x, col.collider.y);
+                if (magnet.contains(position)) {
+                    var targetVec = new Vector(magnet.x - col.collider.x, magnet.y - col.collider.y);
+                    targetVec.normalizeFast();
+                    targetVec.scale3(100);
+                    _pickupSystem.AdjustDrift(eId, targetVec);
+                }
+            }
+        }
     }
 
     public function HasGameEnded() {
         return _gameEnd;
     }
 
-    public function GetReturnZones() : Array<Bounds> {
+    public function GetReturnZones() : Array<Circle> {
         return _returnZones;
+    }
+
+    public function GetMagnets() : Array<Circle> {
+        return _magnets;
     }
 }
