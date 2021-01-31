@@ -182,8 +182,9 @@ class SpawnSystem extends SimSystem {
         _inventories[entity.GetId()].InitializeWeaponSlots(_inventorySlots);
 
         var visRep = new PlayerShipEntityRepresentation(entity.GetId(), obj);
-        visRep.InitFromGameData(_shipMovement, _colliderData);
+        visRep.InitFromGameData(_shipMovement, _colliderData, _inventories);
         visRep.SetBoosterAnim(boosterAnim);
+        visRep.AttachArmorPieces(ResourceLoading.LoadTilesFromSpriteSheet(hxd.Res.armor.toTexture(), hxd.Res.armorMap));
         _shipRepresentations[entity.GetId()] = visRep;
     }
 

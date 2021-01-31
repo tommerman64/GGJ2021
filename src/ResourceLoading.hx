@@ -27,6 +27,10 @@ class ResourceLoading {
     }
 
     public static function LoadAnimFromSpriteSheet(tex:Texture, jsonResource:hxd.res.Resource) : Anim {
+        return new Anim(LoadTilesFromSpriteSheet(tex, jsonResource));
+    }
+
+    public static function LoadTilesFromSpriteSheet(tex:Texture, jsonResource:hxd.res.Resource) : Array<Tile> {
         var frames = new Array<Tile>();
         var jsonString = jsonResource.entry.getText();
         jsonString = jsonString.substr(1);
@@ -45,6 +49,6 @@ class ResourceLoading {
             currentFrame++;
         }
 
-        return new Anim(frames);
+        return frames;
     }
 }

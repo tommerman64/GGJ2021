@@ -1,12 +1,10 @@
-import shipSim.shootyThings.ShipWeaponData;
-import format.as1.Constants.ActionCode;
+import h2d.Tile;
+import shipSim.ShipInventory;
 import shipSim.shootyThings.ShootyData.ProjectileData;
-import jamSim.Entity;
 import shipSim.ShipInventory.PickupData;
 import haxe.Log;
 import h2d.Drawable;
 import h2d.Anim;
-import shipSim.ShipInventory.ShipWeaponSlot;
 import shipSim.physics.PhysData.ShipMovement;
 import shipSim.physics.PhysData.ColliderData;
 import h2d.Object;
@@ -35,19 +33,40 @@ class EnityRepresentation {
 class PlayerShipEntityRepresentation extends EnityRepresentation {
     var _collider : ColliderData;
     var _movement : ShipMovement;
+    var _inventory : ShipInventory;
     var _booster : Drawable;
     var _scaleUpFrames : Int;
+    var _armorPieces : Array<Drawable>;
 
-    public function InitFromGameData(mov:Array<ShipMovement>, col:Map<EntityId,ColliderData>) : Bool {
+    public function InitFromGameData(mov:Array<ShipMovement>, col:Map<EntityId,ColliderData>, inv:Map<EntityId,ShipInventory>) : Bool {
         for (shipMovement in mov) {
             if (shipMovement.entityId == _entityId) {
                 _movement = shipMovement;
             }
         }
         _collider = col[_entityId];
+        _inventory = inv[_entityId];
         _scaleUpFrames = 60;
 
-        return _movement != null && _collider != null;
+        return _movement != null && _collider != null && _inventory != null;
+    }
+
+    public function AttachArmorPieces(tiles:Array<Tile>) {
+        var positions = [
+            { x:0, y:0 },
+            { x:0, y:0 },
+            { x:0, y:0 },
+            { x:0, y:0 },
+            { x:0, y:0 },
+        ];
+        _armorPieces = new Array<Drawable>();
+        for (i in 0...tiles.length) {
+            var t = tiles[i];
+            var bmp = new h2d.Bitmap(t, _obj);
+            bmp.x = positions[i].x;
+            bmp.y = positions[i].y;
+            _armorPieces.push(bmp);
+        }
     }
 
     public override function UpdateRepresentation(s2d:Object): Void {
@@ -61,6 +80,11 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
             _obj.y -= _movement.GetForward().y * 50 * (_scaleUpFrames)/60;
         }
         _booster.visible = _movement.boosting;
+
+        Log.trace("should be showing armor level: " + _inventory.armor);
+        for (a in 0...5) {
+            _armorPieces[a].visible = a < _inventory.armor;
+        }
     }
 
     public function SetBoosterAnim(b:Anim) {

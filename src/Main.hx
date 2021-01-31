@@ -411,6 +411,12 @@ class Main extends hxd.App {
             }
         }
 
+        if(hxd.Key.isPressed('1'.code)) {
+            for (id in GameData.inventories.keys()) {
+                GameData.inventories[id].armor++;
+            }
+        }
+
         var parallaxSpeed = 1.0;
         for(parallaxLayer in _parallaxStars) {
             parallaxLayer.x += dt * parallaxSpeed * 3;

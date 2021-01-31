@@ -64,7 +64,7 @@ class PickupData {
 class ShipInventory {
     public var weaponSlots:Array<ShipWeaponSlot>;
     public var weaponEntityIds:Array<EntityId>; // Entity IDs of attached weapons
-    public var armor:Int;
+    public var armor:Int = 0;
 
     public function new() {
     }
