@@ -130,6 +130,7 @@ class ShipInventory {
                 return weaponId;
             }
         }
+
         return -1;
     }
 

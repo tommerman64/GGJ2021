@@ -81,13 +81,16 @@ class CollisionSystem extends MovementSystem
     }
 
     public override function Tick() {
+        for(pickupId in _pickupEntityIds) {
+            KeepColliderInBounds(_colliderObjects[pickupId]);
+        }
         for (pId in _playerEntityIds) {
             var movementData = FindMovementData(pId);
             var playerCollider =_colliderObjects[pId];
             playerCollider.collider.x += movementData.velocity.x * MovementSystem.SIM_FRAME_LENGTH;
             playerCollider.collider.y += movementData.velocity.y * MovementSystem.SIM_FRAME_LENGTH;
 
-            KeepPlayerInBounds(playerCollider);
+            KeepColliderInBounds(playerCollider);
 
             for(crateId in _crateEntityIds) {
                 var crateCollider = _colliderObjects[crateId];
@@ -116,7 +119,7 @@ class CollisionSystem extends MovementSystem
         }
     }
 
-    function KeepPlayerInBounds(colliderData:ColliderData) {
+    function KeepColliderInBounds(colliderData:ColliderData) {
         if (colliderData.collider.x < 0) {
             colliderData.collider.x += _positionMax.x;
         }

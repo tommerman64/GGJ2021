@@ -100,6 +100,7 @@ class Main extends hxd.App {
         pickupSystem.SetPickupData(GameData.pickupData);
         pickupSystem.InjectColliderData(GameData.colliderData);
         pickupSystem.SetInputSystem(inputSystem);
+        pickupSystem.SetShipMovement(GameData.shipMovement);
 
         spawnSystem = new SpawnSystem();
         spawnSystem.SetColliderData(GameData.colliderData);

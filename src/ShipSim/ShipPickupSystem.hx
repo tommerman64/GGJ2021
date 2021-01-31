@@ -1,5 +1,8 @@
 package shipSim;
 
+import shipSim.physics.MovementSystem;
+import shipSim.physics.PhysData.ShipMovement;
+import h2d.col.Point;
 import shipSim.physics.PhysData.ColliderData;
 import shipSim.Input.InputSystem;
 import shipSim.physics.CollisionSystem;
@@ -17,12 +20,14 @@ class ShipPickupSystem extends SimSystem {
     var _playerIds : Array<EntityId>;
     var _inputSystem:InputSystem;
     var _ignoredWeapons:Map<EntityId, Map<EntityId, Int>>;
-
+    var _pickupDrifts: Map<EntityId, Point>;
+    var _shipMovement:Array<ShipMovement>;
 
     public function new() {
         super();
         _playerIds = new Array<EntityId>();
         _ignoredWeapons = new Map<EntityId, Map<EntityId, Int>>();
+        _pickupDrifts = new Map<EntityId, Point>();
     }
 
     public override function Init(entities:Array<Entity>) {
@@ -54,12 +59,25 @@ class ShipPickupSystem extends SimSystem {
         _inputSystem = inp;
     }
 
+    public function SetShipMovement(mov:Array<ShipMovement>) {
+        _shipMovement = mov;
+    }
+
     public function SetPickupData(data:Map<EntityId,PickupData>) {
         _pickupData = data;
     }
 
     public function SetInventories(inventories:Map<EntityId, ShipInventory>) {
         _shipInventories = inventories;
+    }
+
+    public override function EarlyTick() {
+        for(pickupId in _pickupDrifts.keys()){
+            if(_colliderData.exists(pickupId)){
+                _colliderData[pickupId].collider.x += _pickupDrifts[pickupId].x * _sim.GetSimFrameLength();
+                _colliderData[pickupId].collider.y += _pickupDrifts[pickupId].y * _sim.GetSimFrameLength();
+            }
+        }
     }
 
     public override function Tick() {
@@ -79,6 +97,13 @@ class ShipPickupSystem extends SimSystem {
                     weaponCol.collider.y = shipCol.collider.y;
 
                     _ignoredWeapons[pId][weaponId] = 120;
+
+                    // Apply ship drift
+                    for(move in _shipMovement){
+                        if(move.entityId == pId){
+                            _pickupDrifts[weaponId] = new Point(move.velocity.x, move.velocity.y);
+                        }
+                    }
 
                     // drop another one
                     weaponId = _shipInventories[pId].DetachNextWeapon();
@@ -128,6 +153,7 @@ class ShipPickupSystem extends SimSystem {
                 var attachedSlot = _shipInventories[shipId].AttachWeaponToFirstOpenIndex(pickupId);
                 if(attachedSlot != null) {
                     _pickupData[pickupId].AttachToShip(shipId, attachedSlot);
+                    _pickupDrifts.remove(pickupId);
                 }
             }
         }
