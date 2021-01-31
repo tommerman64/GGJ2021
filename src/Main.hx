@@ -1,3 +1,4 @@
+import hxd.snd.Manager;
 import hxd.Key;
 import hxd.Rand;
 import h2d.col.Bounds;
@@ -160,6 +161,9 @@ class Main extends hxd.App {
         _sim.AddSystem(projectileSystem);
         _sim.AddSystem(_returnZoneSys);
 
+        var sndManager = Manager.get();
+        sndManager.masterSoundGroup.maxAudible = 4;
+
         // Hook up weapons and inventories
         var slots = new Array<ShipWeaponSlot>();
         slots.push(new ShipWeaponSlot(new Vector(15, 0), 0.5));
@@ -277,7 +281,7 @@ class Main extends hxd.App {
         prize.eqAnimName = "crystal";
         prize.pickupAnimName = "crystal";
         prize.tileScale = 1.0/2.0;
-        prize.cooldown = 10000;
+        prize.cooldown = 0;
         prize.weight = 200;
         prize.SetIsCrystal();
 

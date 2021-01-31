@@ -1,5 +1,6 @@
 package shipSim.physics;
 
+import hxd.snd.ChannelGroup;
 import h3d.Vector;
 import shipSim.Input.InputState;
 import shipSim.Input.InputSystem;
@@ -17,6 +18,8 @@ class ShipLocomotionSystem extends MovementSystem {
     static var MAX_ROTATION = Math.PI;
 
     var _inputSystem:InputSystem;
+    var _anyPlayerBoosting:Bool;
+    var _boostAudio:ChannelGroup;
 
     public function new() {
         super();
@@ -32,6 +35,11 @@ class ShipLocomotionSystem extends MovementSystem {
         for (ent in entities) {
             OnNewEntity(ent);
         }
+
+        _anyPlayerBoosting = false;
+        _boostAudio = new hxd.snd.ChannelGroup("booster");
+        _boostAudio.volume = 0;
+        hxd.Res.boostLoop.play(true, 1, _boostAudio);
     }
 
     private function UpdateMovementData(inp:InputState, movement:ShipMovement) {
@@ -41,6 +49,7 @@ class ShipLocomotionSystem extends MovementSystem {
         movement.rotationalVelocity = GameMath.MoveTowards(movement.rotationalVelocity, 0, BASE_ROTATIONAL_ACCEL / 100);
 
         if (inp.Throttle) {
+            _anyPlayerBoosting = true;
             targetVelocity.scale3(MAX_SPEED);
             // move current velocity towards that by acceleration value
             movement.velocity = GameMath.VecMoveTowards(movement.velocity, targetVelocity, BOOSTER_ACCEL * MovementSystem.SIM_FRAME_LENGTH);
@@ -83,5 +92,13 @@ class ShipLocomotionSystem extends MovementSystem {
                 break;
             }
         }
+
+        if(_anyPlayerBoosting){
+            _boostAudio.volume = 1;
+        }
+        else {
+            _boostAudio.volume = 0;
+        }
+        _anyPlayerBoosting = false;
     }
 }

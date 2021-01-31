@@ -65,6 +65,7 @@ class ShootableCrate extends Shootable {
                     y = colliderData.collider.y;
                 }
                 spawnSystem.SpawnEntity(new Pickup(), x, y);
+                hxd.Res.crateBreak.play();
                 sim.DestroyEntity(entityId);
             }
             else{
@@ -88,6 +89,7 @@ class ShootableShip extends Shootable {
     public override function TakeHit(projectile:ProjectileData): Void {
         if(health > 0){
             health -= projectile.damage;
+            hxd.Res.cratehit.play();
             if(health <= 0){
                 // Jettison equipment
                 sim.DestroyEntity(entityId);
