@@ -220,15 +220,24 @@ class SpawnSystem extends SimSystem {
             if(_hasSpawnedCrystal){
                 hxd.Res.crystalSpawn.play();
             }
-            // notify the return zone system
         }
 
         _pickupData[entity.GetId()] = new PickupData(weaponIndex);
 
         var visRep = new PickupEntityRepresentation(entity.GetId(), obj);
+        var eqAnim : h2d.Anim = null;
+        var eqDrawable = _weaponLibrary[weaponIndex].GetDrawable(true);
+        if (_weaponLibrary[weaponIndex].eqAnimName != null) {
+            eqAnim = _weaponLibrary[weaponIndex].GetAnim(_weaponLibrary[weaponIndex].eqAnimName);
+            eqDrawable = null; // leave old drawaable behind in favor of anim
+        }
+        else {
+
+        }
         visRep.InitFromGameData(_colliderData, _pickupData,
-            _weaponLibrary[weaponIndex].GetDrawable(true),
-            _weaponLibrary[weaponIndex].GetDrawable(false));
+            eqDrawable,
+            _weaponLibrary[weaponIndex].GetDrawable(false),
+            eqAnim);
         visRep.InjectPlayerReps(_shipRepresentations);
         _pickupRepresentations[entity.GetId()] = visRep;
     }

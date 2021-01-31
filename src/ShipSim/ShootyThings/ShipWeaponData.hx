@@ -1,4 +1,5 @@
 package shipSim.shootyThings;
+import h2d.Anim;
 import hxd.res.Sound;
 import h2d.Drawable;
 import shipSim.shootyThings.ShootyData;
@@ -50,7 +51,7 @@ class ShipWeaponData {
             return GetAnim(eqAnimName);
         }
         else {
-            if (eqTile != null) {
+            if (pickupTile != null) {
                 return GetPickupBmp();
             }
             return GetAnim(pickupAnimName);
@@ -70,7 +71,7 @@ class ShipWeaponData {
         return bmp;
     }
 
-    public function GetAnim(animName:String) : Drawable {
+    public function GetAnim(animName:String) : Anim {
         var texture = hxd.Res.loader.load("" +animName + ".png").toTexture();
         var jsonData = hxd.Res.loader.load("" +animName + "Map.json");
         var anim = ResourceLoading.LoadAnimFromSpriteSheet(texture, jsonData);

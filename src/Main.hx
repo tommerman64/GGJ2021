@@ -271,8 +271,11 @@ class Main extends hxd.App {
         brrr.cooldown = 10;
         brrr.warmup = 90;
         brrr.weight = 5;
+        /*
         brrr.eqTile = hxd.Res.laserCannon.toTile();
         brrr.eqTile = brrr.eqTile.center();
+        //*/
+        brrr.eqAnimName = "minigun";
         brrr.pickupTile = hxd.Res.pinkOrb.toTile();
         brrr.pickupTile = brrr.pickupTile.center();
         brrr.tileScale = 1;
@@ -369,12 +372,12 @@ class Main extends hxd.App {
 
         var parallaxSpeed = 1.0;
         for(parallaxLayer in _parallaxStars) {
-            parallaxLayer.x += dt * parallaxSpeed * 10;
+            parallaxLayer.x += dt * parallaxSpeed * 3;
 
             if (parallaxLayer.x > s2d.width) {
                 parallaxLayer.x = - s2d.width * 2;
             }
-            parallaxSpeed += .35;
+            parallaxSpeed += .15;
         }
     }
 

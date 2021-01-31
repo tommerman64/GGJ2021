@@ -21,6 +21,7 @@ class PickupData {
     var _weaponLibraryIndex:Int;
     var _parentEntityId:EntityId;
     var _slot:ShipWeaponSlot;
+    var _shooting:Bool;
 
 
     public function new(i:Int) {
@@ -48,6 +49,14 @@ class PickupData {
 
     public function GetSlot() : ShipWeaponSlot {
         return _slot;
+    }
+
+    public function SetShooting(b:Bool) {
+        _shooting = b;
+    }
+
+    public function GetShooting() : Bool {
+        return _shooting;
     }
 }
 

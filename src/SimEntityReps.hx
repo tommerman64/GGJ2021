@@ -88,19 +88,30 @@ class PickupEntityRepresentation extends EnityRepresentation {
     var _parent : EnityRepresentation;
     var _pickupData:PickupData;
     var _allPlayerReps:Map<EntityId, PlayerShipEntityRepresentation>;
+
     var _equippedDrawable:Drawable;
     var _floatingDrawable:Drawable;
+    var _equippedAnim:Anim;
 
-    public function InitFromGameData(col:Map<EntityId,ColliderData>, pickupData:Map<EntityId,PickupData>, eqDraw:Drawable, flDraw:Drawable) : Bool {
+    public function InitFromGameData(col:Map<EntityId,ColliderData>, pickupData:Map<EntityId,PickupData>, eqDraw:Drawable, flDraw:Drawable, eqAnim:Anim) : Bool {
         _collider = col[_entityId];
         _pickupData = pickupData[_entityId];
         _parent = null;
-        _equippedDrawable = eqDraw;
-        _floatingDrawable = flDraw;
 
-        _obj.addChild(_equippedDrawable);
+        _floatingDrawable = flDraw;
         _obj.addChild(_floatingDrawable);
-        _floatingDrawable.visible = false;
+
+        if (eqAnim != null) {
+            _equippedAnim = eqAnim;
+            _obj.addChild(eqAnim);
+            eqAnim.pause = true;
+        }
+
+        if (eqDraw != null) {
+            _equippedDrawable = eqDraw;
+            _obj.addChild(_equippedDrawable);
+        }
+
         return _collider != null;
     }
 
@@ -112,8 +123,7 @@ class PickupEntityRepresentation extends EnityRepresentation {
         if(_pickupData.GetParentId() != 0) {
             // we are supposed to have a parent. lets make sure we do
             var desiredParent = FindParentRepresentation(_pickupData.GetParentId());
-            _equippedDrawable.visible = true;
-            _floatingDrawable.visible = false;
+            SetEquipped(true);
 
             if(_parent != desiredParent) {
                 if(_obj.parent != null) {
@@ -123,14 +133,17 @@ class PickupEntityRepresentation extends EnityRepresentation {
                 _parent.GetObject().addChild(_obj);
             }
 
+            if (_equippedAnim != null) {
+                _equippedAnim.pause = !_pickupData.GetShooting();
+            }
+
             _obj.x = _pickupData.GetSlot().relativePosition.x;
             _obj.y = _pickupData.GetSlot().relativePosition.y;
             _obj.rotation = 0;
         }
         else {
             // we are not supposed to have a parent, make sure we don't
-            _equippedDrawable.visible = false;
-            _floatingDrawable.visible = true;
+            SetEquipped(false);
             if (_parent != null) {
                 if (_obj.parent == _parent.GetObject()) {
                     _obj.parent.removeChild(_obj);
@@ -143,6 +156,18 @@ class PickupEntityRepresentation extends EnityRepresentation {
             // Log.trace(_collider.collider);
             _obj.rotate(Math.PI / 300);
         }
+    }
+
+    function SetEquipped(eq:Bool) {
+        if (_equippedDrawable != null) {
+            _equippedDrawable.visible = eq;
+        }
+
+        if (_equippedAnim != null) {
+            _equippedAnim.visible = eq;
+        }
+        
+        _floatingDrawable.visible = !eq;
     }
 
     function FindParentRepresentation(entityId:EntityId)  : EnityRepresentation{

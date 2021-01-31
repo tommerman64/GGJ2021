@@ -106,6 +106,16 @@ class WeaponSystem extends MovementSystem {
             if (wantsToShoot) {
                 TryShoot(playerId);
             }
+            else {
+                var inventory = _inventories[playerId];
+                for (weapon in inventory.weaponEntityIds) {
+                    if (weapon == 0) {
+                        continue;
+                    }
+        
+                    _pickupData[weapon].SetShooting(false);
+                }
+            }
             UpdateHeat(playerId, wantsToShoot);
             inputIndex++;
         }
@@ -177,6 +187,8 @@ class WeaponSystem extends MovementSystem {
                 slotIndex++;
                 continue;
             }
+
+            _pickupData[weapon].SetShooting(true);
             hasWeapons = true;
             var weaponSlot = inventory.weaponSlots[slotIndex];
             if (GetCooldown(playerId, slotIndex) <= 0 && GetWarmup(playerId, slotIndex) > GetWeapon(inventory, slotIndex).warmup) {
