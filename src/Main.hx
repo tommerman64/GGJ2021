@@ -1,3 +1,4 @@
+import hxd.Rand;
 import h2d.col.Bounds;
 import shipSim.physics.MovementSystem;
 import h2d.Bitmap;
@@ -54,12 +55,24 @@ class Main extends hxd.App {
 
     var dbgGraphics : h2d.Graphics;
 
+    var _parallaxStars : Array<h2d.Bitmap>;
+
     override function init() {
         super.init();
         var backgroundTex = hxd.Res.spaaace.toTile();
         var background = new h2d.Bitmap(backgroundTex, s2d);
         background.scale(2/3);
         background.alpha = 0.24;
+        _parallaxStars = new Array<h2d.Bitmap>();
+        var parallaxSeed = Rand.create();
+        for (i in 0...4) {
+            var tile = i % 2 == 0 ? hxd.Res.Stars1.toTile() : hxd.Res.Stars2.toTile();
+            _parallaxStars.push(new Bitmap(tile, s2d));
+            _parallaxStars[_parallaxStars.length - 1].alpha = parallaxSeed.rand();
+            _parallaxStars[_parallaxStars.length - 1].x = parallaxSeed.random(2*s2d.width) - s2d.width;
+            _parallaxStars[_parallaxStars.length - 1].rotation = parallaxSeed.rand() * Math.PI;
+        }
+
 
         _framerateText = new h2d.Text(hxd.res.DefaultFont.get(), s2d);
         _framerateText.textColor = 0xFFFFFF;
@@ -299,6 +312,16 @@ class Main extends hxd.App {
                 _sim.DestroyEntity(crate.GetId()); // Yeet
                 spawnSystem.SpawnEntity(new Pickup(), x, y);
             }
+        }
+
+        var parallaxSpeed = 1.0;
+        for(parallaxLayer in _parallaxStars) {
+            parallaxLayer.x += dt * parallaxSpeed * 10;
+
+            if (parallaxLayer.x > s2d.width) {
+                parallaxLayer.x = - s2d.width * 2;
+            }
+            parallaxSpeed += .35;
         }
     }
 
