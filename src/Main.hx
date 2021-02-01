@@ -101,7 +101,7 @@ class Main extends hxd.App {
         _framerateText.textColor = 0xFFFFFF;
 
         _framerateText.y = 20;
-        _framerateText.x = 20;
+        _framerateText.x = 700;
         _framerateText.scale(2);
     }
 
@@ -113,7 +113,7 @@ class Main extends hxd.App {
 
         _title = new Bitmap(hxd.Res.title.toTile().center(), s2d);
 
-        _title.x = s2d.width/3;
+        _title.x = s2d.width/4;
         _title.y = s2d.height/2;
         _title.scale(0.66);
 
@@ -146,8 +146,8 @@ class Main extends hxd.App {
         _boost = hxd.Res.boostLoop.play(true, 1, _boostGroup, _boostSG);
 
         var inputSystem = new InputSystem();
-        inputSystem.MapKeys(["A".code, "S".code, "D".code, "F".code, "G".code]);
-        inputSystem.MapKeys(["J".code, "K".code, "L".code, "I".code, "O".code]);
+        inputSystem.MapKeys(["Q".code, "W".code, "A".code, "S".code, "D".code]);
+        inputSystem.MapKeys(["U".code, "I".code, "J".code, "K".code, "L".code]);
 
         locomotionSystem = new ShipLocomotionSystem();
         locomotionSystem.InjectShipMovementData(GameData.shipMovement);
@@ -360,6 +360,11 @@ class Main extends hxd.App {
         // _framerateText.text = ""+1/dt+"\n" + s2d.width + "\n" + s2d.height;
         if (_sim == null) {
             _framerateText.text = "Press T to start!";
+            _framerateText.text += "\nPlayer 1: Q/W to steer,\nA for throttle\nS to shoot\nD to drop all attachments";
+            _framerateText.text += "\n\nPlayer 2: U/I to steer,\nJ for throttle\nK to shoot\nL to drop all attachments";
+            _framerateText.text += "\n\nShoot crates to search for gear and armor.\nDeliver gear to your mothership\n or use them to fight!";
+            _framerateText.text += "\nLook for the space crystal,\n whoever brings that to their ship wins!";
+
             if (Key.isPressed("T".code)) {
                 StartGame();
             }
