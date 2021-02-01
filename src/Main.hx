@@ -139,7 +139,7 @@ class Main extends hxd.App {
     function StartGame() {
         _title.visible = false;
         _music.stop();
-        _music = GetBattleMusic().play(true, 1, _musicGroup, _musicSG);
+        _music = GetBattleMusic().play(true, 0.5, _musicGroup, _musicSG);
 
         _boost.stop();
         _boostGroup.volume = 0;

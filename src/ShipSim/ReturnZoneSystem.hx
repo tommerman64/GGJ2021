@@ -1,5 +1,6 @@
 package shipSim;
 
+import js.lib.WebAssembly.WebAssemblyInstantiatedSource;
 import h3d.Vector;
 import h2d.col.Circle;
 import h2d.col.Point;
@@ -73,6 +74,9 @@ class ReturnZoneSystem extends SimSystem {
                 var position : Point = new Point(col.collider.x, col.collider.y);
                 if (zone.contains(position)) {
                     if (_pickupData[eId].GetWeaponLibIndex() == 0) { // it was the crystal, game is over
+                        var winSound = hxd.Res.win.play();
+                        winSound.priority = 9;
+                        winSound.onEnd = function() {hxd.Res.ding.play().priority = 9;}
                         _gameEnd = true;
                     }
                     else {
