@@ -36,6 +36,10 @@ class Main extends hxd.App {
     var _musicGroup: hxd.snd.ChannelGroup;
     var _musicSG: SoundGroup;
 
+    var _boost:hxd.snd.Channel;
+    var _boostGroup:hxd.snd.ChannelGroup;
+    var _boostSG:SoundGroup;
+
     // sim and systems
     var _sim:jamSim.Sim;
     var _framerateText : h2d.Text;
@@ -59,6 +63,7 @@ class Main extends hxd.App {
     var _projectileRepresentations = new Map<EntityId, ProjectileEntityRepresentation>();
 
     var spawnSystem:SpawnSystem;
+    var locomotionSystem:ShipLocomotionSystem;
 
     var _returnZoneSys:ReturnZoneSystem;
 
@@ -78,6 +83,12 @@ class Main extends hxd.App {
             var res:hxd.res.Sound = hxd.Res.menuMusic;
             _music = res.play(true, 1, _musicGroup, _musicSG);
             _music.priority = 10; 
+            
+            _boostGroup = new hxd.snd.ChannelGroup("boost");
+            _boostGroup.volume = 0;
+            _boostSG = new hxd.snd.SoundGroup("boostSg");
+            _boost = hxd.Res.boostLoop.play(true, 2, _boostGroup, _boostSG);
+            _boost.priority = 1;
         }
 
         _shipRepresentations = new Map<EntityId, PlayerShipEntityRepresentation>();
@@ -129,11 +140,16 @@ class Main extends hxd.App {
         _title.visible = false;
         _music.stop();
         _music = GetBattleMusic().play(true, 1, _musicGroup, _musicSG);
+
+        _boost.stop();
+        _boostGroup.volume = 0;
+        _boost = hxd.Res.boostLoop.play(true, 1, _boostGroup, _boostSG);
+
         var inputSystem = new InputSystem();
         inputSystem.MapKeys(["A".code, "S".code, "D".code, "F".code, "G".code]);
         inputSystem.MapKeys(["J".code, "K".code, "L".code, "I".code, "O".code]);
 
-        var locomotionSystem = new ShipLocomotionSystem();
+        locomotionSystem = new ShipLocomotionSystem();
         locomotionSystem.InjectShipMovementData(GameData.shipMovement);
         locomotionSystem.SetInputSystem(inputSystem);
 
@@ -202,6 +218,7 @@ class Main extends hxd.App {
 
         var sndManager = Manager.get();
         sndManager.masterSoundGroup.maxAudible = 4;
+        sndManager.masterChannelGroup.priority = 1;
 
         // Hook up weapons and inventories
         var slots = new Array<ShipWeaponSlot>();
@@ -274,7 +291,7 @@ class Main extends hxd.App {
 
     function InitializeWeaponLibrary() {
         var zapper = new ProjectileWeaponData();
-        zapper.cooldown = 35;
+        zapper.cooldown = 30;
         zapper.weight = 5;
         zapper.eqTile = hxd.Res.laserCannon.toTile();
         zapper.eqTile = zapper.eqTile.center();
@@ -371,6 +388,18 @@ class Main extends hxd.App {
             for (visRep in _projectileRepresentations) {
                 visRep.UpdateRepresentation(s2d);
             }
+
+            if(locomotionSystem != null){
+                if(locomotionSystem.anyPlayerBoosting){
+                    _boostGroup.volume = 1;
+                }
+                else{
+                    _boostGroup.volume = 0;
+                }
+            }
+            else{
+                _boostGroup.volume = 0;
+            }
         }
 
         if (_returnZoneSys.HasGameEnded())
@@ -450,6 +479,7 @@ class Main extends hxd.App {
 
         // clear member systems
         spawnSystem = null;
+        locomotionSystem = null;
         _returnZoneSys = null;
 
         // dbg graphics and parallax stars

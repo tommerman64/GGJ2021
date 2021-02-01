@@ -103,7 +103,7 @@ class ProjectileWeaponData extends ShipWeaponData {
         var projectileStart = GameMath.GetSlotAbsolutePosition(shipPosition, slotData, mov);
         projectile.position.x = projectileStart.x;
         projectile.position.y = projectileStart.y;
-        projectile.speed = 40;
+        projectile.speed = projectileSpeed;
         projectile.ownerId = mov.entityId;
         projectile.rotation = mov.rotation;
         projectile.tile = projectileTex;
