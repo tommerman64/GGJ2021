@@ -45,6 +45,7 @@ class Main extends hxd.App {
     var _framerateText : h2d.Text;
     var _background:h2d.Bitmap;
     var _title:h2d.Bitmap;
+    var _winnerGfx:h2d.Bitmap;
 
     var _timeToNextFrame:Float;
 
@@ -118,6 +119,10 @@ class Main extends hxd.App {
         _title.x = s2d.width/4;
         _title.y = s2d.height/2;
         _title.scale(0.66);
+
+        _winnerGfx = new Bitmap(hxd.Res.winner.toTile().center(), s2d);
+        _winnerGfx.visible = false;
+        _winnerGfx.scale(0.66);
 
         _parallaxStars = new Array<h2d.Bitmap>();
         var parallaxSeed = Rand.create();
@@ -415,6 +420,10 @@ class Main extends hxd.App {
         if (_returnZoneSys.HasGameEnded())
         {
             _endRoundTimer-=dt;
+            s2d.removeChild(_winnerGfx);
+            s2d.addChild(_winnerGfx);
+            _winnerGfx.visible = true;
+            _winnerGfx.setPosition(_returnZoneSys.GetWinnerPosition().x, _returnZoneSys.GetWinnerPosition().y);
 
             if (_endRoundTimer < 0) {
                 EndRound(true);

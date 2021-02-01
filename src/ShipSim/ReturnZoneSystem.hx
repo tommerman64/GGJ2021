@@ -23,6 +23,8 @@ class ReturnZoneSystem extends SimSystem {
 
     var _gameEnd : Bool = false;
 
+    var _winnerPos : Point;
+
     public override function new() {
         super();
         _pickupEntityIds = new Array<EntityId>();
@@ -78,6 +80,7 @@ class ReturnZoneSystem extends SimSystem {
                         winSound.priority = 9;
                         winSound.onEnd = function() {hxd.Res.ding.play().priority = 9;}
                         _gameEnd = true;
+                        _winnerPos = new Point(zone.x, zone.y);
                     }
                     else {
                         hxd.Res.score.play().priority = 2;
@@ -118,5 +121,12 @@ class ReturnZoneSystem extends SimSystem {
 
     public function GetMagnets() : Array<Circle> {
         return _magnets;
+    }
+
+    public function GetWinnerPosition() : Point {
+        if (_winnerPos == null) {
+            return new Point();
+        }
+        return _winnerPos;
     }
 }
