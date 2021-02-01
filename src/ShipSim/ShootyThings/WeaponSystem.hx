@@ -201,7 +201,7 @@ class WeaponSystem extends MovementSystem {
         }
 
 
-        if (_baseWeaponCooldown <= 0 && !hasWeapons) {
+        if (_baseWeaponCooldown <= 0) {
             s_baseWeaponData.OnFire(pos, new ShipWeaponSlot(new Vector(), 0), mov, _projectileSystem);
             _baseWeaponCooldown = s_baseWeaponData.cooldown;
         }
