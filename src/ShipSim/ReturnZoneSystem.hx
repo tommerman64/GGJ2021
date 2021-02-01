@@ -1,6 +1,5 @@
 package shipSim;
 
-import js.lib.WebAssembly.WebAssemblyInstantiatedSource;
 import h3d.Vector;
 import h2d.col.Circle;
 import h2d.col.Point;
