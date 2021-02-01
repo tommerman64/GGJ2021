@@ -206,7 +206,7 @@ class SpawnSystem extends SimSystem {
         var obj = new h2d.Object(_scene);
 
         var weaponIndex = _random.random(_weaponLibrary.length);
-        if (_crateCount == 1 && !_hasSpawnedCrystal) {
+        if (_crateCount < 3 && !_hasSpawnedCrystal) {
             //force spawn crystal
             var weaponIndex = 0;
         }
