@@ -85,7 +85,9 @@ class ShootableShip extends Shootable {
 
     public override function TakeHit(projectile:ProjectileData): Void {
         hxd.Res.cratehit.play().priority = 1;
-        pickupSystem.JettisonRandomWeaponOrArmor(entityId);
+        for(i in 0...projectile.damage){
+            pickupSystem.JettisonRandomWeaponOrArmor(entityId);
+        }
     }
 
 }

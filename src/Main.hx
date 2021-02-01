@@ -83,7 +83,7 @@ class Main extends hxd.App {
             var res:hxd.res.Sound = hxd.Res.menuMusic;
             _music = res.play(true, 1, _musicGroup, _musicSG);
             _music.priority = 10; 
-            
+
             _boostGroup = new hxd.snd.ChannelGroup("boost");
             _boostGroup.volume = 0;
             _boostSG = new hxd.snd.SoundGroup("boostSg");
@@ -302,6 +302,7 @@ class Main extends hxd.App {
         zapper.recoilRotationAccelerator = 2;
         zapper.projectileSpeed = 40;
         zapper.sound = hxd.Res.laser;
+        zapper.projectileDamage = 2;
 
         var fatMan = new ProjectileWeaponData();
         fatMan.cooldown = 60;
@@ -316,6 +317,7 @@ class Main extends hxd.App {
         fatMan.recoilRotationAccelerator = 10;
         fatMan.projectileSpeed = 6;
         fatMan.sound = hxd.Res.fatmanLaunch;
+        fatMan.projectileDamage = 3;
 
         var brrr = new ProjectileWeaponData();
         brrr.cooldown = 10;

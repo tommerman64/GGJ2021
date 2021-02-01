@@ -86,12 +86,14 @@ class ProjectileWeaponData extends ShipWeaponData {
     public var projectileTex:Tile;
     public var projectileSpeed:Float;
     public var sound:Sound;
+    public var projectileDamage:Int;
 
     public function new() {
         super();
         recoil = 1;
         recoilRotationAccelerator = 0;
         projectileSpeed = 0;
+        projectileDamage = 1;
         sound = null;
     }
 
@@ -107,6 +109,7 @@ class ProjectileWeaponData extends ShipWeaponData {
         projectile.ownerId = mov.entityId;
         projectile.rotation = mov.rotation;
         projectile.tile = projectileTex;
+        projectile.damage = projectileDamage;
 
         projectileSystem.FireProjectile(projectile);
 
