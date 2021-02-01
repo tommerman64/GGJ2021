@@ -123,6 +123,9 @@ class ShipPickupSystem extends SimSystem {
     }
 
     public function AdjustDrift(pickupId:EntityId, target:Vector) {
+        if (_pickupDrifts[pickupId] == null) { // object was picked up while drifting
+            return;
+        }
         var driftVec = new Vector(_pickupDrifts[pickupId].x, _pickupDrifts[pickupId].y);
         driftVec = GameMath.VecMoveTowards(driftVec, target, 10);
         _pickupDrifts[pickupId].x = driftVec.x;
