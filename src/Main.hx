@@ -48,6 +48,8 @@ class Main extends hxd.App {
 
     var _timeToNextFrame:Float;
 
+    var _endRoundTimer:Float;
+
     var GameData = {
         shipMovement : new Array<ShipMovement>(),
         colliderData: new Map<EntityId, ColliderData>(),
@@ -137,6 +139,7 @@ class Main extends hxd.App {
     }
 
     function StartGame() {
+        _endRoundTimer = 2;
         _title.visible = false;
         _music.stop();
         _music = GetBattleMusic().play(true, 0.5, _musicGroup, _musicSG);
@@ -411,7 +414,14 @@ class Main extends hxd.App {
 
         if (_returnZoneSys.HasGameEnded())
         {
-            EndRound(true);
+            _endRoundTimer-=dt;
+
+            if (_endRoundTimer < 0) {
+                EndRound(true);
+            }
+        }
+        else {
+            _endRoundTimer = 2;
         }
 
         /*
