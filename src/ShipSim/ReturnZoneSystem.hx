@@ -14,7 +14,7 @@ import shipSim.shootyThings.ShipWeaponData;
 class ReturnZoneSystem extends SimSystem {
     var _pickupEntityIds : Array<EntityId>;
     var _pickupData:Map<EntityId,PickupData>;
-    var _colliderObjects: Map<EntityId,ColliderData>;
+    var _colliderProvider: EntityId->ColliderData;
     var _pickupSystem:ShipPickupSystem;
 
     var _returnZones : Array<Circle>;
@@ -31,8 +31,8 @@ class ReturnZoneSystem extends SimSystem {
         _magnets = new Array<Circle>();
     }
 
-    public function InjectColliderData(col:Map<EntityId,ColliderData>) {
-        _colliderObjects = col;
+    public function SetColliderProvider(provider:EntityId->ColliderData) {
+        _colliderProvider = provider;
     }
 
     public function InjectPickupData(pu:Map<EntityId,PickupData>) {
@@ -71,7 +71,7 @@ class ReturnZoneSystem extends SimSystem {
 
         for(zone in _returnZones) {
             for (eId in _pickupEntityIds) {
-                var col = _colliderObjects[eId];
+                var col = _colliderProvider(eId);
                 var position : Point = new Point(col.collider.x, col.collider.y);
                 if (zone.contains(position)) {
                     if (_pickupData[eId].GetWeaponLibIndex() == 0) { // it was the crystal, game is over
@@ -92,7 +92,7 @@ class ReturnZoneSystem extends SimSystem {
 
         for(magnet in _magnets) {
             for (eId in _pickupEntityIds) {
-                var col = _colliderObjects[eId];
+                var col = _colliderProvider(eId);
                 var position : Point = new Point(col.collider.x, col.collider.y);
                 if (magnet.contains(position)) {
                     var targetVec = new Vector(magnet.x - col.collider.x, magnet.y - col.collider.y);

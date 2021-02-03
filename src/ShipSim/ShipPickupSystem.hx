@@ -18,7 +18,7 @@ class ShipPickupSystem extends SimSystem {
     var _collisionSystem : CollisionSystem;
     var _shipInventories : Map<EntityId, ShipInventory>;
     var _pickupData : Map<EntityId,PickupData>;
-    var _colliderData: Map<EntityId, ColliderData>;
+    var _colliderProvider: EntityId->ColliderData;
     
     // For dropping items
     var _playerIds : Array<EntityId>;
@@ -63,8 +63,8 @@ class ShipPickupSystem extends SimSystem {
         _collisionSystem = colSys;
     }
 
-    public function InjectColliderData(col:Map<EntityId, ColliderData>) {
-        _colliderData = col;
+    public function SetColliderProvider(provider:EntityId->ColliderData) {
+        _colliderProvider = provider;
     }
 
     public function SetInputSystem(inp:InputSystem) {
@@ -98,8 +98,8 @@ class ShipPickupSystem extends SimSystem {
             // set the pickup to dropped
             pickup.DetachFromShip();
             // find the collision data
-            var weaponCol = _colliderData[weaponId];
-            var shipCol = _colliderData[pId];
+            var weaponCol = _colliderProvider(weaponId);
+            var shipCol = _colliderProvider(pId);
 
             var slotPosition = new Vector(shipCol.collider.x, shipCol.collider.y);
             for(move in _shipMovement){
@@ -134,9 +134,10 @@ class ShipPickupSystem extends SimSystem {
 
     public override function EarlyTick() {
         for(pickupId in _pickupDrifts.keys()){
-            if(_colliderData.exists(pickupId)){
-                _colliderData[pickupId].collider.x += _pickupDrifts[pickupId].x * _sim.GetSimFrameLength();
-                _colliderData[pickupId].collider.y += _pickupDrifts[pickupId].y * _sim.GetSimFrameLength();
+            var colliderData = _colliderProvider(pickupId);
+            if(colliderData != null){
+                colliderData.collider.x += _pickupDrifts[pickupId].x * _sim.GetSimFrameLength();
+                colliderData.collider.y += _pickupDrifts[pickupId].y * _sim.GetSimFrameLength();
             }
         }
     }
@@ -156,8 +157,8 @@ class ShipPickupSystem extends SimSystem {
                     // set the pickup to dropped
                     pickup.DetachFromShip();
                     // find the collision data
-                    var weaponCol = _colliderData[weaponId];
-                    var shipCol = _colliderData[pId];
+                    var weaponCol = _colliderProvider(weaponId);
+                    var shipCol = _colliderProvider(pId);
 
                     var slotPosition = new Vector(shipCol.collider.x, shipCol.collider.y);
                     for(move in _shipMovement){

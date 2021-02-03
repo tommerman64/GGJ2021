@@ -163,7 +163,6 @@ class Main extends hxd.App {
 
         var collisionSystem = new CollisionSystem();
         collisionSystem.InjectShipMovementData(GameData.shipMovement);
-        collisionSystem.InjectColliderData(GameData.colliderData);
         collisionSystem.SetPlayfieldSize(GameData.screenBounds.right, GameData.screenBounds.bottom);
 
         var collisionResolver = new ShipCollisionResolver();
@@ -173,37 +172,38 @@ class Main extends hxd.App {
         var pickupSystem = new ShipPickupSystem();
         pickupSystem.SetCollisionSystem(collisionSystem);
         pickupSystem.SetPickupData(GameData.pickupData);
-        pickupSystem.InjectColliderData(GameData.colliderData);
         pickupSystem.SetInputSystem(inputSystem);
         pickupSystem.SetShipMovement(GameData.shipMovement);
+        pickupSystem.SetColliderProvider(collisionSystem.GetSystemEntityDataProvider());
 
         spawnSystem = new SpawnSystem();
-        spawnSystem.SetColliderData(GameData.colliderData);
         spawnSystem.SetRepresentations(_shipRepresentations, _crateRepresentations, _pickupRepresentations, _projectileRepresentations);
         spawnSystem.SetWeaponLibrary(GameData.weaponLibrary);
         spawnSystem.SetShipMovement(GameData.shipMovement);
         spawnSystem.SetPickupData(GameData.pickupData);
         spawnSystem.SetScene(s2d);
+        spawnSystem.SetColliderProvider(collisionSystem.GetSystemEntityDataProvider());
+        spawnSystem.SetColliderAssigner(collisionSystem.GetSystemEntityDataWriter());
 
         var projectileSystem = new ProjectileSystem();
         projectileSystem.SetProjectileRepresentations(_projectileRepresentations);
-        projectileSystem.SetColliderData(GameData.colliderData);
         projectileSystem.SetSpawner(spawnSystem);
         projectileSystem.SetPlayfieldSize(GameData.screenBounds.right, GameData.screenBounds.bottom);
         projectileSystem.SetPickupSystem(pickupSystem);
+        projectileSystem.SetColliderProvider(collisionSystem.GetSystemEntityDataProvider());
 
         var weaponSystem = new WeaponSystem();
         weaponSystem.SetInputSystem(inputSystem);
         weaponSystem.SetProjectileSystem(projectileSystem);
         weaponSystem.InjectShipMovementData(GameData.shipMovement);
-        weaponSystem.InjectColliderData(GameData.colliderData);
         weaponSystem.InjectPickupData(GameData.pickupData);
         weaponSystem.SetWeaponLibrary(GameData.weaponLibrary);
+        weaponSystem.SetCollisionProvider(collisionSystem.GetSystemEntityDataProvider());
 
         _returnZoneSys = new ReturnZoneSystem();
-        _returnZoneSys.InjectColliderData(GameData.colliderData);
         _returnZoneSys.InjectPickupData(GameData.pickupData);
         _returnZoneSys.SetPickupSystem(pickupSystem);
+        _returnZoneSys.SetColliderProvider(collisionSystem.GetSystemEntityDataProvider());
 
         var bounds = GameData.screenBounds;
         var screenWidth = bounds.right - bounds.left;

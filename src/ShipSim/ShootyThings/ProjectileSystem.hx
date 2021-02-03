@@ -1,5 +1,6 @@
 package shipSim.shootyThings;
 
+import shipSim.physics.CollisionSystem;
 import shipSim.shootyThings.ShootyData.ShootableShip;
 import shipSim.shootyThings.ShootyData.ShootableCrate;
 import h3d.Vector;
@@ -17,9 +18,9 @@ import jamSim.SimSystem;
 class ProjectileSystem extends SimSystem {
     var _activeProjectiles:Array<ProjectileData>;
     var _shootables:Array<Shootable>;
-    var _colliderData:Map<EntityId, ColliderData>;
     var _projectileRepresentations: Map<EntityId, ProjectileEntityRepresentation>;
     var _spawner:SpawnSystem;
+    var _colliderProvider:EntityId->ColliderData;
     var _positionMax:Vector;
     var _pickupSystem:ShipPickupSystem;
 
@@ -34,8 +35,8 @@ class ProjectileSystem extends SimSystem {
         _projectileRepresentations = projectiles;
     }
 
-    public function SetColliderData(colliderData:Map<EntityId, ColliderData>){
-        _colliderData = colliderData;
+    public function SetColliderProvider(provider:EntityId->ColliderData){
+        _colliderProvider = provider;
     }
 
     public function SetSpawner(spawner:SpawnSystem){
@@ -63,8 +64,9 @@ class ProjectileSystem extends SimSystem {
             var crate = new ShootableCrate(entity.GetId());
             crate.spawnSystem = _spawner;
             crate.sim = _sim;
-            if(_colliderData.exists(entity.GetId())){
-                crate.colliderData = _colliderData[entity.GetId()];
+            var collisionData = _colliderProvider(entity.GetId());
+            if(collisionData != null) {
+                crate.colliderData = collisionData;
             }
             _shootables.push(crate);
         }
@@ -98,8 +100,9 @@ class ProjectileSystem extends SimSystem {
 
     public override function LateTick() {
         for(shootable in _shootables){
-            if(_colliderData.exists(shootable.entityId)){
-                var collider = _colliderData[shootable.entityId].collider;
+            var collisionData = _colliderProvider(shootable.entityId);
+            if(collisionData != null) {
+                var collider = collisionData.collider;
                 for(projectile in _activeProjectiles){
                     if(shootable.entityId != projectile.ownerId){
                         if(collider.contains(projectile.position)){

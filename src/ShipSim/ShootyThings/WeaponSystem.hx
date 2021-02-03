@@ -21,7 +21,7 @@ class WeaponSystem extends MovementSystem {
     var _warmups:Map<EntityId, Array<Int>>;
 
     var _inventories:Map<EntityId, ShipInventory>;
-    var _colliderObjects: Map<EntityId,ColliderData>;
+    var _colliderProvider: EntityId->ColliderData;
     var _pickupData:Map<EntityId,PickupData>;
     var _weaponLib:WeaponLibrary;
 
@@ -37,8 +37,8 @@ class WeaponSystem extends MovementSystem {
         _warmups = new Map<EntityId, Array<Int>>();
     }
 
-    public function InjectColliderData(col:Map<EntityId,ColliderData>) {
-        _colliderObjects = col;
+    public function SetCollisionProvider(provider: EntityId->ColliderData) {
+        _colliderProvider = provider;
     }
 
     public function SetWeaponLibrary(lib:WeaponLibrary) {
@@ -171,7 +171,11 @@ class WeaponSystem extends MovementSystem {
     }
 
     function GetPlayerPosition(entityId:EntityId) : Vector {
-        return new Vector(_colliderObjects[entityId].collider.x, _colliderObjects[entityId].collider.y);
+        var colliderData = _colliderProvider(entityId);
+        if(colliderData != null) {
+            return new Vector(colliderData.collider.x, colliderData.collider.y);
+        }
+        return new Vector();
     }
 
     public function TryShoot(playerId:EntityId) {

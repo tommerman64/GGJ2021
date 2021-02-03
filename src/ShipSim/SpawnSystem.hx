@@ -21,7 +21,8 @@ class SpawnSystem extends SimSystem {
     var _inventorySlots:Array<ShipWeaponSlot>;
     var _inventories:Map<EntityId,ShipInventory>;
     var _random:Rand;
-    var _colliderData:Map<EntityId, ColliderData>;
+    var _colliderProvider:EntityId->ColliderData;
+    var _colliderAssigner:(EntityId,ColliderData)->Void;
 
     var _shipMovement : Array<ShipMovement>;
     var _pickupData:Map<EntityId, PickupData>;
@@ -53,8 +54,12 @@ class SpawnSystem extends SimSystem {
         _inventories = inventories;
     }
 
-    public function SetColliderData(colliderData:Map<EntityId, ColliderData>) {
-        _colliderData = colliderData;
+    public function SetColliderProvider(provider:EntityId->ColliderData) {
+        _colliderProvider = provider;
+    }
+
+    public function SetColliderAssigner(assigner:(EntityId,ColliderData)->Void) {
+        _colliderAssigner = assigner;
     }
 
     public function SetShipMovement(shipMovement:Array<ShipMovement>) {
@@ -86,7 +91,6 @@ class SpawnSystem extends SimSystem {
     }
 
     public override function OnEntityDestroyed(entity:EntityId) {
-        _colliderData.remove(entity);
         for(movement in _shipMovement.filter(function(sm) {return sm.entityId == entity;})) {
             _shipMovement.remove(movement);
         }
@@ -153,7 +157,7 @@ class SpawnSystem extends SimSystem {
             collider.collider = new Circle(x, y, 18);
         }
 
-        _colliderData[entity.GetId()] = collider;
+        _colliderAssigner(entity.GetId(), collider);
     }
 
     function InitializeShip(entity:Entity) {
@@ -182,7 +186,7 @@ class SpawnSystem extends SimSystem {
         _inventories[entity.GetId()].InitializeWeaponSlots(_inventorySlots);
 
         var visRep = new PlayerShipEntityRepresentation(entity.GetId(), obj);
-        visRep.InitFromGameData(_shipMovement, _colliderData, _inventories);
+        visRep.InitFromGameData(_shipMovement, _colliderProvider(entity.GetId()), _inventories);
         visRep.SetBoosterAnim(boosterAnim);
         visRep.AttachArmorPieces(ResourceLoading.LoadTilesFromSpriteSheet(hxd.Res.armor.toTexture(), hxd.Res.armorMap));
         _shipRepresentations[entity.GetId()] = visRep;
@@ -197,7 +201,7 @@ class SpawnSystem extends SimSystem {
         bmp.scale(2.0/3.0);
 
         var visRep = new CrateEntityRepresentation(entity.GetId(), obj);
-        visRep.InitFromGameData(_colliderData);
+        visRep.InitFromGameData(_colliderProvider(entity.GetId()));
         _crateRepresentations[entity.GetId()] = visRep;
     }
 
@@ -237,7 +241,7 @@ class SpawnSystem extends SimSystem {
             eqDrawable = null; // leave old drawaable behind in favor of anim
         }
 
-        visRep.InitFromGameData(_colliderData, _pickupData,
+        visRep.InitFromGameData(_colliderProvider(entity.GetId()), _pickupData,
             eqDrawable,
             _weaponLibrary[weaponIndex].GetDrawable(false),
             eqAnim);

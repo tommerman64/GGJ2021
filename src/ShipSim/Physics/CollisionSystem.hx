@@ -1,5 +1,7 @@
 package shipSim.physics;
 
+import haxe.Constraints.Constructible;
+import jamSim.SimSystem.SystemWithEntityData;
 import hxsl.Types.Vec;
 import h3d.Vector;
 import jamSim.Entity;
@@ -8,6 +10,7 @@ import shipSim.physics.PhysData;
 // moves player objects and records all collisions
 // responding to collision events actually happens elsewhere
 class CollisionSystem extends MovementSystem
+    implements SystemWithEntityData<ColliderData>
 {
     var _crateEntityIds: Array<EntityId>;
     var _pickupEntityIds: Array<EntityId>;
@@ -26,10 +29,27 @@ class CollisionSystem extends MovementSystem
         _playerPlayerCollisions = new Array<ActiveCollision>();
         _playerPickupCollisions = new Array<ActiveCollision>();
         _positionMax = new Vector();
+
+        _colliderObjects = new Map<EntityId, ColliderData>();
     }
 
-    public function InjectColliderData(col:Map<EntityId,ColliderData>) {
-        _colliderObjects = col;
+    private function GetSystemDataForEntity(entityId:EntityId): ColliderData {
+        if(_colliderObjects.exists(entityId)) {
+            return _colliderObjects[entityId];
+        }
+        return null;
+    }
+
+    public function GetSystemEntityDataProvider(): EntityId->ColliderData {
+        return GetSystemDataForEntity;
+    }
+
+    private function WriteSystemEntityData(entityId:EntityId, entityData:ColliderData) {
+        _colliderObjects[entityId] = entityData;
+    }
+
+    public function GetSystemEntityDataWriter(): (EntityId,ColliderData)->Void {
+        return WriteSystemEntityData;
     }
 
     public function SetPlayfieldSize(x:Float, y:Float) {
@@ -62,6 +82,7 @@ class CollisionSystem extends MovementSystem
         super.OnEntityDestroyed(entity);
         _crateEntityIds.remove(entity);
         _pickupEntityIds.remove(entity);
+        _colliderObjects.remove(entity);
     }
 
     public override function EarlyTick() {

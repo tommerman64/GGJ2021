@@ -38,13 +38,13 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
     var _scaleUpFrames : Int;
     var _armorPieces : Array<Drawable>;
 
-    public function InitFromGameData(mov:Array<ShipMovement>, col:Map<EntityId,ColliderData>, inv:Map<EntityId,ShipInventory>) : Bool {
+    public function InitFromGameData(mov:Array<ShipMovement>, col:ColliderData, inv:Map<EntityId,ShipInventory>) : Bool {
         for (shipMovement in mov) {
             if (shipMovement.entityId == _entityId) {
                 _movement = shipMovement;
             }
         }
-        _collider = col[_entityId];
+        _collider = col;
         _inventory = inv[_entityId];
         _scaleUpFrames = 60;
 
@@ -94,8 +94,8 @@ class PlayerShipEntityRepresentation extends EnityRepresentation {
 class CrateEntityRepresentation extends EnityRepresentation {
     var _collider : ColliderData;
 
-    public function InitFromGameData(col:Map<EntityId,ColliderData>) : Bool {
-        _collider = col[_entityId];
+    public function InitFromGameData(col:ColliderData) : Bool {
+        _collider = col;
         return _collider != null;
     }
 
@@ -116,8 +116,8 @@ class PickupEntityRepresentation extends EnityRepresentation {
     var _floatingDrawable:Drawable;
     var _equippedAnim:Anim;
 
-    public function InitFromGameData(col:Map<EntityId,ColliderData>, pickupData:Map<EntityId,PickupData>, eqDraw:Drawable, flDraw:Drawable, eqAnim:Anim) : Bool {
-        _collider = col[_entityId];
+    public function InitFromGameData(col:ColliderData, pickupData:Map<EntityId,PickupData>, eqDraw:Drawable, flDraw:Drawable, eqAnim:Anim) : Bool {
+        _collider = col;
         _pickupData = pickupData[_entityId];
         _parent = null;
 
